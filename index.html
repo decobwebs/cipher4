@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Cipher4 AI &amp; Robotics Ltd - Intelligent Automation</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Montserrat:wght@700&amp;display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <link rel="stylesheet" href="static/styles.css" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#13235e",
+            "background-light": "#f6f6f8",
+            "background-dark": "#121520",
+          },
+          fontFamily: {
+            "display": ["Inter", "sans-serif"],
+            "heading": ["Montserrat", "sans-serif"]
+          },
+          borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+        },
+      },
+    }
+  </script>
+  <style>
+    /* Dotted background pattern ONLY on hero */
+    .hero-dots {
+      background-image:
+        radial-gradient(black 1px, transparent 1px),
+        linear-gradient(rgba(255, 255, 255, 0.95), rgba(248, 249, 251, 0.95)),
+        url('https://www.toptal.com/designers/subtlepatterns/uploads/circuit-board.png');
+      background-size: 20px 20px, auto, 300px;
+    }
+    .dark .hero-dots {
+      background-image:
+        radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+        linear-gradient(rgba(18, 21, 32, 0.95), rgba(18, 21, 32, 0.95)),
+        url('https://www.toptal.com/designers/subtlepatterns/uploads/circuit-board.png');
+      background-size: 20px 20px, auto, 300px;
+    }
+
+    /* Reveal-on-scroll animation (improved, directional, performant) */
+    :root { --reveal-duration: 700ms; --reveal-ease: cubic-bezier(.2,.9,.2,1); --reveal-stagger: 80ms; }
+    html { scroll-behavior: smooth; }
+
+    .reveal {
+      opacity: 0;
+      --delay: 0ms;
+      transition: opacity var(--reveal-duration) var(--reveal-ease) var(--delay), transform var(--reveal-duration) var(--reveal-ease) var(--delay);
+      will-change: transform, opacity;
+      /* default entry from bottom */
+      transform: translateY(28px) scale(.99);
+      backface-visibility: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* directional initial offsets */
+    .reveal.from-left { transform: translateX(-28px) scale(.99); }
+    .reveal.from-right { transform: translateX(28px) scale(.99); }
+    .reveal.from-up { transform: translateY(28px) scale(.99); }
+
+    /* revealed state */
+    .reveal.revealed {
+      opacity: 1;
+      transform: translateX(0) translateY(0) scale(1);
+    }
+
+    /* subtle exit positions when element leaves viewport */
+    .reveal.exited[data-exit="up"] { transform: translateY(-12px) scale(.995); opacity: .92; transition-duration: 420ms; }
+    .reveal.exited[data-exit="down"] { transform: translateY(12px) scale(.995); opacity: .92; transition-duration: 420ms; }
+
+    /* small view-specific tweaks */
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { transition: none !important; transform: none !important; opacity: 1 !important; }
+    }
+
+    /* keep existing responsive tweak */
+    @media (max-width: 640px) {
+      .moon-svg {
+        transform: translateY(30%) scale(0.75);
+        transform-origin: bottom right;
+      }
+    }
+  </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-[#1A202C] dark:text-white/90">
+
+<!-- NAVIGATION -->
+<nav class="fixed top-0 left-0 w-full z-50 bg-white/70 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50 transition-all duration-300">
+  <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+    <!-- Logo + Brand -->
+    <div class="flex items-center gap-3">
+      <div class="relative">
+        <img src="assets/Cipher4_logo.png" alt="Cipher4 logo" class="w-10 h-10 " />
+      </div>
+      <span class="text-lg font-heading font-bold text-gray-900 dark:text-white tracking-tight">
+        Cipher4 <span class="text-primary">AI & Robotics</span>
+      </span>
+    </div>
+
+    <!-- Desktop Nav Links -->
+    <div class="hidden md:flex gap-8 font-medium text-[0.95rem] text-gray-700 dark:text-gray-200">
+      <a href="#hero" class="relative group">
+        Home
+        <span class="absolute left-0 -bottom-1 w-0 h-[2px] bg-primary transition-all group-hover:w-full"></span>
+      </a>
+      <a href="#about" class="relative group">
+        About
+        <span class="absolute left-0 -bottom-1 w-0 h-[2px] bg-primary transition-all group-hover:w-full"></span>
+      </a>
+      <a href="#solutions" class="relative group">
+        Solutions
+        <span class="absolute left-0 -bottom-1 w-0 h-[2px] bg-primary transition-all group-hover:w-full"></span>
+      </a>
+      <a href="#contact" class="relative group">
+        Contact
+        <span class="absolute left-0 -bottom-1 w-0 h-[2px] bg-primary transition-all group-hover:w-full"></span>
+      </a>
+    </div>
+
+    <!-- CTA + Mobile Menu Button -->
+    <div class="flex items-center gap-3">
+      <a href="#contact" class="hidden md:inline-block rounded-full bg-primary px-5 py-2 text-sm font-bold text-white shadow-md hover:shadow-lg hover:scale-105 transition-all">
+        Book Consultation
+      </a>
+      <button
+        id="menu-btn"
+        class="md:hidden p-2 rounded-md text-gray-700 dark:text-white focus:outline-none transition-transform hover:scale-110"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        aria-label="Toggle menu"
+      >
+        <i class="fas fa-bars text-xl"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-background-dark/95 border-t border-gray-100 dark:border-gray-800">
+    <div class="px-6 py-4 flex flex-col gap-3">
+      <a href="#hero" class="py-2">Home</a>
+      <a href="#about" class="py-2">About</a>
+      <a href="#solutions" class="py-2">Solutions</a>
+      <a href="#contact" class="py-2">Contact</a>
+      <a href="#contact" class="mt-2 inline-block rounded-lg bg-primary px-4 py-2 text-sm font-bold text-white">Book Consultation</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Font Awesome (for icons) -->
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+/>
+
+
+
+
+<!-- HERO SECTION -->
+<div id="hero" class="relative w-full overflow-x-hidden group/design-root reveal">
+  <main class="flex h-auto w-full flex-col">
+    <div class="flex-grow">
+      <div class="relative bg-white">
+        <div class="container mx-auto px-4 sm:px-2 lg:px-6">
+          <div class="flex items-center pt-16 lg:py-0">
+            <div class="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16">
+              
+              <!-- Left Text Column -->
+              <div class="flex flex-col items-start justify-center text-left lg:col-span-6">
+                <h1 class="font-heading text-4xl font-bold leading-tight tracking-tight text-black sm:text-5xl lg:text-6xl">
+                  Engineering Intelligent Solutions for a Smarter Industrial Future
+                </h1>
+                <p class="mt-6 text-lg leading-8 text-black/80">
+                  At <span class="font-bold text-primary px-1">Cipher4 AI & Robotics Ltd</span>, we design, develop, and deploy next-generation robotics and AI-driven automation systems that empower businesses to operate smarter and more efficiently.
+                </p>
+
+                <div class="mt-10 flex flex-wrap items-center gap-4">
+                  <button type="button" onclick="location.href='#contact'" class="flex h-12 cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-primary px-6 text-base font-bold text-white shadow-lg transition-transform duration-200 hover:scale-105">
+                    <span class="truncate">Explore Solutions</span>
+                  </button>
+                  <button type="button" onclick="location.href='#contact'" class="flex h-12 cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-black/50 bg-transparent px-6 text-base font-bold text-black transition-colors duration-200 hover:bg-black/10">
+                    <span class="truncate">Request Consultation</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="flex justify-end lg:col-span-6">
+                <div class="w-[85%]">
+                    <img class="w-full h-auto rounded-lg object-cover" 
+                    src="assets/cipher43d.png"
+                    alt="A high-resolution 3D render of a futuristic robotic arm operating with precision." />
+                </div>
+             </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- SVG Divider (perfect white match, no line) -->
+<div class="relative w-full overflow-x-hidden -mb-2 bg-white"> 
+  <!-- The bg-white ensures the SVG inherits the exact white above -->
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" class="w-full" style="display:block;">
+    <path fill="#0a0a0a" fill-opacity="1"
+      d="M0,32L48,53.3C96,75,192,117,288,160C384,203,480,245,576,229.3C672,213,768,139,864,101.3C960,64,1056,64,1152,80C1248,96,1344,128,1392,144L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+    </path>
+  </svg>
+</div>
+
+
+
+<!-- ABOUT SECTION -->
+<div id="about" class="relative w-full flex flex-col overflow-hidden font-display bg-[#0a0a0a] group/design-root reveal">
+
+  <!-- ⚡ Top Tech Lines Divider -->
+  <div class="absolute top-0 left-0 w-full overflow-hidden pointer-events-none z-10">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" class="w-full h-[120px]">
+      <line x1="0" y1="90" x2="200" y2="0" stroke="#ffffff" stroke-width="4" opacity="0.8" />
+      <line x1="0" y1="100" x2="250" y2="10" stroke="#444444" stroke-width="3" opacity="0.7" />
+      <line x1="0" y1="110" x2="300" y2="20" stroke="#888888" stroke-width="2" opacity="0.5" />
+      <line x1="1200" y1="90" x2="1000" y2="0" stroke="#ffffff" stroke-width="4" opacity="0.8" />
+      <line x1="1200" y1="100" x2="950" y2="10" stroke="#444444" stroke-width="3" opacity="0.7" />
+      <line x1="1200" y1="110" x2="900" y2="20" stroke="#888888" stroke-width="2" opacity="0.5" />
+    </svg>
+  </div>
+
+  <!--  Full Circle Background -->
+<div class="absolute bottom-0 right-0 w-full flex justify-end pointer-events-none overflow-visible z-0">
+  <svg
+    viewBox="0 0 600 600"
+    xmlns="http://www.w3.org/2000/svg"
+    class="moon-svg w-[750px] h-[750px] md:w-[600px] md:h-[600px] sm:w-[300px] sm:h-[300px]"
+  >
+    <!-- Full white circle -->
+    <circle cx="300" cy="300" r="300" fill="#ffffff" />
+
+    <!-- Decorative dots -->
+    <g fill="#222222" opacity="0.25">
+      <circle cx="200" cy="150" r="4" />
+      <circle cx="280" cy="120" r="2" />
+      <circle cx="350" cy="200" r="3" />
+      <circle cx="420" cy="140" r="2" />
+      <circle cx="250" cy="260" r="3" />
+      <circle cx="340" cy="310" r="2" />
+      <circle cx="420" cy="280" r="4" />
+      <circle cx="230" cy="370" r="3" />
+      <circle cx="370" cy="420" r="2" />
+      <circle cx="450" cy="380" r="3" />
+      <circle cx="280" cy="440" r="2" />
+      <circle cx="310" cy="490" r="3" />
+      <circle cx="380" cy="470" r="2" />
+    </g>
+  </svg>
+</div>
+
+
+  <!-- Section Content -->
+  <div class="layout-container flex h-full grow flex-col relative z-10">
+    <div class="flex flex-1 justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div class="layout-content-container flex flex-col max-w-7xl w-full">
+        <div class="w-full grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+
+          <!-- Left Text -->
+          <div class="md:col-span-6 w-full">
+            <div class="relative bg-gradient-to-b from-[#1a1a1a]/90 to-[#0d0d0d]/90 backdrop-blur-md rounded-2xl shadow-xl border border-white/10 p-8 md:p-10 transition-all duration-300">
+              <h1 class="text-3xl md:text-4xl font-bold font-heading text-white pb-4">
+                About Cipher4 AI &amp; Robotics Ltd
+              </h1>
+              <p class="text-gray-300 text-base md:text-lg leading-relaxed pb-4">
+                Cipher4 AI & Robotics Ltd is a forward-thinking technology company dedicated to advancing robotics, automation, and intelligent software systems. We design and build smart machines, develop powerful digital platforms, and integrate artificial intelligence to help businesses operate more efficiently and intelligently.
+              </p>
+
+              <div class="flex justify-start pt-2">
+                <a href="about.html">
+                    <button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-primary text-white text-base font-bold tracking-wide hover:bg-opacity-90 transition-colors duration-200">
+                        <span class="truncate">Learn More</span>
+                    </button>
+                </a>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Image -->
+          <div class="md:col-span-6 w-full relative z-20 flex items-stretch justify-end">
+            <div class="w-full h-full rounded-full overflow-hidden border border-white/5 shadow-lg m-0 p-0">
+              <img
+                class="w-full h-full object-cover object-center"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRTqQiYWY8NhWW9RL3llOAqb3iko-crNiEP7dxQFx8lZh9hNC2S6QgxJQQBdK66WU4Met148oT0duB-QeI0T8OBppfv1N6LVB0D8ryHX6yAuRS7MbCZQVDEUlqzWOpJPEQXM-YsP-5R9aGIP_dLEBleATlLm5rvDQp7jgP5fpNQI_PYfPY5ssQOO-zf30MWH7OjEaby5uCCg5XspKkha4Xc8_GwZftb4ReW7a4Wh592l6Axfw82LOOLZJ-HvOEPfYt-g6sw4jt6W0S"
+                alt="Futuristic robotic design concept"
+              />
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SVG Divider -->
+<div class="relative w-full overflow-hidden -mb-1 bg-white">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" class="w-full block">
+    <path fill="#0a0a0a" fill-opacity="1"
+      d="M0,160L48,170.7C96,181,192,203,288,218.7C384,235,480,245,576,218.7C672,192,768,128,864,128C960,128,1056,192,1152,229.3C1248,267,1344,277,1392,282.7L1440,288L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z">
+    </path>
+  </svg>
+</div>
+
+<style>
+@media (max-width: 640px) {
+  .moon-svg {
+    transform: translateY(30%) scale(0.75);
+    transform-origin: bottom right;
+  }
+}
+</style>
+
+
+
+
+<!-- CORE PILLARS -->
+<div class="relative flex w-full flex-col">
+  <div class="flex h-full grow flex-col bg-white">
+    <section class="w-full px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+      <div class="mx-auto max-w-7xl">
+        <div class="pb-8 text-center">
+          <h2 class="font-heading text-3xl font-bold text-heading-light dark:text-heading-dark md:text-4xl">
+            Our Core Pillars of Excellence
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+          <!-- Innovation-Driven R&D -->
+          <div class="group flex transform-gpu flex-col gap-4 rounded-xl border border-border-light bg-card-light p-5 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-lg dark:border-border-dark dark:bg-card-dark">
+            <div class="relative flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+              <span class="material-symbols-outlined text-3xl text-primary group-hover:animate-heartbeat">psychology</span>
+              <div class="absolute inset-0 rounded-full bg-primary opacity-0 transition-opacity duration-300 group-hover:opacity-20" style="filter: blur(12px);"></div>
+            </div>
+            <div class="flex flex-col gap-2">
+              <h3 class="font-heading text-lg font-bold text-heading-light dark:text-heading-dark">
+                Innovation-Driven R&amp;D
+              </h3>
+              <p class="font-display text-sm leading-relaxed text-body-light dark:text-body-dark">
+               We’re always exploring new ideas in robotics and artificial intelligence. Our goal is to create smart, practical technologies that help businesses work faster, safer, and more efficiently.
+              </p>
+            </div>
+          </div>
+
+          <!-- Seamless System Integration -->
+          <div class="group flex transform-gpu flex-col gap-4 rounded-xl border border-border-light bg-card-light p-5 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-lg dark:border-border-dark dark:bg-card-dark">
+            <div class="relative flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+              <span class="material-symbols-outlined text-3xl text-primary group-hover:animate-roll">settings</span>
+              <div class="absolute inset-0 rounded-full bg-primary opacity-0 transition-opacity duration-300 group-hover:opacity-20" style="filter: blur(12px);"></div>
+            </div>
+            <div class="flex flex-col gap-2">
+              <h3 class="font-heading text-lg font-bold text-heading-light dark:text-heading-dark">
+                Seamless System Integration
+              </h3>
+              <p class="font-display text-sm leading-relaxed text-body-light dark:text-body-dark">
+                Our engineers build automation systems that fit perfectly into your existing operations. You don’t have to start from scratch, we make your current setup smarter and more connected.
+              </p>
+            </div>
+          </div>
+
+          <!-- AI-Powered Software Solutions -->
+          <div class="group flex transform-gpu flex-col gap-4 rounded-xl border border-border-light bg-card-light p-5 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-lg dark:border-border-dark dark:bg-card-dark">
+            <div class="relative flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+              <span class="material-symbols-outlined text-3xl text-primary group-hover:animate-roll">hub</span>
+              <div class="absolute inset-0 rounded-full bg-primary opacity-0 transition-opacity duration-300 group-hover:opacity-20" style="filter: blur(12px);"></div>
+            </div>
+            <div class="flex flex-col gap-2">
+              <h3 class="font-heading text-lg font-bold text-heading-light dark:text-heading-dark">
+                AI-Powered Software Solutions
+              </h3>
+              <p class="font-display text-sm leading-relaxed text-body-light dark:text-body-dark">
+                From intelligent dashboards to secure data platforms, our software helps you see your operations in real time, make better decisions, and stay protected from digital threats.
+              </p>
+            </div>
+          </div>
+
+          <!-- Client-Focused Partnerships -->
+          <div class="group flex transform-gpu flex-col gap-4 rounded-xl border border-border-light bg-card-light p-5 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-lg dark:border-border-dark dark:bg-card-dark">
+            <div class="relative flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+              <span class="material-symbols-outlined text-3xl text-primary group-hover:animate-heartbeat">handshake</span>
+              <div class="absolute inset-0 rounded-full bg-primary opacity-0 transition-opacity duration-300 group-hover:opacity-20" style="filter: blur(12px);"></div>
+            </div>
+            <div class="flex flex-col gap-2">
+              <h3 class="font-heading text-lg font-bold text-heading-light dark:text-heading-dark">
+                Client-Focused Partnerships
+              </h3>
+              <p class="font-display text-sm leading-relaxed text-body-light dark:text-body-dark">
+                We believe the best results come from teamwork. That’s why we work closely with every client to design solutions that fit their unique goals and grow with their business.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+
+<!-- SOLUTIONS SECTION -->
+<section id="solutions" class="relative w-full bg-[#f9fff6] py-32 overflow-hidden reveal">
+
+  <!-- Decorative Background Dots (Hidden on Mobile) -->
+<div class="absolute inset-0 overflow-hidden pointer-events-none z-0 hidden md:block">
+  <!-- Top Left Dotted Rectangle -->
+  <svg
+    class="absolute left-[10%] top-[5%] w-[500px] h-[350px] opacity-40"
+    viewBox="0 0 600 400"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <defs>
+      <pattern id="dotPatternTopLeft" width="16" height="16" patternUnits="userSpaceOnUse">
+        <rect x="0" y="0" width="2" height="2" fill="#111111" />
+      </pattern>
+    </defs>
+    <rect width="600" height="400" fill="url(#dotPatternTopLeft)" />
+  </svg>
+
+  <!-- Bottom Right Dotted Rectangle -->
+  <svg
+    class="absolute right-[10%] bottom-[5%] w-[500px] h-[350px] opacity-40"
+    viewBox="0 0 600 400"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <defs>
+      <pattern id="dotPatternBottomRight" width="16" height="16" patternUnits="userSpaceOnUse">
+        <rect x="0" y="0" width="2" height="2" fill="#111111" />
+      </pattern>
+    </defs>
+    <rect width="600" height="400" fill="url(#dotPatternBottomRight)" />
+  </svg>
+</div>
+
+  <!-- Central Circle Image (hidden on mobile) -->
+  <div class="absolute inset-0 hidden lg:flex items-center justify-center pointer-events-none z-10">
+    <div class="relative flex items-center justify-center">
+      <div class="w-[420px] h-[420px] rounded-full overflow-hidden 
+                  bg-white/10 backdrop-blur-xl border border-white/30 
+                  shadow-[0_0_40px_rgba(255,255,255,0.2)]
+                  flex items-center justify-center">
+        <img 
+          src="assets/cipher43d.png" 
+          alt="Center Image" 
+          class="w-full h-full object-cover opacity-95"
+        >
+      </div>
+    </div>
+  </div>
+
+  <div class="relative z-30 flex flex-col items-center text-center mb-14 sm:mb-20 px-4">
+  <h1 class="font-heading text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight max-w-3xl">
+    Intelligent Solutions for Every Industry
+  </h1>
+  <p class="mt-3 max-w-xl sm:max-w-2xl text-sm sm:text-base text-gray-600 leading-relaxed">
+    We deliver end-to-end automation and digital solutions, combining hardware precision with software intelligence.
+  </p>
+</div>
+
+  <!-- DESKTOP Circular Card Layout -->
+  <div class="relative hidden lg:flex items-center justify-center mx-auto max-w-6xl h-[700px] z-30">
+    <!-- 1 -->
+    <div class="absolute top-[-60px] left-1/2 transform -translate-x-1/2">
+      <div class="flex flex-col gap-2 w-[420px] rounded-lg border bg-stone-600 p-5 mb-10 shadow-md hover:shadow-lg transition">
+        <h3 class="text-lg font-bold text-gray-50">Robotics & Automation</h3>
+        <p class="text-sm text-gray-100">
+          We design and build smart machines, from industrial robots to drones, that make work faster, safer, and more efficient. Our automation solutions help businesses cut down repetitive tasks and boost productivity.
+        </p>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="absolute top-[18%] right-[10%] transform translate-x-1/2">
+      <div class="flex flex-col gap-2 w-[420px] rounded-lg border bg-blue-900 p-5 shadow-md hover:shadow-lg transition">
+        <h3 class="text-lg font-bold text-gray-50">Software Solutions</h3>
+        <p class="text-sm text-gray-100">
+          We develop powerful software tailored to your business, from ERP systems and analytics dashboards to cybersecurity and cloud platforms, all built to improve performance and decision-making.
+        </p>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="absolute bottom-[25%] right-[0%] transform translate-x-1/2">
+      <div class="flex flex-col gap-2 w-[420px] rounded-lg border bg-orange-500 p-5 shadow-md hover:shadow-lg transition">
+        <h3 class="text-lg font-bold text-gray-50">Industry Integration</h3>
+        <p class="text-sm text-gray-100">
+          Our systems connect seamlessly with your existing technology in sectors like manufacturing, logistics, healthcare, and agriculture, making your operations smarter without disrupting your workflow.
+        </p>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2">
+      <div class="flex flex-col gap-2 w-[420px] rounded-lg border bg-green-900 p-5 shadow-md hover:shadow-lg transition">
+        <h3 class="text-lg font-bold text-gray-50">Consultancy & Digital Transformation</h3>
+        <p class="text-sm text-gray-100">
+          We help organizations plan and adopt automation the right way. From identifying opportunities to full implementation, our experts guide you through every stage of digital transformation.
+        </p>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="absolute bottom-[25%] left-[0%] transform -translate-x-1/2">
+      <div class="flex flex-col gap-2 w-[420px] rounded-lg border bg-purple-900 p-5 shadow-md hover:shadow-lg transition">
+        <h3 class="text-lg font-bold text-gray-50">Maintenance & Support</h3>
+        <p class="text-sm text-gray-100">
+          Our job doesn’t end at delivery. We provide full after-sales support, system maintenance, and performance monitoring, ensuring your operations run smoothly 24/7.
+        </p>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="absolute top-[18%] left-[10%] transform -translate-x-1/2">
+      <div class="flex flex-col gap-2 w-[420px] rounded-lg border bg-yellow-500 p-5 shadow-md hover:shadow-lg transition">
+        <h3 class="text-lg font-bold text-gray-50">IT Academy & R&D</h3>
+        <p class="text-sm text-gray-100">
+          We’re building the future. Through continuous research and hands-on training in AI, robotics, and machine learning, we’re developing the next generation of innovators and industry solutions.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE: Vertical Scroll Cards -->
+  <div class="flex flex-col lg:hidden items-center gap-6 px-6 z-30">
+    <div class="w-full rounded-xl border bg-stone-600 p-6 shadow-lg text-gray-50">
+      <h3 class="text-lg font-bold mb-2">Robotics & Automation</h3>
+      <p class="text-sm text-gray-100">We design and build smart machines, from industrial robots to drones, that make work faster, safer, and more efficient.</p>
+    </div>
+
+    <div class="w-full rounded-xl border bg-blue-900 p-6 shadow-lg text-gray-50">
+      <h3 class="text-lg font-bold mb-2">Software Solutions</h3>
+      <p class="text-sm text-gray-100">We develop powerful software tailored to your business, from ERP systems and analytics dashboards to cybersecurity and cloud platforms.</p>
+    </div>
+
+    <div class="w-full rounded-xl border bg-orange-500 p-6 shadow-lg text-gray-50">
+      <h3 class="text-lg font-bold mb-2">Industry Integration</h3>
+      <p class="text-sm text-gray-100">Our systems connect seamlessly with your existing technology in sectors like manufacturing, logistics, and healthcare.</p>
+    </div>
+
+    <div class="w-full rounded-xl border bg-green-900 p-6 shadow-lg text-gray-50">
+      <h3 class="text-lg font-bold mb-2">Consultancy & Digital Transformation</h3>
+      <p class="text-sm text-gray-100">We help organizations plan and adopt automation the right way, from strategy to execution.</p>
+    </div>
+
+    <div class="w-full rounded-xl border bg-purple-900 p-6 shadow-lg text-gray-50">
+      <h3 class="text-lg font-bold mb-2">Maintenance & Support</h3>
+      <p class="text-sm text-gray-100">We provide ongoing maintenance and 24/7 support to ensure your systems operate smoothly.</p>
+    </div>
+
+    <div class="w-full rounded-xl border bg-yellow-500 p-6 shadow-lg text-gray-50">
+      <h3 class="text-lg font-bold mb-2">IT Academy & R&D</h3>
+      <p class="text-sm text-gray-100">We train innovators through advanced programs in AI, robotics, and machine learning.</p>
+    </div>
+  </div>
+
+  <!-- Button -->
+  <div class="relative mt-20 flex justify-center z-30">
+    <a href="#contact" class="flex min-w-[84px] max-w-[480px] items-center justify-center overflow-hidden rounded-lg h-12 px-8 bg-primary text-white text-base font-bold leading-normal tracking-wide shadow-sm transition-all duration-300 hover:bg-primary/90 active:scale-95 text-center">
+      <span class="truncate">Book Consultation</span>
+    </a>
+  </div>
+</section>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#f9fff6" fill-opacity="1" d="M0,160L80,144C160,128,320,96,480,112C640,128,800,192,960,208C1120,224,1280,192,1360,176L1440,160L1440,0L1360,0C1280,0,1120,0,960,0C800,0,640,0,480,0C320,0,160,0,80,0L0,0Z"></path></svg>
+
+
+
+
+
+<!-- INDUSTRIES -->
+<div class="relative flex w-full flex-col group/design-root overflow-x-hidden">
+  <div class="layout-container flex h-full grow flex-col">
+    <section class="w-full py-12 lg:py-16">
+      <div class="px-4 md:px-6 lg:px-8 mx-auto max-w-7xl">
+        <div class="layout-content-container flex flex-col items-center text-center">
+          <h1 class="text-primary-text dark:text-white font-heading text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">Transforming Key Sectors with Intelligent Automation</h1>
+          <p class="mt-4 max-w-3xl text-lg text-secondary-text dark:text-gray-300">
+            Cipher4’s technologies are adaptable across multiple industries, enabling scalable impact wherever automation drives efficiency.
+          </p>
+          <div class="mt-10 grid w-full grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <!-- 4 industry cards -->
+            <div class="group flex flex-col gap-4 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm transition-all hover:shadow-lg hover:-translate-y-1 dark:hover:border-accent">
+              <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-accent">
+                <span class="material-symbols-outlined text-3xl">precision_manufacturing</span>
+              </div>
+              <div class="flex flex-col gap-1 text-left">
+                <h2 class="text-primary-text dark:text-white font-heading text-xl font-semibold">Manufacturing</h2>
+                <p class="text-secondary-text dark:text-gray-300 text-base font-normal leading-normal">We bring precision and efficiency to modern production. Our robotic systems help manufacturers improve safety, reduce waste, and achieve consistent, high-quality output at scale.</p>
+              </div>
+            </div>
+            <div class="group flex flex-col gap-4 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm transition-all hover:shadow-lg hover:-translate-y-1 dark:hover:border-accent">
+              <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-accent">
+                <span class="material-symbols-outlined text-3xl">local_shipping</span>
+              </div>
+              <div class="flex flex-col gap-1 text-left">
+                <h2 class="text-primary-text dark:text-white font-heading text-xl font-semibold">Logistics</h2>
+                <p class="text-secondary-text dark:text-gray-300 text-base font-normal leading-normal">We create smart automation tools that optimize supply chains, from intelligent sorting and tracking to warehouse robotics, ensuring faster, more reliable delivery operations.</p>
+              </div>
+            </div>
+            <div class="group flex flex-col gap-4 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm transition-all hover:shadow-lg hover:-translate-y-1 dark:hover:border-accent">
+              <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-accent">
+                <span class="material-symbols-outlined text-3xl">agriculture</span>
+              </div>
+              <div class="flex flex-col gap-1 text-left">
+                <h2 class="text-primary-text dark:text-white font-heading text-xl font-semibold">Agriculture</h2>
+                <p class="text-secondary-text dark:text-gray-300 text-base font-normal leading-normal">Our AI-driven farming solutions increase productivity while supporting sustainability. From automated crop monitoring to smart irrigation and drone-assisted farming, we help farmers grow more with less.</p>
+              </div>
+            </div>
+            <div class="group flex flex-col gap-4 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm transition-all hover:shadow-lg hover:-translate-y-1 dark:hover:border-accent">
+              <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-accent">
+                <span class="material-symbols-outlined text-3xl">health_and_safety</span>
+              </div>
+              <div class="flex flex-col gap-1 text-left">
+                <h2 class="text-primary-text dark:text-white font-heading text-xl font-semibold">Healthcare</h2>
+                <p class="text-secondary-text dark:text-gray-300 text-base font-normal leading-normal">We design safe, reliable automation for hospitals and laboratories. Our robotics and AI solutions enhance diagnostics, streamline workflows, and support better patient outcomes.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- ADVANTAGE -->
+<div class="relative flex w-full flex-col group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
+  <div class="layout-container flex h-full grow flex-col">
+    <section class="w-full py-12 lg:py-16 bg-background-light dark:bg-background-dark">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="layout-content-container flex flex-col max-w-4xl mx-auto items-center">
+          <h2 class="font-heading text-3xl md:text-4xl font-bold text-text-primary-light dark:text-text-primary-dark text-center tracking-tight">The Cipher4 Advantage</h2>
+          <p class="mt-4 text-lg text-text-secondary-light dark:text-text-secondary-dark text-center max-w-2xl">Discover why industry leaders partner with us to unlock the future of automation and artificial intelligence.</p>
+        </div>
+        <div class="max-w-7xl mx-auto mt-12">
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <!-- 4 advantage cards -->
+            <div class="flex flex-col gap-4 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark p-5 shadow-subtle transition-all duration-300 hover:shadow-subtle-hover hover:-translate-y-1">
+              <div class="text-primary"><span class="material-symbols-outlined !text-4xl">psychology</span></div>
+              <div class="flex flex-col gap-2">
+                <h3 class="font-heading text-xl font-semibold text-text-primary-light dark:text-text-primary-dark">Proven Expertise</h3>
+                <p class="text-text-secondary-light dark:text-text-secondary-dark text-base leading-relaxed">Our team brings years of experience across robotics, AI, and automation engineering, delivering reliable, high-performance solutions for real-world challenges.</p>
+              </div>
+            </div>
+            <div class="flex flex-col gap-4 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark p-5 shadow-subtle transition-all duration-300 hover:shadow-subtle-hover hover:-translate-y-1">
+              <div class="text-primary"><span class="material-symbols-outlined !text-4xl">tune</span></div>
+              <div class="flex flex-col gap-2">
+                <h3 class="font-heading text-xl font-semibold text-text-primary-light dark:text-text-primary-dark">Tailored Solutions</h3>
+                <p class="text-text-secondary-light dark:text-text-secondary-dark text-base leading-relaxed">We don’t believe in one-size-fits-all. Every project is customized to meet your specific goals, processes, and industry standards.</p>
+              </div>
+            </div>
+            <div class="flex flex-col gap-4 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark p-5 shadow-subtle transition-all duration-300 hover:shadow-subtle-hover hover:-translate-y-1">
+              <div class="text-primary"><span class="material-symbols-outlined !text-4xl">support_agent</span></div>
+              <div class="flex flex-col gap-2">
+                <h3 class="font-heading text-xl font-semibold text-text-primary-light dark:text-text-primary-dark">Continuous Support</h3>
+                <p class="text-text-secondary-light dark:text-text-secondary-dark text-base leading-relaxed">Our partnership doesn’t end at deployment. We provide ongoing system monitoring, updates, and dedicated technical support to keep your operations running seamlessly.</p>
+              </div>
+            </div>
+            <div class="flex flex-col gap-4 rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark p-5 shadow-subtle transition-all duration-300 hover:shadow-subtle-hover hover:-translate-y-1">
+              <div class="text-primary"><span class="material-symbols-outlined !text-4xl">trending_up</span></div>
+              <div class="flex flex-col gap-2">
+                <h3 class="font-heading text-xl font-semibold text-text-primary-light dark:text-text-primary-dark">Scalable Systems</h3>
+                <p class="text-text-secondary-light dark:text-text-secondary-dark text-base leading-relaxed">We design flexible, future-ready solutions that grow with your business — ensuring long-term value, adaptability, and competitive advantage.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#1E2B5C" fill-opacity="1" d="M0,288L0,160L288,160L288,128L576,128L576,32L864,32L864,96L1152,96L1152,96L1440,96L1440,320L1152,320L1152,320L864,320L864,320L576,320L576,320L288,320L288,320L0,320L0,320Z"></path></svg>
+<!-- CTA BANNER -->
+<div id="contact" class="w-full bg-[#1E2B5C] reveal">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="@container">
+      <div class="flex flex-col items-center justify-center gap-6 py-16 text-center @[480px]:gap-8 @[480px]:py-20">
+        <div class="flex flex-col gap-4">
+          <h2 class="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl">
+            Ready to Modernize Your Operations?
+          </h2>
+          <p class="mx-auto max-w-3xl text-lg leading-8 text-slate-200">
+            Partner with Cipher4 AI &amp; Robotics Ltd to integrate intelligent automation into your enterprise. Our team of engineers and consultants are ready to assess your needs and deliver tailored, high-performance solutions.
+          </p>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+<!-- CONTACT SECTION -->
+<section class="relative w-full py-20 bg-[#1E2B5C] overflow-hidden">
+  <div class="absolute inset-0 bg-[#1E2B5C]"></div>
+  
+  <div class="container mx-auto px-6 relative z-10">
+    <!-- Heading -->
+    <div class="flex flex-col max-w-6xl mx-auto text-center">
+      <h2 class="font-heading text-4xl md:text-5xl font-bold text-[#F0F0F0]">
+        Get In Touch
+      </h2>
+      <p class="mt-4 text-lg text-[#BCC2D9] max-w-2xl mx-auto">
+        We'd love to hear from you. Reach out to us for collaborations, inquiries, or to learn more about our innovative solutions.
+      </p>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+      
+      <!-- Form Card -->
+      <div class="rounded-xl bg-white/10 backdrop-blur-lg border border-white/20 p-8 shadow-lg">
+        <form action="#" method="POST" class="flex flex-col gap-6">
+          <!-- Name & Email -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <label class="flex flex-col">
+              <p class="text-[#F0F0F0] text-sm font-medium pb-2">Full Name</p>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-3 text-[#a2a5b4]">person</span>
+                <input type="text" placeholder="Enter your full name"
+                  class="pl-10 w-full h-12 rounded-lg border border-white/20 bg-white/5 text-white placeholder:text-[#a2a5b4] focus:outline-none focus:ring-2 focus:ring-[#00BFFF] transition-all duration-300" />
+              </div>
+            </label>
+            <label class="flex flex-col">
+              <p class="text-[#F0F0F0] text-sm font-medium pb-2">Email Address</p>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-3 text-[#a2a5b4]">mail</span>
+                <input type="email" placeholder="Enter your email"
+                  class="pl-10 w-full h-12 rounded-lg border border-white/20 bg-white/5 text-white placeholder:text-[#a2a5b4] focus:outline-none focus:ring-2 focus:ring-[#00BFFF] transition-all duration-300" />
+              </div>
+            </label>
+          </div>
+
+          <!-- Subject -->
+          <label class="flex flex-col">
+            <p class="text-[#F0F0F0] text-sm font-medium pb-2">Subject</p>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-3 text-[#a2a5b4]">topic</span>
+              <input type="text" placeholder="What is this about?"
+                class="pl-10 w-full h-12 rounded-lg border border-white/20 bg-white/5 text-white placeholder:text-[#a2a5b4] focus:outline-none focus:ring-2 focus:ring-[#00BFFF] transition-all duration-300" />
+            </div>
+          </label>
+
+          <!-- Message -->
+          <label class="flex flex-col">
+            <p class="text-[#F0F0F0] text-sm font-medium pb-2">Message</p>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-4 text-[#a2a5b4]">edit_note</span>
+              <textarea placeholder="Type your message here..."
+                class="pl-10 w-full min-h-36 rounded-lg border border-white/20 bg-white/5 text-white placeholder:text-[#a2a5b4] focus:outline-none focus:ring-2 focus:ring-[#00BFFF] p-4 transition-all duration-300"></textarea>
+            </div>
+          </label>
+
+          <!-- Submit Button -->
+          <button type="submit"
+            class="w-full flex items-center justify-center gap-2 rounded-lg bg-[#00BFFF] text-black h-12 px-6 text-base font-bold leading-normal transition-all duration-300 hover:bg-opacity-90 hover:shadow-[0_0_25px_rgba(0,191,255,0.6)] active:scale-95">
+            Send Message
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="flex flex-col gap-8 justify-center">
+        <div class="space-y-6">
+          <div class="flex items-start gap-4">
+            <span class="material-symbols-outlined text-3xl text-[#00BFFF] mt-1">location_on</span>
+            <div>
+              <h4 class="font-bold text-[#F0F0F0]">Address</h4>
+              <p class="text-[#BCC2D9]">Lagos</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <span class="material-symbols-outlined text-3xl text-[#00BFFF] mt-1">call</span>
+            <div>
+              <h4 class="font-bold text-[#F0F0F0]">Phone</h4>
+              <p class="text-[#BCC2D9]">+234 908 622 3063</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <span class="material-symbols-outlined text-3xl text-[#00BFFF] mt-1">mail</span>
+            <div>
+              <h4 class="font-bold text-[#F0F0F0]">Email</h4>
+              <p class="text-[#BCC2D9]">contact@cipher4.com</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Map -->
+        <div class="w-full h-64 rounded-lg overflow-hidden border border-white/20">
+          <iframe
+            class="w-full h-full"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3348.3315892019184!2d-96.80005788481358!3d32.94276798092288!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x864c20f5a7a72c1b%3A0x8b4b7e1ce20f836!2sTexas%2C%20USA!5e0!3m2!1sen!2suk!4v1672532421337!5m2!1sen!2suk"
+            loading="lazy"
+            style="border:0; filter: invert(90%) grayscale(80%)"
+            allowfullscreen=""
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<div class="flex w-full flex-col bg-background-light dark:bg-background-dark font-display" style="font-family: 'Inter', sans-serif;">
+  <div class="flex-grow"></div>
+  <footer class="w-full bg-[#111827] text-white">
+    <div class="mx-auto max-w-7xl px-8 py-12 sm:px-12">
+      <div class="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-8">
+        <div class="col-span-1 md:col-span-5">
+          <h3 class="font-heading text-lg font-semibold text-gray-100" style="font-family: 'Montserrat', sans-serif;">Quick Links</h3>
+          <ul class="mt-4 space-y-3 text-sm">
+            <li><a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline" href="#">About</a></li>
+            <li><a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline" href="#">Solutions</a></li>
+            <li><a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline" href="#">Industries</a></li>
+            <li><a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline" href="#">Academy</a></li>
+            <li><a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline" href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div class="col-span-1 md:col-span-4">
+          <h3 class="font-heading text-lg font-semibold text-gray-100" style="font-family: 'Montserrat', sans-serif;">Contact</h3>
+          <ul class="mt-4 space-y-3 text-sm">
+            <li class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-gray-400">mail</span>
+              <a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline" href="mailto:info@cipher4.ai">info@cipher4.ai</a>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="material-symbols-outlined text-gray-400 mt-1">location_on</span>
+              <span class="text-gray-300">123 Tech Avenue, Innovation City, 10101</span>
+            </li>
+          </ul>
+        </div>
+        <div class="col-span-1 md:col-span-3">
+          <h3 class="font-heading text-lg font-semibold text-gray-100" style="font-family: 'Montserrat', sans-serif;">Social</h3>
+          <div class="mt-4 flex gap-5">
+            <a class="text-gray-300 transition-colors duration-300 hover:text-primary" href="#">
+              <span class="sr-only">LinkedIn</span>
+              <svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.25 6.5 1.75 1.75 0 016.5 8.25zM19 19h-3v-4.75c0-1.4-1.2-2.5-2.5-2.5S11 12.85 11 14.25V19h-3v-9h2.9v1.3a3.11 3.11 0 012.6-1.4c2.5 0 4.5 2.2 4.5 5.1z"></path>
+              </svg>
+            </a>
+            <a class="text-gray-300 transition-colors duration-300 hover:text-primary" href="#">
+              <span class="sr-only">X (Twitter)</span>
+              <svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+              </svg>
+            </a>
+            <a class="text-gray-300 transition-colors duration-300 hover:text-primary" href="#">
+              <span class="sr-only">YouTube</span>
+              <svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                <path clip-rule="evenodd" d="M19.812 5.418c.861.23 1.538.907 1.768 1.768C21.998 8.746 22 12 22 12s0 3.255-.418 4.814a2.506 2.506 0 0 1-1.768 1.768c-1.56.419-7.814.419-7.814.419s-6.255 0-7.814-.419a2.505 2.505 0 0 1-1.768-1.768C2 15.255 2 12 2 12s0-3.255.417-4.814a2.507 2.507 0 0 1 1.768-1.768C5.744 5 11.998 5 11.998 5s6.255 0 7.814.418ZM15.194 12 10 15.198V8.802z" fill-rule="evenodd"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="mt-8 border-t border-gray-700 pt-6">
+        <p class="text-center text-sm text-gray-400">© 2025 Cipher4 AI &amp; Robotics Ltd. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- Add script for reveal-on-scroll and mobile menu toggle -->
+<script>
+  // Mobile menu toggle (unchanged behavior, kept minimal)
+  (function() {
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (menuBtn && mobileMenu) {
+      menuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        const expanded = !mobileMenu.classList.contains('hidden');
+        menuBtn.setAttribute('aria-expanded', String(expanded));
+      });
+
+      mobileMenu.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', () => {
+          mobileMenu.classList.add('hidden');
+          menuBtn.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+
+    document.querySelectorAll('nav a[href^="#"]').forEach(a => {
+      a.addEventListener('click', () => {
+        if (mobileMenu) mobileMenu.classList.add('hidden');
+        if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+  })();
+
+  // Improved reveal-on-scroll (directional, lightweight, staggered)
+  (function() {
+    const reveals = Array.from(document.querySelectorAll('.reveal'));
+    if (!reveals.length) return;
+
+    // Quick helper: determine entry direction based on element geometry
+    function chooseDirection(el) {
+      try {
+        const rect = el.getBoundingClientRect();
+        const vw = window.innerWidth || document.documentElement.clientWidth;
+        const elCenterX = rect.left + rect.width / 2;
+        const wideThreshold = vw * 0.75;
+
+        // If element is very wide (likely full-width section) -> use up
+        if (rect.width >= wideThreshold) return 'from-up';
+        // left-of-center -> from-left, right-of-center -> from-right, else up
+        if (elCenterX < vw * 0.45) return 'from-left';
+        if (elCenterX > vw * 0.55) return 'from-right';
+        return 'from-up';
+      } catch (e) {
+        return 'from-up';
+      }
+    }
+
+    // set small staggered delay and appropriate initial direction
+    reveals.forEach((el, i) => {
+      // don't override if author already set a direction class
+      if (!el.classList.contains('from-left') && !el.classList.contains('from-right') && !el.classList.contains('from-up')) {
+        el.classList.add(chooseDirection(el));
+      }
+      // set a tiny stagger so groups feel natural
+      el.style.setProperty('--delay', `${Math.min(i * 80, 320)}ms`);
+    });
+
+    if (!('IntersectionObserver' in window)) {
+      // fallback: reveal immediately
+      reveals.forEach(el => el.classList.add('revealed'));
+      return;
+    }
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const el = entry.target;
+        if (entry.isIntersecting) {
+          // show
+          el.classList.add('revealed');
+          el.classList.remove('exited');
+          // once revealed, unobserve to reduce work
+          io.unobserve(el);
+        } else {
+          // mark as partially left so CSS can slightly offset position
+          // decide exit direction based on where it left viewport
+          const top = entry.boundingClientRect.top;
+          el.dataset.exit = (top < 0) ? 'up' : 'down';
+          // add exited state (won't block re-entry if page scrolls back quickly)
+          el.classList.add('exited');
+        }
+      });
+    }, { root: null, rootMargin: '0px 0px -12% 0px', threshold: [0, 0.12, 0.2] });
+
+    // Observe; use a tiny delay to allow layout to settle
+    requestAnimationFrame(() => {
+      reveals.forEach(el => io.observe(el));
+    });
+  })();
+</script>
+</body>
+</html>

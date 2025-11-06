@@ -1,0 +1,21 @@
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+@keyframes roll {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(90deg); }
+  50% { transform: rotate(180deg); }
+  75% { transform: rotate(270deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Apply smooth infinite looping only while card is hovered */
+.group:hover .animate-heartbeat {
+  animation: heartbeat 2s ease-in-out infinite;
+}
+
+.group:hover .animate-roll {
+  animation: roll 3s ease-in-out infinite;
+}
