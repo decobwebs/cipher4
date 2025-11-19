@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
@@ -7,27 +8,95 @@
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com" rel="preconnect" />
   <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Montserrat:wght@700&amp;display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Montserrat:wght@700&amp;display=swap"
+    rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
   <style>
-    :root { --primary:#13235e; --bg-light:#f6f6f8; --bg-dark:#121520; }
-    body { font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: var(--bg-light); color: #1A202C; }
-    .font-heading { font-family: "Montserrat", sans-serif; }
+    :root {
+      --primary: #13235e;
+      --bg-light: #f6f6f8;
+      --bg-dark: #121520;
+    }
+
+    body {
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: var(--bg-light);
+      color: #1A202C;
+    }
+
+    .font-heading {
+      font-family: "Montserrat", sans-serif;
+    }
+
     /* Reveal-on-scroll (same efficient styles as index) */
-    :root { --reveal-duration: 700ms; --reveal-ease: cubic-bezier(.2,.9,.2,1); }
-    .reveal { opacity: 0; --delay: 0ms; transition: opacity var(--reveal-duration) var(--reveal-ease) var(--delay), transform var(--reveal-duration) var(--reveal-ease) var(--delay); will-change: transform, opacity; transform: translateY(28px) scale(.99); backface-visibility: hidden; }
-    .reveal.from-left { transform: translateX(-28px) scale(.99); }
-    .reveal.from-right { transform: translateX(28px) scale(.99); }
-    .reveal.from-up { transform: translateY(28px) scale(.99); }
-    .reveal.revealed { opacity: 1; transform: none; }
-    .reveal.exited[data-exit="up"] { transform: translateY(-12px) scale(.995); opacity: .92; transition-duration: 420ms; }
-    .reveal.exited[data-exit="down"] { transform: translateY(12px) scale(.995); opacity: .92; transition-duration: 420ms; }
-    @media (prefers-reduced-motion: reduce) { .reveal { transition: none !important; transform: none !important; opacity: 1 !important; } }
+    :root {
+      --reveal-duration: 700ms;
+      --reveal-ease: cubic-bezier(.2, .9, .2, 1);
+    }
+
+    .reveal {
+      opacity: 0;
+      --delay: 0ms;
+      transition: opacity var(--reveal-duration) var(--reveal-ease) var(--delay), transform var(--reveal-duration) var(--reveal-ease) var(--delay);
+      will-change: transform, opacity;
+      transform: translateY(28px) scale(.99);
+      backface-visibility: hidden;
+    }
+
+    .reveal.from-left {
+      transform: translateX(-28px) scale(.99);
+    }
+
+    .reveal.from-right {
+      transform: translateX(28px) scale(.99);
+    }
+
+    .reveal.from-up {
+      transform: translateY(28px) scale(.99);
+    }
+
+    .reveal.revealed {
+      opacity: 1;
+      transform: none;
+    }
+
+    .reveal.exited[data-exit="up"] {
+      transform: translateY(-12px) scale(.995);
+      opacity: .92;
+      transition-duration: 420ms;
+    }
+
+    .reveal.exited[data-exit="down"] {
+      transform: translateY(12px) scale(.995);
+      opacity: .92;
+      transition-duration: 420ms;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal {
+        transition: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+      }
+    }
 
     /* small utilities */
-    .brand-bg { background: var(--primary); color: white; }
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
-    a { color: inherit; text-decoration: none; }
+    .brand-bg {
+      background: var(--primary);
+      color: white;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
   </style>
   <script id="tailwind-config">
     tailwind.config = {
@@ -48,84 +117,76 @@
       },
     }
   </script>
-  <link   rel="stylesheet"  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
 
 </head>
+
 <body class="bg-background-light">
 
   <!-- NAVIGATION -->
-<nav class="fixed top-0 left-0 w-full z-50 bg-white/70 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50 transition-all duration-300">
-  <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-    <!-- Logo + Brand -->
-    <div class="flex items-center gap-3">
-      <div class="relative">
-        <img src="assets/Cipher4_logo.png" alt="Cipher4 logo" class="w-10 h-10 " />
+  <nav
+    class="fixed top-0 left-0 w-full z-50 bg-white/70 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50 transition-all duration-300">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+      <!-- Logo + Brand -->
+      <div class="flex items-center gap-3">
+        <div class="relative">
+          <img src="assets/Cipher4_logo.png" alt="Cipher4 logo" class="w-10 h-10 " />
+        </div>
+        <span class="text-lg font-heading font-bold text-gray-900 dark:text-white tracking-tight">
+          Cipher4 <span class="text-primary">AI & Robotics</span>
+        </span>
       </div>
-      <span class="text-lg font-heading font-bold text-gray-900 dark:text-white tracking-tight">
-        Cipher4 <span class="text-primary">AI & Robotics</span>
-      </span>
+
+      <!-- Desktop Nav Links -->
+      <div class="hidden md:flex gap-8 font-medium text-[0.95rem] text-gray-700 dark:text-gray-200">
+        <a href="index.html#hero" class="relative group">
+          Home
+          <span class="absolute left-0 -bottom-1 w-0 h-[2px] bg-primary transition-all group-hover:w-full"></span>
+        </a>
+        <a href="about.html#about" class="relative group">
+          About
+          <span class="absolute left-0 -bottom-1 w-0 h-[2px] bg-primary transition-all group-hover:w-full"></span>
+        </a>
+        <a href="index.html#solutions" class="relative group">
+          Solutions
+          <span class="absolute left-0 -bottom-1 w-0 h-[2px] bg-primary transition-all group-hover:w-full"></span>
+        </a>
+        <a href="index.html#contact" class="relative group">
+          Contact
+          <span class="absolute left-0 -bottom-1 w-0 h-[2px] bg-primary transition-all group-hover:w-full"></span>
+        </a>
+      </div>
+
+      <!-- CTA + Mobile Menu Button -->
+      <div class="flex items-center gap-3">
+        <a href="index.html#contact"
+          class="hidden md:inline-block rounded-full bg-primary px-5 py-2 text-sm font-bold text-white shadow-md hover:shadow-lg hover:scale-105 transition-all">
+          Book Consultation
+        </a>
+        <button id="menu-btn"
+          class="md:hidden p-2 rounded-md text-gray-700 dark:text-white focus:outline-none transition-transform hover:scale-110"
+          aria-expanded="false" aria-controls="mobile-menu" aria-label="Toggle menu">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+      </div>
     </div>
 
-    <!-- Desktop Nav Links -->
-    <div class="hidden md:flex gap-8 font-medium text-[0.95rem] text-gray-700 dark:text-gray-200">
-      <a href="index.html#hero" class="relative group">
-        Home
-        <span class="absolute left-0 -bottom-1 w-0 h-[2px] bg-primary transition-all group-hover:w-full"></span>
-      </a>
-      <a href="about.html#about" class="relative group">
-        About
-        <span class="absolute left-0 -bottom-1 w-0 h-[2px] bg-primary transition-all group-hover:w-full"></span>
-      </a>
-      <a href="index.html#solutions" class="relative group">
-        Solutions
-        <span class="absolute left-0 -bottom-1 w-0 h-[2px] bg-primary transition-all group-hover:w-full"></span>
-      </a>
-      <a href="index.html#contact" class="relative group">
-        Contact
-        <span class="absolute left-0 -bottom-1 w-0 h-[2px] bg-primary transition-all group-hover:w-full"></span>
-      </a>
+    <!-- Mobile Menu -->
+    <div id="mobile-menu"
+      class="hidden flex-col bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-md transition-all duration-300 md:hidden">
+      <div class="px-6 py-4 flex flex-col gap-3">
+        <a href="index.html#hero" class="py-2">Home</a>
+        <a href="about.html#about" class="py-2">About</a>
+        <a href="index.html#solutions" class="py-2">Solutions</a>
+        <a href="index.html#contact" class="py-2">Contact</a>
+        <a href="index.html#contact" class="mt-2 inline-block rounded-lg brand-bg px-4 py-2 text-sm font-bold">Book
+          Consultation</a>
+      </div>
     </div>
+  </nav>
 
-    <!-- CTA + Mobile Menu Button -->
-    <div class="flex items-center gap-3">
-      <a
-        href="index.html#contact"
-        class="hidden md:inline-block rounded-full bg-primary px-5 py-2 text-sm font-bold text-white shadow-md hover:shadow-lg hover:scale-105 transition-all"
-      >
-        Book Consultation
-      </a>
-      <button
-        id="menu-btn"
-        class="md:hidden p-2 rounded-md text-gray-700 dark:text-white focus:outline-none transition-transform hover:scale-110"
-        aria-expanded="false"
-        aria-controls="mobile-menu"
-        aria-label="Toggle menu"
-      >
-        <i class="fas fa-bars text-xl"></i>
-      </button>
-    </div>
-  </div>
-
-  <!-- Mobile Menu -->
-  <div
-    id="mobile-menu"
-    class="hidden flex-col bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-md transition-all duration-300 md:hidden"
-  >
-    <div class="px-6 py-4 flex flex-col gap-3">
-      <a href="index.html#hero" class="py-2">Home</a>
-      <a href="about.html#about" class="py-2">About</a>
-      <a href="index.html#solutions" class="py-2">Solutions</a>
-      <a href="index.html#contact" class="py-2">Contact</a>
-      <a href="index.html#contact" class="mt-2 inline-block rounded-lg brand-bg px-4 py-2 text-sm font-bold">Book Consultation</a>
-    </div>
-  </div>
-</nav>
-
-<!-- Font Awesome (for icons) -->
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-/>
+  <!-- Font Awesome (for icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
 
 
 
@@ -133,471 +194,519 @@
   <main class="pt-20">
 
     <!-- Hero / Page Header -->
-<header id="about" class="relative py-20 bg-gradient-to-b from-gray-50 via-white to-gray-50 overflow-hidden reveal from-up">
-  <!-- Decorative background glow -->
-  <div class="absolute inset-0 pointer-events-none">
-    <div class="absolute -top-20 -left-20 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl"></div>
-    <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-200/20 rounded-full blur-3xl"></div>
-  </div>
-
-  <div class="container relative grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
-    <!-- Text content -->
-    <div class="md:col-span-7 space-y-6">
-      <span class="inline-block px-4 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold uppercase tracking-wide">
-        About Us
-      </span>
-      <h1 class="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-gray-900">
-        Shaping the Future of <span class="text-blue-600">Automation</span> & <span class="text-purple-600">Intelligence</span>
-      </h1>
-      <p class="text-gray-700 text-lg leading-relaxed">
-        <span class="font-bold text-primary px-1">Cipher4 AI & Robotics Ltd</span> is a technology company redefining industrial performance through robotics, automation, and intelligent software systems.
-        Our mission is to bridge mechanical innovation with digital intelligence, empowering businesses to move beyond traditional workflows into smarter, scalable, and more efficient operations.
-      </p>
-      <div class="pt-4">
-        <a href="index.html#solutions" class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-full font-semibold hover:bg-blue-700 transition-all">
-          Explore Our Work
-          <i class="fas fa-arrow-right text-sm"></i>
-        </a>
-      </div>
-    </div>
-
-    <!-- Hero image -->
-    <div class="md:col-span-5 relative">
-      <div class="relative group">
-        <!-- Glass effect card -->
-        <div class="absolute inset-0 bg-white/30 backdrop-blur-lg rounded-3xl "></div>
-        <img
-          src="assets/hero__img.png"
-          alt="Robotic render"
-          class="relative w-full h-auto rounded-3xl object-cover transition-transform duration-700 group-hover:scale-105"
-        />
+    <header id="about"
+      class="relative py-20 bg-gradient-to-b from-gray-50 via-white to-gray-50 overflow-hidden reveal from-up">
+      <!-- Decorative background glow -->
+      <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute -top-20 -left-20 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-200/20 rounded-full blur-3xl"></div>
       </div>
 
-      <!-- Decorative icon -->
-      <div class="absolute -bottom-6 -left-6 bg-gradient-to-tr from-blue-800 to-gray-700 text-white p-4 rounded-full shadow-lg">
-        <i class="fas fa-robot text-2xl"></i>
+      <div class="container relative grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+        <!-- Text content -->
+        <div class="md:col-span-7 space-y-6">
+          <span
+            class="inline-block px-4 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold uppercase tracking-wide">
+            About Us
+          </span>
+          <h1 class="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-gray-900">
+            Shaping the Future of <span class="text-blue-600">Automation</span> & <span
+              class="text-purple-600">Intelligence</span>
+          </h1>
+          <p class="text-gray-700 text-lg leading-relaxed">
+            <span class="font-bold text-primary px-1">Cipher4 AI & Robotics Ltd</span> is a technology company
+            redefining industrial performance through robotics, automation, and intelligent software systems.
+            Our mission is to bridge mechanical innovation with digital intelligence, empowering businesses to move
+            beyond traditional workflows into smarter, scalable, and more efficient operations.
+          </p>
+          <div class="pt-4">
+            <a href="index.html#solutions"
+              class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-full font-semibold hover:bg-blue-700 transition-all">
+              Explore Our Work
+              <i class="fas fa-arrow-right text-sm"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Hero image -->
+        <div class="md:col-span-5 relative">
+          <div class="relative group">
+            <!-- Glass effect card -->
+            <div class="absolute inset-0 bg-white/30 backdrop-blur-lg rounded-3xl "></div>
+            <img src="assets/hero__img.png" alt="Robotic render"
+              class="relative w-full h-auto rounded-3xl object-cover transition-transform duration-700 group-hover:scale-105" />
+          </div>
+
+          <!-- Decorative icon -->
+          <div
+            class="absolute -bottom-6 -left-6 bg-gradient-to-tr from-blue-800 to-gray-700 text-white p-4 rounded-full shadow-lg">
+            <i class="fas fa-robot text-2xl"></i>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</header>
+    </header>
 
 
     <!-- What We Do -->
-<section id="what-we-do" class="container py-16 reveal from-left">
-  <!-- Heading -->
-  <div class="text-center mb-12">
-    <h2 class="font-heading text-3xl sm:text-4xl font-bold text-gray-900">
-      What We Do
-    </h2>
-    <p class="mt-3 text-gray-600 text-base sm:text-lg max-w-2xl mx-auto">
-      We deliver end-to-end automation and digital transformation, bridging intelligent design, robotics, and smart software to future-proof industries.
-    </p>
-  </div>
-
-  <!-- Cards Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-    <!-- 1 -->
-    <div class="p-8 bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-      <div class="flex items-center gap-4 mb-4">
-        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-700">
-          <i class="fas fa-cogs text-2xl"></i>
-        </div>
-        <h3 class="font-heading font-semibold text-lg text-gray-900">
-          Design & Manufacturing
-        </h3>
+    <section id="what-we-do" class="container py-16 reveal from-left">
+      <!-- Heading -->
+      <div class="text-center mb-12">
+        <h2 class="font-heading text-3xl sm:text-4xl font-bold text-gray-900">
+          What We Do
+        </h2>
+        <p class="mt-3 text-gray-600 text-base sm:text-lg max-w-2xl mx-auto">
+          We deliver end-to-end automation and digital transformation, bridging intelligent design, robotics, and smart
+          software to future-proof industries.
+        </p>
       </div>
-      <p class="text-sm text-gray-600 leading-relaxed">
-        We design, prototype, and manufacture robotic systems — from industrial automation to drones — turning complex engineering ideas into real, scalable solutions with precision and reliability.
-      </p>
-    </div>
 
-    <!-- 2 -->
-    <div class="p-8 bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-      <div class="flex items-center gap-4 mb-4">
-        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-100 text-purple-700">
-          <i class="fas fa-brain text-2xl"></i>
+      <!-- Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- 1 -->
+        <div
+          class="p-8 bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-700">
+              <i class="fas fa-cogs text-2xl"></i>
+            </div>
+            <h3 class="font-heading font-semibold text-lg text-gray-900">
+              Design & Manufacturing
+            </h3>
+          </div>
+          <p class="text-sm text-gray-600 leading-relaxed">
+            We design, prototype, and manufacture robotic systems — from industrial automation to drones — turning
+            complex engineering ideas into real, scalable solutions with precision and reliability.
+          </p>
         </div>
-        <h3 class="font-heading font-semibold text-lg text-gray-900">
-          Intelligent Software Platforms
-        </h3>
-      </div>
-      <p class="text-sm text-gray-600 leading-relaxed">
-        We build intelligent software platforms — ERP, analytics, cybersecurity, and cloud — giving businesses full control to monitor and optimize their operations in real time.
-      </p>
-    </div>
 
-    <!-- 3 -->
-    <div class="p-8 bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-      <div class="flex items-center gap-4 mb-4">
-        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-orange-100 text-orange-700">
-          <i class="fas fa-industry text-2xl"></i>
+        <!-- 2 -->
+        <div
+          class="p-8 bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-100 text-purple-700">
+              <i class="fas fa-brain text-2xl"></i>
+            </div>
+            <h3 class="font-heading font-semibold text-lg text-gray-900">
+              Intelligent Software Platforms
+            </h3>
+          </div>
+          <p class="text-sm text-gray-600 leading-relaxed">
+            We build intelligent software platforms — ERP, analytics, cybersecurity, and cloud — giving businesses full
+            control to monitor and optimize their operations in real time.
+          </p>
         </div>
-        <h3 class="font-heading font-semibold text-lg text-gray-900">
-          Implementation Across Industries
-        </h3>
-      </div>
-      <p class="text-sm text-gray-600 leading-relaxed">
-        We implement automation for manufacturing, logistics, healthcare, and agriculture, seamlessly integrating robotics with your existing IT systems.
-      </p>
-    </div>
 
-    <!-- 4 -->
-    <div class="p-8 bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-      <div class="flex items-center gap-4 mb-4">
-        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 text-green-700">
-          <i class="fas fa-user-tie text-2xl"></i>
+        <!-- 3 -->
+        <div
+          class="p-8 bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="flex items-center justify-center w-12 h-12 rounded-full bg-orange-100 text-orange-700">
+              <i class="fas fa-industry text-2xl"></i>
+            </div>
+            <h3 class="font-heading font-semibold text-lg text-gray-900">
+              Implementation Across Industries
+            </h3>
+          </div>
+          <p class="text-sm text-gray-600 leading-relaxed">
+            We implement automation for manufacturing, logistics, healthcare, and agriculture, seamlessly integrating
+            robotics with your existing IT systems.
+          </p>
         </div>
-        <h3 class="font-heading font-semibold text-lg text-gray-900">
-          Consultancy & Tailored Solutions
-        </h3>
+
+        <!-- 4 -->
+        <div
+          class="p-8 bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 text-green-700">
+              <i class="fas fa-user-tie text-2xl"></i>
+            </div>
+            <h3 class="font-heading font-semibold text-lg text-gray-900">
+              Consultancy & Tailored Solutions
+            </h3>
+          </div>
+          <p class="text-sm text-gray-600 leading-relaxed">
+            We offer expert consulting in automation strategy, provide customized solutions for SMEs and enterprises,
+            and ensure long-term success through training and ongoing support.
+          </p>
+        </div>
       </div>
-      <p class="text-sm text-gray-600 leading-relaxed">
-        We offer expert consulting in automation strategy, provide customized solutions for SMEs and enterprises, and ensure long-term success through training and ongoing support.
-      </p>
-    </div>
-  </div>
-</section>
+    </section>
 
 
     <!-- Why It Matters -->
-<section id="why-it-matters" class="container py-16 reveal from-right">
-  <!-- Heading -->
-  <div class="text-center mb-12">
-    <h2 class="font-heading text-3xl sm:text-4xl font-bold text-gray-900">
-      Why It Matters
-    </h2>
-    <p class="mt-3 text-gray-600 text-base sm:text-lg max-w-2xl mx-auto">
-      Automation and robotics aren’t just technologies, they redefine productivity, safety, and scalability across industries.
-    </p>
-  </div>
-
-  <!-- Benefits Grid -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    <!-- 1 -->
-    <div class="flex flex-col items-start bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-300">
-      <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-700 mb-4">
-        <i class="fas fa-chart-line text-2xl"></i>
+    <section id="why-it-matters" class="container py-16 reveal from-right">
+      <!-- Heading -->
+      <div class="text-center mb-12">
+        <h2 class="font-heading text-3xl sm:text-4xl font-bold text-gray-900">
+          Why It Matters
+        </h2>
+        <p class="mt-3 text-gray-600 text-base sm:text-lg max-w-2xl mx-auto">
+          Automation and robotics aren’t just technologies, they redefine productivity, safety, and scalability across
+          industries.
+        </p>
       </div>
-      <h3 class="font-semibold text-lg text-gray-900 mb-2">
-        Productivity & Cost Efficiency
-      </h3>
-      <p class="text-gray-600 text-sm leading-relaxed">
-        Automation drives up to <strong>33%</strong> higher productivity and reduces operational costs by <strong>15–30%</strong>.
-      </p>
-    </div>
 
-    <!-- 2 -->
-    <div class="flex flex-col items-start bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-300">
-      <div class="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 text-green-700 mb-4">
-        <i class="fas fa-recycle text-2xl"></i>
-      </div>
-      <h3 class="font-semibold text-lg text-gray-900 mb-2">
-        Quality & Waste Reduction
-      </h3>
-      <p class="text-gray-600 text-sm leading-relaxed">
-        Robotics minimizes errors, improves consistency, and promotes sustainability through reduced material waste.
-      </p>
-    </div>
+      <!-- Benefits Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- 1 -->
+        <div
+          class="flex flex-col items-start bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-300">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-700 mb-4">
+            <i class="fas fa-chart-line text-2xl"></i>
+          </div>
+          <h3 class="font-semibold text-lg text-gray-900 mb-2">
+            Productivity & Cost Efficiency
+          </h3>
+          <p class="text-gray-600 text-sm leading-relaxed">
+            Automation drives up to <strong>33%</strong> higher productivity and reduces operational costs by
+            <strong>15–30%</strong>.
+          </p>
+        </div>
 
-    <!-- 3 -->
-    <div class="flex flex-col items-start bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-300">
-      <div class="flex items-center justify-center w-12 h-12 rounded-full bg-orange-100 text-orange-700 mb-4">
-        <i class="fas fa-layer-group text-2xl"></i>
-      </div>
-      <h3 class="font-semibold text-lg text-gray-900 mb-2">
-        Scalability & Flexibility
-      </h3>
-      <p class="text-gray-600 text-sm leading-relaxed">
-        Robotics empowers businesses to scale efficiently and adapt fast to new demands or production needs.
-      </p>
-    </div>
+        <!-- 2 -->
+        <div
+          class="flex flex-col items-start bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-300">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 text-green-700 mb-4">
+            <i class="fas fa-recycle text-2xl"></i>
+          </div>
+          <h3 class="font-semibold text-lg text-gray-900 mb-2">
+            Quality & Waste Reduction
+          </h3>
+          <p class="text-gray-600 text-sm leading-relaxed">
+            Robotics minimizes errors, improves consistency, and promotes sustainability through reduced material waste.
+          </p>
+        </div>
 
-    <!-- 4 -->
-    <div class="flex flex-col items-start bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-300">
-      <div class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-100 text-purple-700 mb-4">
-        <i class="fas fa-user-shield text-2xl"></i>
+        <!-- 3 -->
+        <div
+          class="flex flex-col items-start bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-300">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full bg-orange-100 text-orange-700 mb-4">
+            <i class="fas fa-layer-group text-2xl"></i>
+          </div>
+          <h3 class="font-semibold text-lg text-gray-900 mb-2">
+            Scalability & Flexibility
+          </h3>
+          <p class="text-gray-600 text-sm leading-relaxed">
+            Robotics empowers businesses to scale efficiently and adapt fast to new demands or production needs.
+          </p>
+        </div>
+
+        <!-- 4 -->
+        <div
+          class="flex flex-col items-start bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-300">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-100 text-purple-700 mb-4">
+            <i class="fas fa-user-shield text-2xl"></i>
+          </div>
+          <h3 class="font-semibold text-lg text-gray-900 mb-2">
+            Workforce Transformation & Safety
+          </h3>
+          <p class="text-gray-600 text-sm leading-relaxed">
+            Automation enhances worker safety and allows teams to focus on high-value, innovative tasks.
+          </p>
+        </div>
       </div>
-      <h3 class="font-semibold text-lg text-gray-900 mb-2">
-        Workforce Transformation & Safety
-      </h3>
-      <p class="text-gray-600 text-sm leading-relaxed">
-        Automation enhances worker safety and allows teams to focus on high-value, innovative tasks.
-      </p>
-    </div>
-  </div>
-</section>
+    </section>
 
 
 
     <!-- Our Approach -->
-<section id="our-approach" class="container py-16 reveal from-up">
-  <!-- Section Header -->
-  <div class="text-center mb-12">
-    <h2 class="font-heading text-3xl sm:text-4xl font-bold text-gray-900">
-      Our Approach
-    </h2>
-    <p class="mt-3 text-gray-600 text-base sm:text-lg max-w-2xl mx-auto">
-      We combine engineering precision with digital intelligence to create scalable, future-proof automation solutions built around your goals.
-    </p>
-  </div>
-
-  <!-- Key Pillars -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <!-- 1 -->
-    <div class="flex items-start gap-4 p-6 bg-white border rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-      <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-700 shrink-0">
-        <i class="fas fa-user-check text-2xl"></i>
-      </div>
-      <div>
-        <h3 class="font-semibold text-gray-900">Client-First Design</h3>
-        <p class="text-sm text-gray-600 mt-1">
-          Every solution is built around your business needs, designed to fit your workflow, goals, and growth strategy.
+    <section id="our-approach" class="container py-16 reveal from-up">
+      <!-- Section Header -->
+      <div class="text-center mb-12">
+        <h2 class="font-heading text-3xl sm:text-4xl font-bold text-gray-900">
+          Our Approach
+        </h2>
+        <p class="mt-3 text-gray-600 text-base sm:text-lg max-w-2xl mx-auto">
+          We combine engineering precision with digital intelligence to create scalable, future-proof automation
+          solutions built around your goals.
         </p>
       </div>
-    </div>
 
-    <!-- 2 -->
-    <div class="flex items-start gap-4 p-6 bg-white border rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-      <div class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-100 text-purple-700 shrink-0">
-        <i class="fas fa-network-wired text-2xl"></i>
-      </div>
-      <div>
-        <h3 class="font-semibold text-gray-900">End-to-End Integration</h3>
-        <p class="text-sm text-gray-600 mt-1">
-          From robotics and software platforms to maintenance and training, everything connects seamlessly.
-        </p>
-      </div>
-    </div>
-
-    <!-- 3 -->
-    <div class="flex items-start gap-4 p-6 bg-white border rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-      <div class="flex items-center justify-center w-12 h-12 rounded-full bg-orange-100 text-orange-700 shrink-0">
-        <i class="fas fa-layer-group text-2xl"></i>
-      </div>
-      <div>
-        <h3 class="font-semibold text-gray-900">Accessible Innovation</h3>
-        <p class="text-sm text-gray-600 mt-1">
-          Scalable automation for both SMEs and large enterprises, practical innovation that grows with you.
-        </p>
-      </div>
-    </div>
-
-    <!-- 4 -->
-    <div class="flex items-start gap-4 p-6 bg-white border rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-      <div class="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 text-green-700 shrink-0">
-        <i class="fas fa-flask text-2xl"></i>
-      </div>
-      <div>
-        <h3 class="font-semibold text-gray-900">Continuous Improvement</h3>
-        <p class="text-sm text-gray-600 mt-1">
-          Through our IT Academy and R&amp;D programs, we ensure solutions evolve with technology.
-        </p>
-      </div>
-    </div>
-
-    <!-- 5 -->
-    <div class="flex items-start gap-4 p-6 bg-white border rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-      <div class="flex items-center justify-center w-12 h-12 rounded-full bg-yellow-100 text-yellow-700 shrink-0">
-        <i class="fas fa-handshake text-2xl"></i>
-      </div>
-      <div>
-        <h3 class="font-semibold text-gray-900">Sustained Partnership</h3>
-        <p class="text-sm text-gray-600 mt-1">
-          We’re with you long after deployment, ongoing support ensures maximum uptime and long-term impact.
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Closing Statement -->
-  <div class="mt-12 text-center max-w-3xl mx-auto">
-    <p class="text-gray-700 text-base sm:text-lg leading-relaxed">
-      By choosing <strong>Cipher4 AI & Robotics Ltd</strong>, you partner with a team that unites mechanical precision with digital intelligence, achieving higher productivity, lower costs, and future-ready growth.
-    </p>
-  </div>
-</section>
-
-
-   <!-- CTA BANNER -->
-<div id="contact" class="w-full bg-[#1E2B5C] reveal">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="@container">
-      <div class="flex flex-col items-center justify-center gap-6 py-16 text-center @[480px]:gap-8 @[480px]:py-20">
-        <div class="flex flex-col gap-4">
-          <h2 class="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl">
-            Ready to Modernize Your Operations?
-          </h2>
-          <p class="mx-auto max-w-3xl text-lg leading-8 text-slate-200">
-            Partner with Cipher4 AI &amp; Robotics Ltd to integrate intelligent automation into your enterprise. Our team of engineers and consultants are ready to assess your needs and deliver tailored, high-performance solutions.
-          </p>
+      <!-- Key Pillars -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- 1 -->
+        <div
+          class="flex items-start gap-4 p-6 bg-white border rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-700 shrink-0">
+            <i class="fas fa-user-check text-2xl"></i>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Client-First Design</h3>
+            <p class="text-sm text-gray-600 mt-1">
+              Every solution is built around your business needs, designed to fit your workflow, goals, and growth
+              strategy.
+            </p>
+          </div>
         </div>
-        <div class="mt-4 flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <a href="index.html#contact" class="flex h-12 min-w-[84px] items-center justify-center gap-x-2 rounded-lg bg-primary px-6 text-base font-bold text-white transition-colors hover:bg-primary/80 active:bg-primary/90 text-center">
-            <span>Book a Consultation</span>
-          </a>
-          <a href="index.html#contact" class="flex h-12 min-w-[84px] items-center justify-center gap-x-2 rounded-lg border border-white px-6 text-base font-bold text-white transition-colors hover:bg-white/10 active:bg-white/20 text-center">
-            <span>Contact Us</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
-<!-- FOOTER -->
-<div class="flex w-full flex-col bg-background-light dark:bg-background-dark font-display" style="font-family: 'Inter', sans-serif;">
-  <div class="flex-grow"></div>
-  <footer class="w-full bg-[#111827] text-white">
-    <div class="mx-auto max-w-7xl px-8 py-12 sm:px-12">
-      <div class="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-8">
-        <div class="col-span-1 md:col-span-5">
-          <h3 class="font-heading text-lg font-semibold text-gray-100" style="font-family: 'Montserrat', sans-serif;">Quick Links</h3>
-          <ul class="mt-4 space-y-3 text-sm">
-            <li><a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline" href="index.html#about">About</a></li>
-            <li><a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline" href="index.html#solutions">Solutions</a></li>
-            <li><a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline" href="#">Industries</a></li>
-            <li><a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline" href="#">Academy</a></li>
-            <li><a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline" href="index.html#contact">Contact</a></li>
-          </ul>
+        <!-- 2 -->
+        <div
+          class="flex items-start gap-4 p-6 bg-white border rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-100 text-purple-700 shrink-0">
+            <i class="fas fa-network-wired text-2xl"></i>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900">End-to-End Integration</h3>
+            <p class="text-sm text-gray-600 mt-1">
+              From robotics and software platforms to maintenance and training, everything connects seamlessly.
+            </p>
+          </div>
         </div>
-        <div class="col-span-1 md:col-span-4">
-          <h3 class="font-heading text-lg font-semibold text-gray-100" style="font-family: 'Montserrat', sans-serif;">Contact</h3>
-          <ul class="mt-4 space-y-3 text-sm">
-            <li class="flex items-center gap-3">
-              <span class="material-symbols-outlined text-gray-400">mail</span>
-              <a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline" href="mailto:info@cipher4.ai">info@cipher4.ai</a>
-            </li>
-            <li class="flex items-start gap-3">
-              <span class="material-symbols-outlined text-gray-400 mt-1">location_on</span>
-              <span class="text-gray-300">123 Tech Avenue, Innovation City, 10101</span>
-            </li>
-          </ul>
+
+        <!-- 3 -->
+        <div
+          class="flex items-start gap-4 p-6 bg-white border rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full bg-orange-100 text-orange-700 shrink-0">
+            <i class="fas fa-layer-group text-2xl"></i>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Accessible Innovation</h3>
+            <p class="text-sm text-gray-600 mt-1">
+              Scalable automation for both SMEs and large enterprises, practical innovation that grows with you.
+            </p>
+          </div>
         </div>
-        <div class="col-span-1 md:col-span-3">
-          <h3 class="font-heading text-lg font-semibold text-gray-100" style="font-family: 'Montserrat', sans-serif;">Social</h3>
-          <div class="mt-4 flex gap-5">
-            <a class="text-gray-300 transition-colors duration-300 hover:text-primary" href="#">
-              <span class="sr-only">LinkedIn</span>
-              <svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.25 6.5 1.75 1.75 0 016.5 8.25zM19 19h-3v-4.75c0-1.4-1.2-2.5-2.5-2.5S11 12.85 11 14.25V19h-3v-9h2.9v1.3a3.11 3.11 0 012.6-1.4c2.5 0 4.5 2.2 4.5 5.1z"></path>
-              </svg>
-            </a>
-            <a class="text-gray-300 transition-colors duration-300 hover:text-primary" href="#">
-              <span class="sr-only">X (Twitter)</span>
-              <svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
-              </svg>
-            </a>
-            <a class="text-gray-300 transition-colors duration-300 hover:text-primary" href="#">
-              <span class="sr-only">YouTube</span>
-              <svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                <path clip-rule="evenodd" d="M19.812 5.418c.861.23 1.538.907 1.768 1.768C21.998 8.746 22 12 22 12s0 3.255-.418 4.814a2.506 2.506 0 0 1-1.768 1.768c-1.56.419-7.814.419-7.814.419s-6.255 0-7.814-.419a2.505 2.505 0 0 1-1.768-1.768C2 15.255 2 12 2 12s0-3.255.417-4.814a2.507 2.507 0 0 1 1.768-1.768C5.744 5 11.998 5 11.998 5s6.255 0 7.814.418ZM15.194 12 10 15.198V8.802z" fill-rule="evenodd"></path>
-              </svg>
-            </a>
+
+        <!-- 4 -->
+        <div
+          class="flex items-start gap-4 p-6 bg-white border rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 text-green-700 shrink-0">
+            <i class="fas fa-flask text-2xl"></i>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Continuous Improvement</h3>
+            <p class="text-sm text-gray-600 mt-1">
+              Through our IT Academy and R&amp;D programs, we ensure solutions evolve with technology.
+            </p>
+          </div>
+        </div>
+
+        <!-- 5 -->
+        <div
+          class="flex items-start gap-4 p-6 bg-white border rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full bg-yellow-100 text-yellow-700 shrink-0">
+            <i class="fas fa-handshake text-2xl"></i>
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900">Sustained Partnership</h3>
+            <p class="text-sm text-gray-600 mt-1">
+              We’re with you long after deployment, ongoing support ensures maximum uptime and long-term impact.
+            </p>
           </div>
         </div>
       </div>
-      <div class="mt-8 border-t border-gray-700 pt-6">
-        <p class="text-center text-sm text-gray-400">© 2025 Cipher4 AI &amp; Robotics Ltd. All Rights Reserved.</p>
+
+      <!-- Closing Statement -->
+      <div class="mt-12 text-center max-w-3xl mx-auto">
+        <p class="text-gray-700 text-base sm:text-lg leading-relaxed">
+          By choosing <strong>Cipher4 AI & Robotics Ltd</strong>, you partner with a team that unites mechanical
+          precision with digital intelligence, achieving higher productivity, lower costs, and future-ready growth.
+        </p>
+      </div>
+    </section>
+
+
+    <!-- CTA BANNER -->
+    <div id="contact" class="w-full bg-[#1E2B5C] reveal">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="@container">
+          <div class="flex flex-col items-center justify-center gap-6 py-16 text-center @[480px]:gap-8 @[480px]:py-20">
+            <div class="flex flex-col gap-4">
+              <h2 class="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl">
+                Ready to Modernize Your Operations?
+              </h2>
+              <p class="mx-auto max-w-3xl text-lg leading-8 text-slate-200">
+                Partner with Cipher4 AI &amp; Robotics Ltd to integrate intelligent automation into your enterprise. Our
+                team of engineers and consultants are ready to assess your needs and deliver tailored, high-performance
+                solutions.
+              </p>
+            </div>
+            <div class="mt-4 flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <a href="index.html#contact"
+                class="flex h-12 min-w-[84px] items-center justify-center gap-x-2 rounded-lg bg-primary px-6 text-base font-bold text-white transition-colors hover:bg-primary/80 active:bg-primary/90 text-center">
+                <span>Book a Consultation</span>
+              </a>
+              <a href="index.html#contact"
+                class="flex h-12 min-w-[84px] items-center justify-center gap-x-2 rounded-lg border border-white px-6 text-base font-bold text-white transition-colors hover:bg-white/10 active:bg-white/20 text-center">
+                <span>Contact Us</span>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </footer>
-</div>
 
-<!-- Add script for reveal-on-scroll and mobile menu toggle -->
-<script>
-  // Mobile menu toggle (unchanged behavior, kept minimal)
-  (function() {
-    const menuBtn = document.getElementById('menu-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
-    if (menuBtn && mobileMenu) {
-      menuBtn.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-        const expanded = !mobileMenu.classList.contains('hidden');
-        menuBtn.setAttribute('aria-expanded', String(expanded));
-      });
+    <!-- FOOTER -->
+    <div class="flex w-full flex-col bg-background-light dark:bg-background-dark font-display"
+      style="font-family: 'Inter', sans-serif;">
+      <div class="flex-grow"></div>
+      <footer class="w-full bg-[#111827] text-white">
+        <div class="mx-auto max-w-7xl px-8 py-12 sm:px-12">
+          <div class="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-8">
+            <div class="col-span-1 md:col-span-5">
+              <h3 class="font-heading text-lg font-semibold text-gray-100"
+                style="font-family: 'Montserrat', sans-serif;">Quick Links</h3>
+              <ul class="mt-4 space-y-3 text-sm">
+                <li><a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline"
+                    href="index.html#about">About</a></li>
+                <li><a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline"
+                    href="index.html#solutions">Solutions</a></li>
+                <li><a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline"
+                    href="#">Industries</a></li>
+                <li><a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline"
+                    href="#">Academy</a></li>
+                <li><a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline"
+                    href="index.html#contact">Contact</a></li>
+              </ul>
+            </div>
+            <div class="col-span-1 md:col-span-4">
+              <h3 class="font-heading text-lg font-semibold text-gray-100"
+                style="font-family: 'Montserrat', sans-serif;">Contact</h3>
+              <ul class="mt-4 space-y-3 text-sm">
+                <li class="flex items-center gap-3">
+                  <span class="material-symbols-outlined text-gray-400">mail</span>
+                  <a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline"
+                    href="mailto:info@cipher4.ai">info@cipher4.ai</a>
+                </li>
+                <li class="flex items-start gap-3">
+                  <span class="material-symbols-outlined text-gray-400 mt-1">location_on</span>
+                  <span class="text-gray-300">123 Tech Avenue, Innovation City, 10101</span>
+                </li>
+              </ul>
+            </div>
+            <div class="col-span-1 md:col-span-3">
+              <h3 class="font-heading text-lg font-semibold text-gray-100"
+                style="font-family: 'Montserrat', sans-serif;">Social</h3>
+              <div class="mt-4 flex gap-5">
+                <a class="text-gray-300 transition-colors duration-300 hover:text-primary" href="#">
+                  <span class="sr-only">LinkedIn</span>
+                  <svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.25 6.5 1.75 1.75 0 016.5 8.25zM19 19h-3v-4.75c0-1.4-1.2-2.5-2.5-2.5S11 12.85 11 14.25V19h-3v-9h2.9v1.3a3.11 3.11 0 012.6-1.4c2.5 0 4.5 2.2 4.5 5.1z">
+                    </path>
+                  </svg>
+                </a>
+                <a class="text-gray-300 transition-colors duration-300 hover:text-primary" href="#">
+                  <span class="sr-only">X (Twitter)</span>
+                  <svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z">
+                    </path>
+                  </svg>
+                </a>
+                <a class="text-gray-300 transition-colors duration-300 hover:text-primary" href="#">
+                  <span class="sr-only">YouTube</span>
+                  <svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path clip-rule="evenodd"
+                      d="M19.812 5.418c.861.23 1.538.907 1.768 1.768C21.998 8.746 22 12 22 12s0 3.255-.418 4.814a2.506 2.506 0 0 1-1.768 1.768c-1.56.419-7.814.419-7.814.419s-6.255 0-7.814-.419a2.505 2.505 0 0 1-1.768-1.768C2 15.255 2 12 2 12s0-3.255.417-4.814a2.507 2.507 0 0 1 1.768-1.768C5.744 5 11.998 5 11.998 5s6.255 0 7.814.418ZM15.194 12 10 15.198V8.802z"
+                      fill-rule="evenodd"></path>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="mt-8 border-t border-gray-700 pt-6">
+            <p class="text-center text-sm text-gray-400">© 2025 Cipher4 AI &amp; Robotics Ltd. All Rights Reserved.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
 
-      mobileMenu.querySelectorAll('a[href^="#"]').forEach(a => {
-        a.addEventListener('click', () => {
-          mobileMenu.classList.add('hidden');
-          menuBtn.setAttribute('aria-expanded', 'false');
-        });
-      });
-    }
+    <!-- Add script for reveal-on-scroll and mobile menu toggle -->
+    <script>
+        // Mobile menu toggle (unchanged behavior, kept minimal)
+        (function () {
+          const menuBtn = document.getElementById('menu-btn');
+          const mobileMenu = document.getElementById('mobile-menu');
+          if (menuBtn && mobileMenu) {
+            menuBtn.addEventListener('click', () => {
+              mobileMenu.classList.toggle('hidden');
+              const expanded = !mobileMenu.classList.contains('hidden');
+              menuBtn.setAttribute('aria-expanded', String(expanded));
+            });
 
-    document.querySelectorAll('nav a[href^="#"]').forEach(a => {
-      a.addEventListener('click', () => {
-        if (mobileMenu) mobileMenu.classList.add('hidden');
-        if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
-      });
-    });
-  })();
+            mobileMenu.querySelectorAll('a[href^="#"]').forEach(a => {
+              a.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                menuBtn.setAttribute('aria-expanded', 'false');
+              });
+            });
+          }
 
-  // Improved reveal-on-scroll (directional, lightweight, staggered)
-  (function() {
-    const reveals = Array.from(document.querySelectorAll('.reveal'));
-    if (!reveals.length) return;
+          document.querySelectorAll('nav a[href^="#"]').forEach(a => {
+            a.addEventListener('click', () => {
+              if (mobileMenu) mobileMenu.classList.add('hidden');
+              if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+            });
+          });
+        })();
 
-    // Quick helper: determine entry direction based on element geometry
-    function chooseDirection(el) {
-      try {
-        const rect = el.getBoundingClientRect();
-        const vw = window.innerWidth || document.documentElement.clientWidth;
-        const elCenterX = rect.left + rect.width / 2;
-        const wideThreshold = vw * 0.75;
+      // Improved reveal-on-scroll (directional, lightweight, staggered)
+      (function () {
+        const reveals = Array.from(document.querySelectorAll('.reveal'));
+        if (!reveals.length) return;
 
-        // If element is very wide (likely full-width section) -> use up
-        if (rect.width >= wideThreshold) return 'from-up';
-        // left-of-center -> from-left, right-of-center -> from-right, else up
-        if (elCenterX < vw * 0.45) return 'from-left';
-        if (elCenterX > vw * 0.55) return 'from-right';
-        return 'from-up';
-      } catch (e) {
-        return 'from-up';
-      }
-    }
+        // Quick helper: determine entry direction based on element geometry
+        function chooseDirection(el) {
+          try {
+            const rect = el.getBoundingClientRect();
+            const vw = window.innerWidth || document.documentElement.clientWidth;
+            const elCenterX = rect.left + rect.width / 2;
+            const wideThreshold = vw * 0.75;
 
-    // set small staggered delay and appropriate initial direction
-    reveals.forEach((el, i) => {
-      // don't override if author already set a direction class
-      if (!el.classList.contains('from-left') && !el.classList.contains('from-right') && !el.classList.contains('from-up')) {
-        el.classList.add(chooseDirection(el));
-      }
-      // set a tiny stagger so groups feel natural
-      el.style.setProperty('--delay', `${Math.min(i * 80, 320)}ms`);
-    });
-
-    if (!('IntersectionObserver' in window)) {
-      // fallback: reveal immediately
-      reveals.forEach(el => el.classList.add('revealed'));
-      return;
-    }
-
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        const el = entry.target;
-        if (entry.isIntersecting) {
-          // show
-          el.classList.add('revealed');
-          el.classList.remove('exited');
-          // once revealed, unobserve to reduce work
-          io.unobserve(el);
-        } else {
-          // mark as partially left so CSS can slightly offset position
-          // decide exit direction based on where it left viewport
-          const top = entry.boundingClientRect.top;
-          el.dataset.exit = (top < 0) ? 'up' : 'down';
-          // add exited state (won't block re-entry if page scrolls back quickly)
-          el.classList.add('exited');
+            // If element is very wide (likely full-width section) -> use up
+            if (rect.width >= wideThreshold) return 'from-up';
+            // left-of-center -> from-left, right-of-center -> from-right, else up
+            if (elCenterX < vw * 0.45) return 'from-left';
+            if (elCenterX > vw * 0.55) return 'from-right';
+            return 'from-up';
+          } catch (e) {
+            return 'from-up';
+          }
         }
-      });
-    }, { root: null, rootMargin: '0px 0px -12% 0px', threshold: [0, 0.12, 0.2] });
 
-    // Observe; use a tiny delay to allow layout to settle
-    requestAnimationFrame(() => {
-      reveals.forEach(el => io.observe(el));
-    });
-  })();
-</script>
+        // set small staggered delay and appropriate initial direction
+        reveals.forEach((el, i) => {
+          // don't override if author already set a direction class
+          if (!el.classList.contains('from-left') && !el.classList.contains('from-right') && !el.classList.contains('from-up')) {
+            el.classList.add(chooseDirection(el));
+          }
+          // set a tiny stagger so groups feel natural
+          el.style.setProperty('--delay', `${Math.min(i * 80, 320)}ms`);
+        });
+
+        if (!('IntersectionObserver' in window)) {
+          // fallback: reveal immediately
+          reveals.forEach(el => el.classList.add('revealed'));
+          return;
+        }
+
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            const el = entry.target;
+            if (entry.isIntersecting) {
+              // show
+              el.classList.add('revealed');
+              el.classList.remove('exited');
+              // once revealed, unobserve to reduce work
+              io.unobserve(el);
+            } else {
+              // mark as partially left so CSS can slightly offset position
+              // decide exit direction based on where it left viewport
+              const top = entry.boundingClientRect.top;
+              el.dataset.exit = (top < 0) ? 'up' : 'down';
+              // add exited state (won't block re-entry if page scrolls back quickly)
+              el.classList.add('exited');
+            }
+          });
+        }, { root: null, rootMargin: '0px 0px -12% 0px', threshold: [0, 0.12, 0.2] });
+
+        // Observe; use a tiny delay to allow layout to settle
+        requestAnimationFrame(() => {
+          reveals.forEach(el => io.observe(el));
+        });
+      })();
+    </script>
 </body>
+
 </html>
