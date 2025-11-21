@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Cipher4 AI &amp; Robotics Ltd - Intelligent Automation</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Montserrat:wght@700&amp;display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <link rel="stylesheet" href="static/styles.css" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#13235e",
+            "background-light": "#f6f6f8",
+            "background-dark": "#121520",
+          },
+          fontFamily: {
+            "display": ["Inter", "sans-serif"],
+            "heading": ["Montserrat", "sans-serif"]
+          },
+          borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+        },
+      },
+    }
+  </script>
+  <style>
+    /* Dotted background pattern ONLY on hero */
+    .hero-dots {
+      background-image:
+        radial-gradient(black 1px, transparent 1px),
+        linear-gradient(rgba(255, 255, 255, 0.95), rgba(248, 249, 251, 0.95)),
+        url('https://www.toptal.com/designers/subtlepatterns/uploads/circuit-board.png');
+      background-size: 20px 20px, auto, 300px;
+    }
+
+    .dark .hero-dots {
+      background-image:
+        radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(rgba(18, 21, 32, 0.95), rgba(18, 21, 32, 0.95)),
+        url('https://www.toptal.com/designers/subtlepatterns/uploads/circuit-board.png');
+      background-size: 20px 20px, auto, 300px;
+    }
+
+    /* Reveal-on-scroll animation (improved, directional, performant) */
+    :root {
+      --reveal-duration: 700ms;
+      --reveal-ease: cubic-bezier(.2, .9, .2, 1);
+      --reveal-stagger: 80ms;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .reveal {
+      opacity: 0;
+      --delay: 0ms;
+      transition: opacity var(--reveal-duration) var(--reveal-ease) var(--delay), transform var(--reveal-duration) var(--reveal-ease) var(--delay);
+      will-change: transform, opacity;
+      /* default entry from bottom */
+      transform: translateY(28px) scale(.99);
+      backface-visibility: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* directional initial offsets */
+    .reveal.from-left {
+      transform: translateX(-28px) scale(.99);
+    }
+
+    .reveal.from-right {
+      transform: translateX(28px) scale(.99);
+    }
+
+    .reveal.from-up {
+      transform: translateY(28px) scale(.99);
+    }
+
+    /* revealed state */
+    .reveal.revealed {
+      opacity: 1;
+      transform: translateX(0) translateY(0) scale(1);
+    }
+
+    /* subtle exit positions when element leaves viewport */
+    .reveal.exited[data-exit="up"] {
+      transform: translateY(-12px) scale(.995);
+      opacity: .92;
+      transition-duration: 420ms;
+    }
+
+    .reveal.exited[data-exit="down"] {
+      transform: translateY(12px) scale(.995);
+      opacity: .92;
+      transition-duration: 420ms;
+    }
+
+    /* small view-specific tweaks */
+    @media (prefers-reduced-motion: reduce) {
+      .reveal {
+        transition: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+      }
+    }
+
+    /* keep existing responsive tweak */
+    @media (max-width: 640px) {
+      .moon-svg {
+        transform: translateY(30%) scale(0.75);
+        transform-origin: bottom right;
+      }
+    }
+  </style>
+</head>
+
+<body class="font-display bg-background-light dark:bg-background-dark text-[#1A202C] dark:text-white/90">
+
+  <!-- NAVIGATION -->
+  <nav
+    class="fixed top-0 left-0 w-full z-50 bg-white/70 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50 transition-all duration-300">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+      <!-- Logo + Brand -->
+      <div class="flex items-center gap-3">
+        <div class="relative">
+          <img src="assets/Cipher4_logo.png" alt="Cipher4 logo" class="w-10 h-10 " />
+        </div>
+        <span class="text-lg font-heading font-bold text-gray-900 dark:text-white tracking-tight">
+          Cipher4 <span class="text-primary">AI & Robotics</span>
+        </span>
+      </div>
+
+      <!-- Desktop Nav Links -->
+      <div class="hidden md:flex gap-6 lg:gap-8 font-medium text-[0.95rem] text-gray-700 dark:text-gray-200">
+        <a href="#hero" class="relative group">
+          Home
+          <span class="absolute left-0 -bottom-1 w-0 h-[2px] bg-primary transition-all group-hover:w-full"></span>
+        </a>
+        <a href="#about" class="relative group">
+          About
+          <span class="absolute left-0 -bottom-1 w-0 h-[2px] bg-primary transition-all group-hover:w-full"></span>
+        </a>
+        <a href="#solutions" class="relative group">
+          Solutions
+          <span class="absolute left-0 -bottom-1 w-0 h-[2px] bg-primary transition-all group-hover:w-full"></span>
+        </a>
+        <a href="#contact" class="relative group">
+          Contact
+          <span class="absolute left-0 -bottom-1 w-0 h-[2px] bg-primary transition-all group-hover:w-full"></span>
+        </a>
+      </div>
+
+      <!-- CTA + Mobile Menu Button -->
+      <div class="flex items-center gap-3">
+        <a href="#contact"
+          class="hidden md:inline-block rounded-full bg-primary px-5 py-2 text-sm font-bold text-white shadow-md hover:shadow-lg hover:scale-105 transition-all">
+          Book Consultation
+        </a>
+        <button id="menu-btn"
+          class="md:hidden p-2 rounded-md text-gray-700 dark:text-white focus:outline-none transition-transform hover:scale-110"
+          aria-expanded="false" aria-controls="mobile-menu" aria-label="Toggle menu">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu"
+      class="hidden md:hidden bg-white dark:bg-background-dark/95 border-t border-gray-100 dark:border-gray-800">
+      <div class="px-6 py-4 flex flex-col gap-3">
+        <a href="#hero" class="py-2">Home</a>
+        <a href="#about" class="py-2">About</a>
+        <a href="#solutions" class="py-2">Solutions</a>
+        <a href="#contact" class="py-2">Contact</a>
+        <a href="#contact" class="mt-2 inline-block rounded-lg bg-primary px-4 py-2 text-sm font-bold text-white">Book
+          Consultation</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Font Awesome (for icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+
+
+
+
+  <!-- HERO SECTION -->
+  <div id="hero" class="relative w-full overflow-x-hidden group/design-root reveal from-up">
+    <main class="flex h-auto w-full flex-col">
+      <div class="flex-grow">
+        <div class="relative bg-white">
+          <div class="container mx-auto px-4 md:px-8 lg:px-12">
+            <div class="flex items-center pt-16 md:pt-24 lg:py-20">
+              <div class="grid grid-cols-1 gap-8 md:gap-12 lg:grid-cols-12 lg:gap-16">
+                <!-- Left: Headline + CTA -->
+                <div class="flex flex-col items-start justify-center text-left lg:col-span-6">
+                  <h1
+                    class="font-heading text-4xl md:text-5xl font-bold leading-tight tracking-tight text-gray-900 lg:text-6xl">
+                    <span class="">AI</span> & <span class="">Robotics</span> for the Future
+                    of <span class="text-blue-900">Maritime and Industrial
+                      Operations</span>
+                  </h1>
+
+                  <p class="mt-6 text-lg leading-8 text-gray-700">
+                    Cipher4 AI &amp; Robotics fuses artificial intelligence, robotics, and data intelligence
+                    to power the world’s most critical operational sectors,
+                    <span class="font-semibold text-primary">Transport, Logistics, Oil &amp; Gas, and Supply
+                      Chain</span>.
+                  </p>
+
+                  <p class="mt-4 text-lg leading-8 text-gray-700">
+                    From autonomous maritime systems to smart procurement and fleet intelligence platforms,
+                    we build solutions that <span class="font-medium">see, decide, and act</span> in real time.
+                  </p>
+
+                  <div class="mt-10 flex flex-wrap items-center gap-4">
+                    <a href="#solutions"
+                      class="flex h-12 cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-primary px-6 text-base font-bold text-white shadow-lg transition-transform duration-200 hover:scale-105">
+                      Discover Our Solutions
+                    </a>
+
+                    <a href="#contact"
+                      class="flex h-12 cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-gray-300 bg-transparent px-6 text-base font-bold text-gray-800 transition-colors duration-200 hover:bg-gray-50">
+                      Request a Strategic Consultation
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Right: Image -->
+                <div class="flex justify-center lg:justify-end lg:col-span-6 mt-8 lg:mt-16">
+                  <div class="w-[85%] max-w-lg">
+                    <img class="w-full h-auto rounded-lg object-cover " src="assets/OPERATIONS.png"
+                      alt="Futuristic AI-powered robotic system for logistics and transport automation" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+
+  </div>
+
+  <!-- SVG Divider (perfect white match, no line) -->
+  <div class="relative w-full overflow-x-hidden -mb-2 bg-white">
+    <!-- The bg-white ensures the SVG inherits the exact white above -->
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" class="w-full" style="display:block;">
+      <path fill="#1E40AF" fill-opacity="1"
+        d="M0,32L48,53.3C96,75,192,117,288,160C384,203,480,245,576,229.3C672,213,768,139,864,101.3C960,64,1056,64,1152,80C1248,96,1344,128,1392,144L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+      </path>
+    </svg>
+  </div>
+
+
+
+  <!-- ABOUT SECTION -->
+  <div id="about"
+    class="relative w-full flex flex-col overflow-hidden font-display bg-blue-800 group/design-root reveal">
+    <!-- Top Tech Lines Divider -->
+    <div class="absolute top-0 left-0 w-full overflow-hidden pointer-events-none z-10">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"
+        class="w-full h-[120px]">
+        <line x1="0" y1="90" x2="200" y2="0" stroke="#ffffff" stroke-width="4" opacity="0.8" />
+        <line x1="0" y1="100" x2="250" y2="10" stroke="#444444" stroke-width="3" opacity="0.7" />
+        <line x1="0" y1="110" x2="300" y2="20" stroke="#888888" stroke-width="2" opacity="0.5" />
+        <line x1="1200" y1="90" x2="1000" y2="0" stroke="#ffffff" stroke-width="4" opacity="0.8" />
+        <line x1="1200" y1="100" x2="950" y2="10" stroke="#444444" stroke-width="3" opacity="0.7" />
+        <line x1="1200" y1="110" x2="900" y2="20" stroke="#888888" stroke-width="2" opacity="0.5" />
+      </svg>
+    </div>
+
+
+    <!-- Section Content -->
+    <div class="layout-container flex h-full grow flex-col relative z-10">
+      <div class="flex flex-1 justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="layout-content-container flex flex-col max-w-7xl w-full">
+          <div class="w-full grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+            <!-- Left Text: Updated Content -->
+            <div class="md:col-span-6 w-full">
+              <div
+                class="relative bg-primary backdrop-blur-md rounded-2xl shadow-xl border border-white/10 p-8 md:p-10 transition-all duration-300">
+                <h1 class="text-3xl md:text-4xl font-bold font-heading text-white pb-4">
+                  About Cipher4 AI &amp; Robotics Ltd
+                </h1>
+                <p class="text-gray-300 text-base md:text-lg leading-relaxed pb-4">
+                  Cipher4 AI & Robotics Ltd is a forward-thinking technology company dedicated to advancing robotics,
+                  automation, and intelligent software systems, exclusively for the world’s most critical operational
+                  domains: <span class="font-semibold">Transport, Logistics, Oil &amp; Gas, and Supply Chain</span>.
+                </p>
+                <p class="text-gray-300 text-base md:text-lg leading-relaxed pb-4">
+                  We design smart machines, build intelligent digital platforms, and integrate artificial intelligence
+                  to
+                  transform how goods, energy, and commerce move, across road, sea, and air, with real-time visibility,
+                  seamless coordination, and adaptive intelligence.
+                </p>
+                <div class="flex justify-start pt-2">
+                  <a href="index.html">
+                    <button
+                      class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-blue-600 text-white text-base font-bold tracking-wide hover:bg-opacity-90 transition-colors duration-200">
+                      <span class="truncate">Learn More</span>
+                    </button>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <!-- Right Image: Center on mobile, right on desktop -->
+            <div
+              class="md:col-span-6 w-full relative z-20 flex items-stretch justify-center md:justify-end mt-8 md:mt-0">
+              <div class="w-full h-full overflow-hidden shadow-xl/30 m-0 p-0 md:ml-12">
+                <img class="w-full h-full object-cover object-center rounded-2xl shadow-2xl/30"
+                  src="assets/oil-and-gass.jpg"
+                  alt="AI-powered command center for transport, logistics, and supply chain operations" />
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SVG Divider -->
+  <div class="relative w-full overflow-hidden -mb-1 bg-white">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" class="w-full block">
+      <path fill="#1E40AF" fill-opacity="1"
+        d="M0,160L48,170.7C96,181,192,203,288,218.7C384,235,480,245,576,218.7C672,192,768,128,864,128C960,128,1056,192,1152,229.3C1248,267,1344,277,1392,282.7L1440,288L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z">
+      </path>
+    </svg>
+  </div>
+
+  <style>
+    @media (max-width: 640px) {
+      .moon-svg {
+        transform: translateY(30%) scale(0.75);
+        transform-origin: bottom right;
+      }
+    }
+  </style>
+
+
+
+
+  <!-- FOUR STRATEGIC PILLARS – ALTERNATING LEFT/RIGHT -->
+  <div id="pillars" class="relative w-full bg-white py-16 md:py-24 overflow-hidden font-display">
+    <div class="container mx-auto px-4 md:px-8 lg:px-12">
+      <div class="text-center mb-16">
+        <h2 class="font-heading text-3xl md:text-4xl font-bold text-gray-900">
+          Our Strategic Focus Areas
+        </h2>
+      </div>
+
+      <!-- Pillar 1: Transport Technology & Intelligent Mobility Systems (Text Left / Image Right) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center mb-20 reveal from-left">
+        <div class="lg:pr-8">
+          <div class="flex items-center gap-4 mb-6">
+
+            <h3 class="font-heading text-2xl font-bold text-gray-900">Transport Technology &amp; Intelligent Mobility
+              Systems</h3>
+          </div>
+          <p class="text-lg text-gray-700 leading-relaxed mb-4">
+            Cipher4 AI & Robotics delivers advanced digital and robotics-driven solutions that enhance the safety,
+            coordination, and efficiency of Road, Sea, and Air transport operations. Our systems provide real-time
+            visibility, predictive monitoring, and automated communication tools that improve the movement of people,
+            cargo, and mission-critical assets.
+          </p>
+          <p class="text-lg text-gray-700 leading-relaxed mb-4">
+            We develop platforms for fleet tracking, transport scheduling, multi-modal coordination, and smart mobility
+            intelligence, ensuring that every vehicle, vessel, aircraft, and support unit remains connected, monitored,
+            and efficiently managed.
+          </p>
+          <p class="text-base italic text-gray-600">“We do not move the assets, we build the intelligence that keeps
+            them
+            moving.”</p>
+        </div>
+        <div class="flex justify-center">
+          <div class="bg-gray-100 overflow-hidden w-full max-w-3xl rounded-xl">
+            <img src="assets/mobile-tracking.jpg"
+              alt="Digital dashboard showing real-time tracking of ships, trucks, and aircraft across road, sea, and air"
+              class="w-full h-auto object-cover" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Pillar 2: Logistics Technology, Automation & Asset Intelligence (Image Left / Text Right) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center mb-20 reveal from-right">
+        <div class="flex justify-center order-2 lg:order-1">
+          <div class="bg-gray-100 overflow-hidden w-full max-w-3xl rounded-xl">
+            <img src="assets/transport.jpg"
+              alt="Automated port logistics with robotic cranes, cargo tracking, and maritime asset coordination"
+              class="w-full h-auto object-cover" />
+          </div>
+        </div>
+        <div class="lg:pl-8 order-1 lg:order-2">
+          <div class="flex items-center gap-4 mb-6">
+
+            <h3 class="font-heading text-2xl font-bold text-gray-900">Logistics Technology, Automation &amp; Asset
+              Intelligence</h3>
+          </div>
+          <p class="text-lg text-gray-700 leading-relaxed mb-4">
+            Our logistics solutions are engineered for industries where precision and reliability are non-negotiable,
+            especially maritime and oil & gas operations. Cipher4 AI & Robotics builds digital tools and robotic systems
+            that monitor, analyze, and manage operational activities involving vessels, trucks, boats, helicopters,
+            machinery, and other high-value equipment.
+          </p>
+          <p class="text-lg text-gray-700 leading-relaxed mb-4">
+            From automated equipment tracking to digital dispatch systems, cargo visibility platforms, operational
+            dashboards, and logistics robotics, we enable organizations to streamline movement, reduce downtime, and
+            maintain full oversight of their operational environment.
+          </p>
+          <p class="text-base italic text-gray-600">“Every logistics operation needs clarity, our technology delivers
+            it.”</p>
+        </div>
+      </div>
+
+      <!-- Pillar 3: Oil & Gas Technology Enablement & Industrial Robotics (Text Left / Image Right) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center mb-20 reveal from-left">
+        <div class="lg:pr-8">
+          <div class="flex items-center gap-4 mb-6">
+
+            <h3 class="font-heading text-2xl font-bold text-gray-900">Oil &amp; Gas Technology Enablement &amp;
+              Industrial Robotics</h3>
+          </div>
+          <p class="text-lg text-gray-700 leading-relaxed mb-4">
+            Cipher4 AI & Robotics supports the oil & gas industry through intelligent software platforms and robotic
+            systems designed for offshore, onshore, and deep-sea operations. Our solutions enhance exploration
+            workflows, production logistics, marine coordination, personnel movement, and asset readiness.
+          </p>
+          <p class="text-lg text-gray-700 leading-relaxed mb-4">
+            We build systems that monitor offshore vessels, track helicopter operations, support rig-to-shore
+            communication, and automate inspection, reporting, and operational activities. Whether in harsh environments
+            or restricted-access locations, our technology improves safety, awareness, and operational continuity.
+          </p>
+          <p class="text-base italic text-gray-600">“When human access is limited, intelligent systems take the lead.”
+          </p>
+        </div>
+        <div class="flex justify-center">
+          <div class="bg-gray-100 overflow-hidden w-full max-w-3xl rounded-xl">
+            <img src="assets/oil-and-gas1.png"
+              alt="Offshore oil rig with drone inspection, vessel coordination, and digital monitoring systems"
+              class="w-full h-auto object-cover" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Pillar 4: Digital Supply Chain, Procurement & Intelligent Sourcing (Image Left / Text Right) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center reveal from-right">
+        <div class="flex justify-center order-2 lg:order-1">
+          <div class="bg-gray-100 overflow-hidden w-full max-w-3xl">
+            <img src="assets/supply-chain.png" alt="Digital procurement platform"
+              class="w-full h-auto object-contain" />
+          </div>
+
+        </div>
+        <div class="lg:pl-8 order-1 lg:order-2">
+          <div class="flex items-center gap-4 mb-6">
+
+            <h3 class="font-heading text-2xl font-bold text-gray-900">Digital Supply Chain, Procurement &amp;
+              Intelligent Sourcing</h3>
+          </div>
+          <p class="text-lg text-gray-700 leading-relaxed mb-4">
+            We provide technology that transforms procurement, tendering, bidding, supplier management, and supply chain
+            transparency. Cipher4 AI & Robotics develops secure digital procurement platforms, automated tender systems,
+            audit-friendly sourcing tools, and integrated supply chain dashboards built for modern operational demands.
+          </p>
+          <p class="text-lg text-gray-700 leading-relaxed mb-4">
+            Our solutions improve compliance, reduce manual errors, streamline vendor interactions, and support
+            competitive bidding with automated screening, matching, and performance analysis, empowering organizations
+            to
+            make smarter, data-driven procurement decisions.
+          </p>
+          <p class="text-base italic text-gray-600">“Supply chain efficiency begins with intelligent systems—not
+            paperwork.”</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOLUTIONS SECTION – CLEAN & MODERN -->
+  <section id="solutions" class="relative w-full bg-white py-20 md:py-28 overflow-hidden reveal">
+    <div class="container mx-auto px-4 md:px-8 lg:px-12">
+      <!-- Header -->
+      <div class="text-center max-w-4xl mx-auto mb-16">
+        <h1 class="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+          Cipher4 AI &amp; Robotics — Technology That Runs Industry
+        </h1>
+        <p class="mt-6 text-lg text-gray-700 leading-relaxed">
+          We build mission-grade software and robotic systems that turn complex transport, logistics, oil & gas, and
+          supply-chain challenges into predictable outcomes.
+          From deep-sea inspection drones to enterprise procurement intelligence, our solutions are engineered for
+          reliability, safety, and measurable operational gain.
+        </p>
+      </div>
+
+      <!-- What We Deliver -->
+      <div class="bg-primary/5 border border-primary/10 rounded-xl p-6 mb-16 max-w-4xl mx-auto">
+        <h2 class="font-heading text-2xl font-bold text-gray-900 mb-4">What We Deliver</h2>
+        <p class="text-gray-700 mb-4">Practical innovation, deployed. We design, integrate, and support intelligent
+          systems that solve real problems in harsh and highly regulated environments.</p>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-700">
+          <li class="flex items-start gap-2"><span class="text-primary mt-0.5">•</span> <span><strong>End-to-end
+                delivery:</strong> concept → prototype → certified deployment → 24/7 support</span></li>
+          <li class="flex items-start gap-2"><span class="text-primary mt-0.5">•</span> <span><strong>Interoperable
+                design:</strong> integrates with existing fleets, ICS/SCADA, ERP, and maritime communications</span>
+          </li>
+          <li class="flex items-start gap-2"><span class="text-primary mt-0.5">•</span> <span><strong>Industry
+                compliance:</strong> built to meet offshore safety, maritime, and procurement audit standards</span>
+          </li>
+          <li class="flex items-start gap-2"><span class="text-primary mt-0.5">•</span> <span><strong>Measured
+                ROI:</strong> reduced downtime, faster crew turns, fewer manual procurements, verifiable cost
+              savings</span></li>
+        </ul>
+      </div>
+
+      <!-- Capabilities Header -->
+      <div class="text-center mb-12">
+        <h2 class="font-heading text-3xl font-bold text-gray-900">Our Capabilities</h2>
+        <p class="text-gray-600 mt-2">Clear. Concrete. Impactful.</p>
+      </div>
+
+      <!-- 4 Capability Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Card 1: Intelligent Mobility & Fleet Orchestration -->
+        <div
+          class="group bg-blue-50 border border-blue-200 rounded-xl p-7 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
+              <span class="material-symbols-outlined text-lg">directions_bus</span>
+            </div>
+            <h3 class="font-heading text-xl font-bold text-gray-900">Intelligent Mobility &amp; Fleet Orchestration</h3>
+          </div>
+          <p class="text-gray-700 mb-4">
+            We create platforms that make multi-modal transport predictable. Real-time telemetry, deterministic routing,
+            and event orchestration systems give operators the situational awareness to reduce transit time, eliminate
+            blind spots, and respond to incidents before they escalate.
+          </p>
+          <ul class="text-gray-700 text-sm mb-4 space-y-1">
+            <li>• Fleet telemetry for road, sea, and air</li>
+            <li>• Geo-fenced automation and exception workflows</li>
+            <li>• Scheduler + predictive-delay modeling</li>
+          </ul>
+          <p class="text-primary font-medium">Outcome: faster, safer, and auditable transport operations.</p>
+        </div>
+
+        <!-- Card 2: Logistics Orchestration & Asset Visibility -->
+        <div
+          class="group bg-emerald-50 border border-emerald-200 rounded-xl p-7 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-600 text-white">
+              <span class="material-symbols-outlined text-lg">warehouse</span>
+            </div>
+            <h3 class="font-heading text-xl font-bold text-gray-900">Logistics Orchestration &amp; Asset Visibility</h3>
+          </div>
+          <p class="text-gray-700 mb-4">
+            Turn scattered operational data into a single source of truth. Our logistics stack tracks assets (vessels,
+            trucks, workboats, helicopters, heavy equipment) and ties movement to tasks, manifests, and compliance
+            records, all in one pane.
+          </p>
+          <ul class="text-gray-700 text-sm mb-4 space-y-1">
+            <li>• Condition & location tracking for high-value assets</li>
+            <li>• Maintenance triggers and lifecycle management</li>
+            <li>• Load planning and optimized dispatch</li>
+          </ul>
+          <p class="text-emerald-700 font-medium">Outcome: reduced idle time, improved asset utilization, stronger
+            safety oversight.</p>
+        </div>
+
+        <!-- Card 3: Offshore & Field Robotics -->
+        <div
+          class="group bg-amber-50 border border-amber-200 rounded-xl p-7 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-600 text-white">
+              <span class="material-symbols-outlined text-lg">robot</span>
+            </div>
+            <h3 class="font-heading text-xl font-bold text-gray-900">Offshore &amp; Field Robotics</h3>
+          </div>
+          <p class="text-gray-700 mb-4">
+            Robotics designed for environments where failure is not an option. We build rugged inspection drones,
+            remotely operated units, and task-automation tools that collect data, perform routine interventions, and
+            reduce human exposure in hazardous zones.
+          </p>
+          <ul class="text-gray-700 text-sm mb-4 space-y-1">
+            <li>• Remote inspection drones and ROVs</li>
+            <li>• Automated inspection reporting and anomaly detection</li>
+            <li>• Robotics-assisted cargo transfers</li>
+          </ul>
+          <p class="text-amber-700 font-medium">Outcome: faster inspections, fewer stoppages, safer field operations.
+          </p>
+        </div>
+
+        <!-- Card 4: Procurement Intelligence & Digital Supply Chain -->
+        <div
+          class="group bg-violet-50 border border-violet-200 rounded-xl p-7 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-600 text-white">
+              <span class="material-symbols-outlined text-lg">gavel</span>
+            </div>
+            <h3 class="font-heading text-xl font-bold text-gray-900">Procurement Intelligence &amp; Digital Supply Chain
+            </h3>
+          </div>
+          <p class="text-gray-700 mb-4">
+            Procurement becomes strategic when powered by transparent, auditable systems. Our platforms streamline
+            tendering, automate bid comparisons, and maintain a compliant trail that simplifies audits and accelerates
+            sourcing.
+          </p>
+          <ul class="text-gray-700 text-sm mb-4 space-y-1">
+            <li>• Digital tender portals and automated bid matching</li>
+            <li>• Supplier performance scoring and spend analytics</li>
+            <li>• Audit-ready procurement records</li>
+          </ul>
+          <p class="text-violet-700 font-medium">Outcome: lower cycle time, higher vendor performance, reduced risk.</p>
+        </div>
+      </div>
+
+      <!-- Why Choose Cipher4 + CTA -->
+      <div class="mt-20 text-center max-w-4xl mx-auto">
+        <h3 class="font-heading text-2xl font-bold text-gray-900 mb-4">Why Choose Cipher4?</h3>
+        <p class="text-gray-700 mb-6">
+          We combine hardware resilience with enterprise software discipline.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm text-gray-600 mb-8">
+          <div><strong>Built for extremes:</strong> tested for offshore, marine, remote sites</div>
+          <div><strong>Seamless integration:</strong> augments your current stack</div>
+          <div><strong>Operational-first design:</strong> shaped by field operators</div>
+          <div><strong>Sustained support:</strong> SLA-backed, continuous improvement</div>
+        </div>
+        <div class="bg-gray-50 border-l-4 border-primary p-4 inline-block mb-8">
+          <p class="text-lg italic text-gray-800">“Deploy a pilot in 90 days, cut unscheduled downtime by 30% within 12
+            months.”</p>
+        </div>
+        <a href="#contact"
+          class="inline-flex items-center justify-center h-12 px-8 bg-primary text-white font-bold rounded-lg shadow-md hover:bg-opacity-90 transition-all hover:scale-105">
+          Book Consultation
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+
+
+
+
+  <!-- INDUSTRIES CAROUSEL -->
+  <section id="industries" class="relative w-full bg-white py-20 md:py-28 overflow-hidden reveal">
+    <div class="container mx-auto px-4 md:px-8 lg:px-12">
+      <!-- Header -->
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="font-heading text-3xl md:text-4xl font-bold text-gray-900">
+          Transforming Heavy Industries with Purpose-Built Intelligence
+        </h2>
+        <p class="mt-6 text-lg text-gray-700">
+          Cipher4 delivers advanced software and robotic systems engineered specifically for complex, high-risk and
+          asset-driven industries.
+          Our technology strengthens operational control, enhances safety, and drives measurable efficiency where
+          reliability is non-negotiable.
+        </p>
+      </div>
+
+      <!-- Carousel Container -->
+      <div class="relative max-w-4xl mx-auto">
+        <!-- Slides Wrapper -->
+        <div class="relative overflow-hidden rounded-xl bg-gray-50 border border-gray-200">
+          <div id="carousel-slides" class="flex transition-transform duration-500 ease-in-out">
+            <!-- Slide 1: Transport -->
+            <div class="min-w-full p-8 md:p-10">
+              <div class="flex items-start gap-4 mb-6">
+                <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-white">
+                  <span class="material-symbols-outlined text-xl">directions_bus</span>
+                </div>
+                <h3 class="font-heading text-2xl font-bold text-gray-900">Transport Systems &amp; Mobility
+                  Intelligence</h3>
+              </div>
+              <p class="text-gray-700 mb-6">
+                We develop platforms that coordinate the movement of vehicles, vessels, and aircraft with real-time
+                awareness, predictive routing, and automated incident workflows.
+                From land fleets to offshore support craft, we help organizations achieve consistent, transparent, and
+                efficient mobility operations.
+              </p>
+              <h4 class="font-bold text-gray-900 mb-3">What we enable:</h4>
+              <ul class="grid grid-cols-1 md:grid-cols-2 gap-2 text-gray-700">
+                <li class="flex items-start gap-2"><span class="text-primary mt-0.5">•</span> Real-time fleet
+                  visibility</li>
+                <li class="flex items-start gap-2"><span class="text-primary mt-0.5">•</span> Predictive routing &
+                  event automation</li>
+                <li class="flex items-start gap-2"><span class="text-primary mt-0.5">•</span> Safer crew and cargo
+                  movement</li>
+                <li class="flex items-start gap-2"><span class="text-primary mt-0.5">•</span> Full audit trace for
+                  compliance</li>
+              </ul>
+            </div>
+
+            <!-- Slide 2: Logistics -->
+            <div class="min-w-full p-8 md:p-10">
+              <div class="flex items-start gap-4 mb-6">
+                <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-600 text-white">
+                  <span class="material-symbols-outlined text-xl">warehouse</span>
+                </div>
+                <h3 class="font-heading text-2xl font-bold text-gray-900">Industrial &amp; Maritime Logistics
+                  Automation</h3>
+              </div>
+              <p class="text-gray-700 mb-6">
+                Logistics is the heartbeat of every field operation, Cipher4 makes it intelligent.
+                Our systems track high-value assets, synchronize field movements, automate load planning, and ensure
+                every vessel, truck, equipment, or helicopter operates with precision.
+              </p>
+              <h4 class="font-bold text-gray-900 mb-3">What we enable:</h4>
+              <ul class="grid grid-cols-1 md:grid-cols-2 gap-2 text-gray-700">
+                <li class="flex items-start gap-2"><span class="text-emerald-600 mt-0.5">•</span> Real-time asset
+                  tracking</li>
+                <li class="flex items-start gap-2"><span class="text-emerald-600 mt-0.5">•</span> Automated dispatch &
+                  task coordination</li>
+                <li class="flex items-start gap-2"><span class="text-emerald-600 mt-0.5">•</span> Maintenance
+                  lifecycle monitoring</li>
+                <li class="flex items-start gap-2"><span class="text-emerald-600 mt-0.5">•</span> Logistics
+                  intelligence dashboards</li>
+              </ul>
+            </div>
+
+            <!-- Slide 3: Oil & Gas -->
+            <div class="min-w-full p-8 md:p-10">
+              <div class="flex items-start gap-4 mb-6">
+                <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-amber-600 text-white">
+                  <span class="material-symbols-outlined text-xl">energy</span>
+                </div>
+                <h3 class="font-heading text-2xl font-bold text-gray-900">Oil &amp; Gas Robotics &amp; Operational
+                  Support</h3>
+              </div>
+              <p class="text-gray-700 mb-6">
+                Offshore, onshore, and deep-sea operations demand technology built for extremes.
+                We design inspection robots, aerial drones, and field-automation systems that reduce human exposure
+                and keep operations running with accuracy and safety.
+              </p>
+              <h4 class="font-bold text-gray-900 mb-3">What we enable:</h4>
+              <ul class="grid grid-cols-1 md:grid-cols-2 gap-2 text-gray-700">
+                <li class="flex items-start gap-2"><span class="text-amber-600 mt-0.5">•</span> Robotic inspection &
+                  anomaly detection</li>
+                <li class="flex items-start gap-2"><span class="text-amber-600 mt-0.5">•</span> Drone-based monitoring
+                  for remote sites</li>
+                <li class="flex items-start gap-2"><span class="text-amber-600 mt-0.5">•</span> Equipment movement &
+                  task automation</li>
+                <li class="flex items-start gap-2"><span class="text-amber-600 mt-0.5">•</span> Safer offshore &
+                  onshore field operations</li>
+              </ul>
+            </div>
+
+            <!-- Slide 4: Supply Chain -->
+            <div class="min-w-full p-8 md:p-10">
+              <div class="flex items-start gap-4 mb-6">
+                <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-violet-600 text-white">
+                  <span class="material-symbols-outlined text-xl">gavel</span>
+                </div>
+                <h3 class="font-heading text-2xl font-bold text-gray-900">Digital Supply Chain &amp; Procurement
+                  Systems</h3>
+              </div>
+              <p class="text-gray-700 mb-6">
+                Cipher4 brings structure, transparency, and intelligence to supply-chain operations.
+                We digitize procurement cycles, streamline bidding, automate vendor assessments, and ensure every
+                transaction is auditable and strategically aligned.
+              </p>
+              <h4 class="font-bold text-gray-900 mb-3">What we enable:</h4>
+              <ul class="grid grid-cols-1 md:grid-cols-2 gap-2 text-gray-700">
+                <li class="flex items-start gap-2"><span class="text-violet-600 mt-0.5">•</span> Digital tender &
+                  bidding platforms</li>
+                <li class="flex items-start gap-2"><span class="text-violet-600 mt-0.5">•</span> Automated vendor
+                  evaluation</li>
+                <li class="flex items-start gap-2"><span class="text-violet-600 mt-0.5">•</span> Spend intelligence &
+                  compliance tools</li>
+                <li class="flex items-start gap-2"><span class="text-violet-600 mt-0.5">•</span> Transparent
+                  procurement workflows</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Arrows (hidden on mobile) -->
+        <button id="prev-btn" aria-label="Previous sector"
+          class="absolute left-0 top-1/2 -translate-y-1/2 bg-blue-800 hover:bg-blue-600 duration-300  p-2 rounded-full shadow-md hidden md:flex">
+          <span class="material-symbols-outlined text-blue-50">chevron_left</span>
+        </button>
+        <button id="next-btn" aria-label="Next sector"
+          class="absolute right-0 top-1/2 -translate-y-1/2 bg-blue-800 hover:bg-blue-600 duration-300  p-2 rounded-full shadow-md hidden md:flex">
+          <span class="material-symbols-outlined text-blue-50">chevron_right</span>
+        </button>
+
+        <!-- Indicators (Dots) -->
+        <div id="carousel-indicators" class="flex justify-center gap-2 mt-6">
+          <button aria-label="Go to slide 1"
+            class="w-3 h-3 rounded-full bg-primary/40 hover:bg-primary transition"></button>
+          <button aria-label="Go to slide 2"
+            class="w-3 h-3 rounded-full bg-gray-300 hover:bg-gray-500 transition"></button>
+          <button aria-label="Go to slide 3"
+            class="w-3 h-3 rounded-full bg-gray-300 hover:bg-gray-500 transition"></button>
+          <button aria-label="Go to slide 4"
+            class="w-3 h-3 rounded-full bg-gray-300 hover:bg-gray-500 transition"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const slidesContainer = document.getElementById("carousel-slides");
+      const indicators = document.querySelectorAll("#carousel-indicators button");
+      const prevBtn = document.getElementById("prev-btn");
+      const nextBtn = document.getElementById("next-btn");
+      const carouselSection = document.getElementById("industries");
+
+      let currentIndex = 0;
+      const totalSlides = 4;
+      let autoSlideInterval = null;
+      let isAnimating = false; // prevents rapid clicks
+
+      function goToSlide(index) {
+        if (isAnimating) return;
+        isAnimating = true;
+
+        if (index < 0) index = totalSlides - 1;
+        if (index >= totalSlides) index = 0;
+        currentIndex = index;
+
+        slidesContainer.style.transition = "transform 0.6s ease";
+        slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+        // Update indicators
+        indicators.forEach((dot, i) => {
+          dot.classList.toggle("bg-primary/40", i === currentIndex);
+          dot.classList.toggle("bg-gray-300", i !== currentIndex);
+        });
+
+        setTimeout(() => {
+          isAnimating = false;
+        }, 600);
+      }
+
+      function nextSlide() {
+        goToSlide(currentIndex + 1);
+      }
+
+      function startAutoSlide() {
+        stopAutoSlide(); // ensures only one interval exists
+        autoSlideInterval = setInterval(nextSlide, 6000);
+      }
+
+      function stopAutoSlide() {
+        if (autoSlideInterval) {
+          clearInterval(autoSlideInterval);
+          autoSlideInterval = null;
+        }
+      }
+
+      // INDICATOR CLICKS
+      indicators.forEach((dot, i) => {
+        dot.addEventListener("click", () => {
+          goToSlide(i);
+          startAutoSlide(); // safely resets
+        });
+      });
+
+      // BUTTON CONTROLS
+      if (prevBtn && nextBtn) {
+        prevBtn.addEventListener("click", () => {
+          goToSlide(currentIndex - 1);
+          startAutoSlide();
+        });
+
+        nextBtn.addEventListener("click", () => {
+          goToSlide(currentIndex + 1);
+          startAutoSlide();
+        });
+      }
+
+      // AUTO-ROTATION
+      startAutoSlide();
+
+      // PAUSE ON HOVER
+      carouselSection.addEventListener("mouseenter", stopAutoSlide);
+      carouselSection.addEventListener("mouseleave", startAutoSlide);
+    });
+  </script>
+
+
+  <!-- THE CIPHER4 ADVANTAGE – WITH IMAGES -->
+  <section id="advantage" class="relative w-full bg-white py-20 md:py-28 overflow-hidden reveal">
+    <div class="container mx-auto px-4 md:px-8 lg:px-12">
+      <!-- Header -->
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="font-heading text-3xl md:text-4xl font-bold text-gray-900">
+          The Cipher4 Advantage
+        </h2>
+        <p class="mt-4 text-lg text-gray-700">
+          Why forward-thinking organizations trust Cipher4 to power their next leap in automation, intelligence, and
+          innovation.
+        </p>
+      </div>
+
+      <!-- Advantage Cards Grid -->
+      <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <!-- Card 1: Cross-Disciplinary Engineering Excellence -->
+        <div
+          class="flex flex-col bg-gray-50 rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <div class="h-40 overflow-hidden">
+            <img src="assets/Engineering-Excellence.jpg"
+              alt="Robotics engineers and AI researchers collaborating in a lab" class="w-full h-full object-cover" />
+          </div>
+          <div class="p-6 flex-grow">
+            <div class="text-primary mb-2">
+              <span class="material-symbols-outlined !text-2xl">psychology</span>
+            </div>
+            <h3 class="font-heading text-lg font-bold text-gray-900 mb-3">Cross-Disciplinary Engineering Excellence
+            </h3>
+            <p class="text-gray-700 text-sm leading-relaxed">
+              Our team blends robotics engineering, AI research, software development, and hardware design into one
+              unified capability.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 2: Solutions Built Around Your Real Operational Needs -->
+        <div
+          class="flex flex-col bg-gray-50 rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <div class="h-40 overflow-hidden">
+            <img src="assets/operational-needs.jpg" alt="Field team analyzing logistics workflow with digital tablet"
+              class="w-full h-full object-cover" />
+          </div>
+          <div class="p-6 flex-grow">
+            <div class="text-primary mb-2">
+              <span class="material-symbols-outlined !text-2xl">tune</span>
+            </div>
+            <h3 class="font-heading text-lg font-bold text-gray-900 mb-3">Solutions Built Around Your Real Operational
+              Needs</h3>
+            <p class="text-gray-700 text-sm leading-relaxed">
+              We analyze workflows and constraints before engineering, delivering systems that integrate smoothly and
+              meet global standards.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 3: End-to-End Lifecycle Support -->
+        <div
+          class="flex flex-col bg-gray-50 rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <div class="h-40 overflow-hidden">
+            <img src="assets/support.jpg" alt="Technical support team monitoring robotic systems remotely"
+              class="w-full h-full object-cover" />
+          </div>
+          <div class="p-6 flex-grow">
+            <div class="text-primary mb-2">
+              <span class="material-symbols-outlined !text-2xl">support_agent</span>
+            </div>
+            <h3 class="font-heading text-lg font-bold text-gray-900 mb-3">End-to-End Lifecycle Support</h3>
+            <p class="text-gray-700 text-sm leading-relaxed">
+              From design to long-term maintenance, we stay with you, ensuring systems stay optimized, secure, and
+              improving.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 4: Future-Ready & Scalable Architecture -->
+        <div
+          class="flex flex-col bg-gray-50 rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <div class="h-40 overflow-hidden">
+            <img src="assets/future-tech.jpg" alt="Modular AI platform architecture with expandable nodes"
+              class="w-full h-full object-cover" />
+          </div>
+          <div class="p-6 flex-grow">
+            <div class="text-primary mb-2">
+              <span class="material-symbols-outlined !text-2xl">hub</span>
+            </div>
+            <h3 class="font-heading text-lg font-bold text-gray-900 mb-3">Future-Ready &amp; Scalable Architecture
+            </h3>
+            <p class="text-gray-700 text-sm leading-relaxed">
+              Built on modular frameworks, adopt new features, integrate hardware, and scale operations without
+              disruption.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 5: Security & Reliability at the Core -->
+        <div
+          class="flex flex-col bg-gray-50 rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <div class="h-40 overflow-hidden">
+            <img src="assets/ssecurity.jpg" alt="Cybersecurity and safety protocols for industrial robotics"
+              class="w-full h-full object-cover" />
+          </div>
+          <div class="p-6 flex-grow">
+            <div class="text-primary mb-2">
+              <span class="material-symbols-outlined !text-2xl">lock</span>
+            </div>
+            <h3 class="font-heading text-lg font-bold text-gray-900 mb-3">Security &amp; Reliability at the Core</h3>
+            <p class="text-gray-700 text-sm leading-relaxed">
+              We prioritize safety, cybersecurity, and resilience to protect your business from downtime and risk.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+    <path fill="#1E2B5C" fill-opacity="1"
+      d="M0,288L0,160L288,160L288,128L576,128L576,32L864,32L864,96L1152,96L1152,96L1440,96L1440,320L1152,320L1152,320L864,320L864,320L576,320L576,320L288,320L288,320L0,320L0,320Z">
+    </path>
+  </svg>
+  <!-- CTA BANNER -->
+  <div id="contact" class="w-full bg-[#1E2B5C] reveal">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="@container">
+        <div class="flex flex-col items-center justify-center gap-6 py-16 text-center @[480px]:gap-8 @[480px]:py-20">
+          <div class="flex flex-col gap-4">
+            <h2 class="font-heading text-4xl font-bold tracking-tight text-white sm:text-5xl">
+              Ready to Transform Your Operations?
+            </h2>
+            <p class="mx-auto max-w-3xl text-lg leading-8 text-slate-200">
+              Unlock the power of automation, robotics, and AI with Cipher4 AI &amp; Robotics Ltd. Whether you're
+              modernizing your workflow, improving efficiency, or building next-generation systems, our experts are
+              ready to guide you from strategy to deployment.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT SECTION -->
+  <section class="relative w-full py-20 bg-[#1E2B5C] overflow-hidden">
+    <div class="absolute inset-0 bg-[#1E2B5C]"></div>
+
+    <div class="container mx-auto px-6 md:px-8 lg:px-12 relative z-10">
+      <!-- Heading -->
+      <div class="flex flex-col max-w-4xl mx-auto text-center">
+        <h2 class="font-heading text-4xl md:text-5xl font-bold text-[#F0F0F0]">
+          Let’s Build the Future Together
+        </h2>
+        <p class="mt-4 text-lg text-[#BCC2D9] max-w-2xl mx-auto">
+          Have a project in mind? Need a custom automation solution?
+          Our engineers, innovators, and consultants are here to support you every step of the way, from exploration
+          to full implementation.
+        </p>
+      </div>
+
+      <!-- Sub-heading above form -->
+      <div class="mt-12 text-center max-w-2xl mx-auto">
+        <p class="text-slate-200 text-lg font-medium">
+          Get In Touch
+        </p>
+        <p class="mt-2 text-[#BCC2D9]">
+          Connect with us for partnerships, consultations, or inquiries about our cutting-edge solutions. We’re ready
+          when you are.
+        </p>
+      </div>
+
+      <!-- Content Grid -->
+      <div class="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+        <!-- Form Card -->
+        <div class="rounded-xl bg-white/10 backdrop-blur-lg border border-white/20 p-8 shadow-lg">
+          <form action="#" method="POST" class="flex flex-col gap-6">
+            <!-- Name & Email -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
+              <label class="flex flex-col">
+                <p class="text-[#F0F0F0] text-sm font-medium pb-2">Full Name</p>
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-3 top-3 text-[#a2a5b4]">person</span>
+                  <input type="text" placeholder="Enter your full name"
+                    class="pl-10 w-full h-12 rounded-lg border border-white/20 bg-white/5 text-white placeholder:text-[#a2a5b4] focus:outline-none focus:ring-2 focus:ring-[#00BFFF] transition-all duration-300" />
+                </div>
+              </label>
+              <label class="flex flex-col">
+                <p class="text-[#F0F0F0] text-sm font-medium pb-2">Email Address</p>
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-3 top-3 text-[#a2a5b4]">mail</span>
+                  <input type="email" placeholder="Enter your email"
+                    class="pl-10 w-full h-12 rounded-lg border border-white/20 bg-white/5 text-white placeholder:text-[#a2a5b4] focus:outline-none focus:ring-2 focus:ring-[#00BFFF] transition-all duration-300" />
+                </div>
+              </label>
+            </div>
+
+            <!-- Subject -->
+            <label class="flex flex-col">
+              <p class="text-[#F0F0F0] text-sm font-medium pb-2">Subject</p>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-3 text-[#a2a5b4]">topic</span>
+                <input type="text" placeholder="What is this about?"
+                  class="pl-10 w-full h-12 rounded-lg border border-white/20 bg-white/5 text-white placeholder:text-[#a2a5b4] focus:outline-none focus:ring-2 focus:ring-[#00BFFF] transition-all duration-300" />
+              </div>
+            </label>
+
+            <!-- Message -->
+            <label class="flex flex-col">
+              <p class="text-[#F0F0F0] text-sm font-medium pb-2">Message</p>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-4 text-[#a2a5b4]">edit_note</span>
+                <textarea placeholder="Type your message here..."
+                  class="pl-10 w-full min-h-36 rounded-lg border border-white/20 bg-white/5 text-white placeholder:text-[#a2a5b4] focus:outline-none focus:ring-2 focus:ring-[#00BFFF] p-4 transition-all duration-300"></textarea>
+              </div>
+            </label>
+
+            <!-- Submit Button -->
+            <button type="submit"
+              class="w-full flex items-center justify-center gap-2 rounded-lg bg-[#00BFFF] text-black h-12 px-6 text-base font-bold leading-normal transition-all duration-300 hover:bg-opacity-90 hover:shadow-[0_0_25px_rgba(0,191,255,0.6)] active:scale-95">
+              Send Message
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="flex flex-col gap-8 justify-center">
+          <div class="space-y-6">
+            <div class="flex items-start gap-4">
+              <span class="material-symbols-outlined text-3xl text-[#00BFFF] mt-1">location_on</span>
+              <div>
+                <h4 class="font-bold text-[#F0F0F0]">Address</h4>
+                <p class="text-[#BCC2D9]">Lagos</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <span class="material-symbols-outlined text-3xl text-[#00BFFF] mt-1">call</span>
+              <div>
+                <h4 class="font-bold text-[#F0F0F0]">Phone</h4>
+                <p class="text-[#BCC2D9]">+234 908 622 3063</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <span class="material-symbols-outlined text-3xl text-[#00BFFF] mt-1">mail</span>
+              <div>
+                <h4 class="font-bold text-[#F0F0F0]">Email</h4>
+                <p class="text-[#BCC2D9]">contact@cipher4.com</p>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- FOOTER -->
+  <div class="flex w-full flex-col bg-background-light dark:bg-background-dark font-display"
+    style="font-family: 'Inter', sans-serif;">
+    <div class="flex-grow"></div>
+    <footer class="w-full bg-[#111827] text-white">
+      <div class="mx-auto max-w-7xl px-6 md:px-8 lg:px-12 py-12 sm:px-12">
+        <div class="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-8">
+          <div class="col-span-1 md:col-span-5">
+            <h3 class="font-heading text-lg font-semibold text-gray-100" style="font-family: 'Montserrat', sans-serif;">
+              Quick Links</h3>
+            <ul class="mt-4 space-y-3 text-sm">
+              <li><a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline"
+                  href="about">About</a></li>
+              <li><a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline"
+                  href="#solutions">Solutions</a></li>
+              <li><a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline"
+                  href="#">Industries</a></li>
+              <li><a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline"
+                  href="#">Academy</a></li>
+              <li><a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline"
+                  href="#contact">Contact</a></li>
+            </ul>
+          </div>
+          <div class="col-span-1 md:col-span-4">
+            <h3 class="font-heading text-lg font-semibold text-gray-100" style="font-family: 'Montserrat', sans-serif;">
+              Contact</h3>
+            <ul class="mt-4 space-y-3 text-sm">
+              <li class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-gray-400">mail</span>
+                <a class="text-gray-300 transition-colors duration-300 hover:text-primary hover:underline"
+                  href="mailto:info@cipher4.ai">contact@cipher4.com</a>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="material-symbols-outlined text-gray-400 mt-1">location_on</span>
+                <span class="text-gray-300">Lagos Nigeria</span>
+              </li>
+            </ul>
+          </div>
+          <div class="col-span-1 md:col-span-3">
+            <h3 class="font-heading text-lg font-semibold text-gray-100" style="font-family: 'Montserrat', sans-serif;">
+              Social</h3>
+            <div class="mt-4 flex gap-5">
+              <a class="text-gray-300 transition-colors duration-300 hover:text-primary" href="#">
+                <span class="sr-only">LinkedIn</span>
+                <svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.25 6.5 1.75 1.75 0 016.5 8.25zM19 19h-3v-4.75c0-1.4-1.2-2.5-2.5-2.5S11 12.85 11 14.25V19h-3v-9h2.9v1.3a3.11 3.11 0 012.6-1.4c2.5 0 4.5 2.2 4.5 5.1z">
+                  </path>
+                </svg>
+              </a>
+              <a class="text-gray-300 transition-colors duration-300 hover:text-primary" href="#">
+                <span class="sr-only">X (Twitter)</span>
+                <svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z">
+                  </path>
+                </svg>
+              </a>
+              <a class="text-gray-300 transition-colors duration-300 hover:text-primary" href="#">
+                <span class="sr-only">YouTube</span>
+                <svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path clip-rule="evenodd"
+                    d="M19.812 5.418c.861.23 1.538.907 1.768 1.768C21.998 8.746 22 12 22 12s0 3.255-.418 4.814a2.506 2.506 0 0 1-1.768 1.768c-1.56.419-7.814.419-7.814.419s-6.255 0-7.814-.419a2.505 2.505 0 0 1-1.768-1.768C2 15.255 2 12 2 12s0-3.255.417-4.814a2.507 2.507 0 0 1 1.768-1.768C5.744 5 11.998 5 11.998 5s6.255 0 7.814.418ZM15.194 12 10 15.198V8.802z"
+                    fill-rule="evenodd"></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="mt-8 border-t border-gray-700 pt-6">
+          <p class="text-center text-sm text-gray-400">© 2025 Cipher4 AI &amp; Robotics Ltd. All Rights Reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Add script for reveal-on-scroll and mobile menu toggle -->
+  <script>
+    // Mobile menu toggle (unchanged behavior, kept minimal)
+    (function () {
+      const menuBtn = document.getElementById('menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (menuBtn && mobileMenu) {
+        menuBtn.addEventListener('click', () => {
+          mobileMenu.classList.toggle('hidden');
+          const expanded = !mobileMenu.classList.contains('hidden');
+          menuBtn.setAttribute('aria-expanded', String(expanded));
+        });
+
+        mobileMenu.querySelectorAll('a[href^="#"]').forEach(a => {
+          a.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+            menuBtn.setAttribute('aria-expanded', 'false');
+          });
+        });
+      }
+
+      document.querySelectorAll('nav a[href^="#"]').forEach(a => {
+        a.addEventListener('click', () => {
+          if (mobileMenu) mobileMenu.classList.add('hidden');
+          if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+        });
+      });
+    })();
+
+    // Improved reveal-on-scroll (directional, lightweight, staggered)
+    (function () {
+      const reveals = Array.from(document.querySelectorAll('.reveal'));
+      if (!reveals.length) return;
+
+      // Quick helper: determine entry direction based on element geometry
+      function chooseDirection(el) {
+        try {
+          const rect = el.getBoundingClientRect();
+          const vw = window.innerWidth || document.documentElement.clientWidth;
+          const elCenterX = rect.left + rect.width / 2;
+          const wideThreshold = vw * 0.75;
+
+          // If element is very wide (likely full-width section) -> use up
+          if (rect.width >= wideThreshold) return 'from-up';
+          // left-of-center -> from-left, right-of-center -> from-right, else up
+          if (elCenterX < vw * 0.45) return 'from-left';
+          if (elCenterX > vw * 0.55) return 'from-right';
+          return 'from-up';
+        } catch (e) {
+          return 'from-up';
+        }
+      }
+
+      // set small staggered delay and appropriate initial direction
+      reveals.forEach((el, i) => {
+        // don't override if author already set a direction class
+        if (!el.classList.contains('from-left') && !el.classList.contains('from-right') && !el.classList.contains('from-up')) {
+          el.classList.add(chooseDirection(el));
+        }
+        // set a tiny stagger so groups feel natural
+        el.style.setProperty('--delay', `${Math.min(i * 80, 320)}ms`);
+      });
+
+      if (!('IntersectionObserver' in window)) {
+        // fallback: reveal immediately
+        reveals.forEach(el => el.classList.add('revealed'));
+        return;
+      }
+
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const el = entry.target;
+          if (entry.isIntersecting) {
+            // show
+            el.classList.add('revealed');
+            el.classList.remove('exited');
+            // once revealed, unobserve to reduce work
+            io.unobserve(el);
+          } else {
+            // mark as partially left so CSS can slightly offset position
+            // decide exit direction based on where it left viewport
+            const top = entry.boundingClientRect.top;
+            el.dataset.exit = (top < 0) ? 'up' : 'down';
+            // add exited state (won't block re-entry if page scrolls back quickly)
+            el.classList.add('exited');
+          }
+        });
+      }, { root: null, rootMargin: '0px 0px -12% 0px', threshold: [0, 0.12, 0.2] });
+
+      // Observe; use a tiny delay to allow layout to settle
+      requestAnimationFrame(() => {
+        reveals.forEach(el => io.observe(el));
+      });
+    })();
+  </script>
+</body>
+
+</html>
