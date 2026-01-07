@@ -785,231 +785,314 @@
             </div>
           </div>
         </div>
+
+        <!-- Navigation Arrows (hidden on mobile) -->
+        <button id="prev-btn" aria-label="Previous sector"
+          class="absolute left-0 top-1/2 -translate-y-1/2 bg-blue-800 hover:bg-blue-600 duration-300  p-2 rounded-full shadow-md hidden md:flex">
+          <span class="material-symbols-outlined text-blue-50">chevron_left</span>
+        </button>
+        <button id="next-btn" aria-label="Next sector"
+          class="absolute right-0 top-1/2 -translate-y-1/2 bg-blue-800 hover:bg-blue-600 duration-300  p-2 rounded-full shadow-md hidden md:flex">
+          <span class="material-symbols-outlined text-blue-50">chevron_right</span>
+        </button>
+
+        <!-- Indicators (Dots) -->
+        <div id="carousel-indicators" class="flex justify-center gap-2 mt-6">
+          <button aria-label="Go to slide 1"
+            class="w-3 h-3 rounded-full bg-primary/40 hover:bg-primary transition"></button>
+          <button aria-label="Go to slide 2"
+            class="w-3 h-3 rounded-full bg-gray-300 hover:bg-gray-500 transition"></button>
+          <button aria-label="Go to slide 3"
+            class="w-3 h-3 rounded-full bg-gray-300 hover:bg-gray-500 transition"></button>
+          <button aria-label="Go to slide 4"
+            class="w-3 h-3 rounded-full bg-gray-300 hover:bg-gray-500 transition"></button>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- ENTERPRISE TECHNOLOGY SUPPLY SECTION -->
-  <section id="technology-supply" class="relative w-full bg-gradient-to-b from-white to-gray-50 py-20 md:py-28 overflow-hidden reveal">
+
+
+  <!-- THE CIPHER4 ADVANTAGE – WITH IMAGES -->
+  <section id="advantage" class="relative w-full bg-white py-20 md:py-28 overflow-hidden reveal">
     <div class="container mx-auto px-4 md:px-8 lg:px-12">
       <!-- Header -->
-      <div class="text-center max-w-4xl mx-auto mb-16">
-        <h2 class="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900">
-          Enterprise Technology Supply, Hardware Deployment &amp; Systems Configuration
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="font-heading text-3xl md:text-4xl font-bold text-gray-900">
+          The Cipher4 Advantage
         </h2>
-        <p class="mt-6 text-lg text-gray-700 leading-relaxed">
-          Complete technology delivery — from devices to fully operational systems.
-        </p>
-        <p class="mt-4 text-base text-gray-600">
-          Cipher4 AI & Robotics provides end-to-end sourcing, supply, installation, and configuration of enterprise
-          technology hardware and software for organizations operating across transport, logistics, maritime, oil &amp;
-          gas, and industrial environments.
-        </p>
-        <p class="mt-4 text-base text-gray-600">
-          We supply laptops, workstations, servers, networking equipment, and specialized industrial devices, install
-          all required software, configure systems to operational standards, and integrate everything into a secure,
-          reliable, and scalable technology environment.
+        <p class="mt-4 text-lg text-gray-700">
+          Why forward-thinking organizations trust Cipher4 to power their next leap in automation, intelligence, and
+          innovation.
         </p>
       </div>
 
-      <!-- Main Content Grid -->
-      <div class="max-w-6xl mx-auto">
-        <!-- Section 1: What We Supply & Deploy -->
-        <div class="mb-16">
-          <h3 class="font-heading text-2xl md:text-3xl font-bold text-gray-900 mb-10 flex items-center gap-3">
-            <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
-              <i class="fas fa-cube text-lg"></i>
-            </span>
-            What We Supply &amp; Deploy
-          </h3>
-
-          <!-- Supply Categories Grid -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Card 1: End-User & Office Technology -->
-            <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all">
-              <div class="flex items-center gap-3 mb-4">
-                <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
-                  <i class="fas fa-laptop text-lg"></i>
-                </div>
-                <h4 class="font-heading text-lg font-bold text-gray-900">End-User &amp; Office Technology</h4>
-              </div>
-              <p class="text-gray-700 text-sm mb-4">
-                We supply and configure everyday operational and executive technology used across offices, control
-                rooms, and field locations.
-              </p>
-              <ul class="text-gray-700 text-sm space-y-2 mb-4">
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>Laptops and desktop computers (standard, rugged, and high-performance)</span></li>
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>Workstations for engineering, monitoring, and analytics</span></li>
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>Printers, scanners, and peripheral devices</span></li>
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>Collaboration and communication tools</span></li>
-              </ul>
-              <p class="text-sm italic text-gray-600 border-t border-gray-100 pt-4">
-                Delivered ready-to-use, fully configured.
-              </p>
+      <!-- Advantage Cards Grid -->
+      <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <!-- Card 1: Cross-Disciplinary Engineering Excellence -->
+        <div
+          class="flex flex-col bg-gray-50 rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <div class="h-40 overflow-hidden">
+            <img src="assets/Engineering-Excellence.jpg"
+              alt="Robotics engineers and AI researchers collaborating in a lab" class="w-full h-full object-cover" />
+          </div>
+          <div class="p-6 flex-grow">
+            <div class="text-primary mb-2">
+              <span class="material-symbols-outlined !text-2xl">psychology</span>
             </div>
-
-            <!-- Card 2: Enterprise & Industrial IT Infrastructure -->
-            <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all">
-              <div class="flex items-center gap-3 mb-4">
-                <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600">
-                  <i class="fas fa-server text-lg"></i>
-                </div>
-                <h4 class="font-heading text-lg font-bold text-gray-900">Enterprise &amp; Industrial IT Infrastructure</h4>
-              </div>
-              <p class="text-gray-700 text-sm mb-4">
-                We design and deploy resilient infrastructure built for uptime and operational continuity.
-              </p>
-              <ul class="text-gray-700 text-sm space-y-2 mb-4">
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>Servers (on-premise and hybrid)</span></li>
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>Storage systems and backup solutions</span></li>
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>Network equipment (routers, switches, firewalls, access points)</span></li>
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>Satellite, radio, and long-range communication systems</span></li>
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>Industrial computers and edge devices</span></li>
-              </ul>
-              <p class="text-sm italic text-gray-600 border-t border-gray-100 pt-4">
-                Built for harsh, remote, and mission-critical environments.
-              </p>
-            </div>
-
-            <!-- Card 3: Software Installation & Configuration -->
-            <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all">
-              <div class="flex items-center gap-3 mb-4">
-                <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100 text-purple-600">
-                  <i class="fas fa-cogs text-lg"></i>
-                </div>
-                <h4 class="font-heading text-lg font-bold text-gray-900">Software Installation &amp; Configuration</h4>
-              </div>
-              <p class="text-gray-700 text-sm mb-4">
-                Every device is delivered with the right software stack, properly installed, licensed, and secured.
-              </p>
-              <ul class="text-gray-700 text-sm space-y-2 mb-4">
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>Operating systems and enterprise security tools</span></li>
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>Fleet management and asset tracking software</span></li>
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>Operations dashboards and control platforms</span></li>
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>Procurement, logistics, and supply chain systems</span></li>
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>ERP, SCADA, and third-party system integration</span></li>
-              </ul>
-              <p class="text-sm italic text-gray-600 border-t border-gray-100 pt-4">
-                Technology aligned to real operational workflows.
-              </p>
-            </div>
+            <h3 class="font-heading text-lg font-bold text-gray-900 mb-3">Cross-Disciplinary Engineering Excellence
+            </h3>
+            <p class="text-gray-700 text-sm leading-relaxed">
+              Our team blends robotics engineering, AI research, software development, and hardware design into one
+              unified capability.
+            </p>
           </div>
         </div>
 
-        <!-- Section 2: On-Site Installation & Training -->
-        <div class="mb-16 bg-primary/5 border border-primary/10 rounded-xl p-8 md:p-10">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Column 1: On-Site Installation -->
-            <div>
-              <h4 class="font-heading text-xl font-bold text-gray-900 mb-4 flex items-center gap-3">
-                <i class="fas fa-tools text-primary text-lg"></i>
-                On-Site Installation &amp; Commissioning
-              </h4>
-              <p class="text-gray-700 text-sm mb-4">
-                Our engineers handle physical setup and digital commissioning across offices, terminals, vessels,
-                yards, and offshore locations.
-              </p>
-              <ul class="text-gray-700 text-sm space-y-2">
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>Hardware deployment and cabling</span></li>
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>Network design and system connectivity</span></li>
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>Device commissioning and system validation</span></li>
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>Integration with existing infrastructure</span></li>
-              </ul>
-              <p class="text-sm italic text-gray-600 mt-4 border-t border-primary/20 pt-4">
-                No vendor confusion. One accountable partner.
-              </p>
+        <!-- Card 2: Solutions Built Around Your Real Operational Needs -->
+        <div
+          class="flex flex-col bg-gray-50 rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <div class="h-40 overflow-hidden">
+            <img src="assets/operational-needs.jpg" alt="Field team analyzing logistics workflow with digital tablet"
+              class="w-full h-full object-cover" />
+          </div>
+          <div class="p-6 flex-grow">
+            <div class="text-primary mb-2">
+              <span class="material-symbols-outlined !text-2xl">tune</span>
             </div>
-
-            <!-- Column 2: Training & Support -->
-            <div>
-              <h4 class="font-heading text-xl font-bold text-gray-900 mb-4 flex items-center gap-3">
-                <i class="fas fa-graduation-cap text-primary text-lg"></i>
-                Training, Support &amp; Lifecycle Management
-              </h4>
-              <p class="text-gray-700 text-sm mb-4">
-                We ensure smooth adoption and long-term reliability.
-              </p>
-              <ul class="text-gray-700 text-sm space-y-2">
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>User and administrator training</span></li>
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>Documentation and system handover</span></li>
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>Preventive maintenance and upgrades</span></li>
-                <li class="flex items-start gap-2"><i class="fas fa-check text-primary mt-0.5"></i> <span>SLA-backed support and monitoring</span></li>
-              </ul>
-              <p class="text-sm italic text-gray-600 mt-4 border-t border-primary/20 pt-4">
-                Technology that stays productive, not abandoned.
-              </p>
-            </div>
+            <h3 class="font-heading text-lg font-bold text-gray-900 mb-3">Solutions Built Around Your Real Operational
+              Needs</h3>
+            <p class="text-gray-700 text-sm leading-relaxed">
+              We analyze workflows and constraints before engineering, delivering systems that integrate smoothly and
+              meet global standards.
+            </p>
           </div>
         </div>
 
-        <!-- Section 3: Why Choose Cipher4 -->
-        <div class="bg-white rounded-xl border border-gray-200 p-8 md:p-10">
-          <h3 class="font-heading text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
-            <i class="fas fa-star text-primary text-xl"></i>
-            Why Choose Cipher4?
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="flex items-start gap-4">
-              <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary flex-shrink-0 mt-1">
-                <i class="fas fa-check text-sm"></i>
-              </div>
-              <div>
-                <h4 class="font-semibold text-gray-900">One Partner for Everything</h4>
-                <p class="text-gray-700 text-sm mt-1">Laptops, devices, software, and infrastructure in one unified delivery</p>
-              </div>
-            </div>
-            <div class="flex items-start gap-4">
-              <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary flex-shrink-0 mt-1">
-                <i class="fas fa-check text-sm"></i>
-              </div>
-              <div>
-                <h4 class="font-semibold text-gray-900">Vendor-Neutral Procurement</h4>
-                <p class="text-gray-700 text-sm mt-1">We source what fits your needs, not what vendors push</p>
-              </div>
-            </div>
-            <div class="flex items-start gap-4">
-              <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary flex-shrink-0 mt-1">
-                <i class="fas fa-check text-sm"></i>
-              </div>
-              <div>
-                <h4 class="font-semibold text-gray-900">Regulated Environment Experience</h4>
-                <p class="text-gray-700 text-sm mt-1">Proven expertise in high-risk and compliance-heavy sectors</p>
-              </div>
-            </div>
-            <div class="flex items-start gap-4">
-              <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary flex-shrink-0 mt-1">
-                <i class="fas fa-check text-sm"></i>
-              </div>
-              <div>
-                <h4 class="font-semibold text-gray-900">Seamless Integration</h4>
-                <p class="text-gray-700 text-sm mt-1">Works with your existing systems without disruption</p>
-              </div>
-            </div>
-            <div class="flex items-start gap-4">
-              <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary flex-shrink-0 mt-1">
-                <i class="fas fa-check text-sm"></i>
-              </div>
-              <div>
-                <h4 class="font-semibold text-gray-900">Long-Term Support</h4>
-                <p class="text-gray-700 text-sm mt-1">Accountability and continuous support beyond deployment</p>
-              </div>
-            </div>
+        <!-- Card 3: End-to-End Lifecycle Support -->
+        <div
+          class="flex flex-col bg-gray-50 rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <div class="h-40 overflow-hidden">
+            <img src="assets/support.jpg" alt="Technical support team monitoring robotic systems remotely"
+              class="w-full h-full object-cover" />
           </div>
+          <div class="p-6 flex-grow">
+            <div class="text-primary mb-2">
+              <span class="material-symbols-outlined !text-2xl">support_agent</span>
+            </div>
+            <h3 class="font-heading text-lg font-bold text-gray-900 mb-3">End-to-End Lifecycle Support</h3>
+            <p class="text-gray-700 text-sm leading-relaxed">
+              From design to long-term maintenance, we stay with you, ensuring systems stay optimized, secure, and
+              improving.
+            </p>
+          </div>
+        </div>
 
-          <!-- Quote -->
-          <div class="mt-10 p-6 bg-gradient-to-r from-primary/10 to-blue-50 rounded-lg border-l-4 border-primary">
-            <p class="text-lg italic text-gray-900 font-medium">
-              "From laptops on desks to systems running offshore — we make technology work."
+        <!-- Card 4: Future-Ready & Scalable Architecture -->
+        <div
+          class="flex flex-col bg-gray-50 rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <div class="h-40 overflow-hidden">
+            <img src="assets/future-tech.jpg" alt="Modular AI platform architecture with expandable nodes"
+              class="w-full h-full object-cover" />
+          </div>
+          <div class="p-6 flex-grow">
+            <div class="text-primary mb-2">
+              <span class="material-symbols-outlined !text-2xl">hub</span>
+            </div>
+            <h3 class="font-heading text-lg font-bold text-gray-900 mb-3">Future-Ready &amp; Scalable Architecture
+            </h3>
+            <p class="text-gray-700 text-sm leading-relaxed">
+              Built on modular frameworks, adopt new features, integrate hardware, and scale operations without
+              disruption.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 5: Security & Reliability at the Core -->
+        <div
+          class="flex flex-col bg-gray-50 rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <div class="h-40 overflow-hidden">
+            <img src="assets/ssecurity.jpg" alt="Cybersecurity and safety protocols for industrial robotics"
+              class="w-full h-full object-cover" />
+          </div>
+          <div class="p-6 flex-grow">
+            <div class="text-primary mb-2">
+              <span class="material-symbols-outlined !text-2xl">lock</span>
+            </div>
+            <h3 class="font-heading text-lg font-bold text-gray-900 mb-3">Security &amp; Reliability at the Core</h3>
+            <p class="text-gray-700 text-sm leading-relaxed">
+              We prioritize safety, cybersecurity, and resilience to protect your business from downtime and risk.
             </p>
           </div>
         </div>
       </div>
     </div>
   </section>
+  <!-- ENTERPRISE TECHNOLOGY SUPPLY & DEPLOYMENT -->
+  <section id="enterprise-tech" class="relative w-full bg-white py-20 md:py-28 overflow-hidden reveal">
+    <div class="container mx-auto px-4 md:px-8 lg:px-12">
+      <!-- Header -->
+      <div class="text-center max-w-4xl mx-auto mb-16">
+        <h2 class="font-heading text-3xl md:text-4xl font-bold text-gray-900">
+          Enterprise Technology Supply, Hardware Deployment &amp; Systems Configuration
+        </h2>
+        <p class="mt-6 text-lg text-gray-700 leading-relaxed">
+          Complete technology delivery — from devices to fully operational systems.
+        </p>
+      </div>
 
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#1E2B5C" fill-opacity="1"
+      <!-- Intro Paragraph -->
+      <div class="max-w-5xl mx-auto mb-16 bg-primary/5 border border-primary/10 rounded-xl p-6">
+        <p class="text-gray-800">
+          Cipher4 AI &amp; Robotics provides end-to-end sourcing, supply, installation, and configuration of enterprise
+          technology hardware and software for organizations operating across transport, logistics, maritime, oil &amp;
+          gas, and industrial environments.
+        </p>
+        <p class="mt-3 text-gray-800">
+          We supply laptops, workstations, servers, networking equipment, and specialized industrial devices, install
+          all required software, configure systems to operational standards, and integrate everything into a secure,
+          reliable, and scalable technology environment.
+        </p>
+      </div>
+
+      <!-- What We Supply & Deploy -->
+      <div class="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3 mb-20">
+        <!-- Card 1: End-User & Office Technology -->
+        <div class="flex flex-col">
+          <div class="flex items-start gap-4 mb-4">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
+              <i class="fas fa-laptop text-sm"></i>
+            </div>
+            <h3 class="font-heading text-xl font-bold text-gray-900">End-User & Office Technology</h3>
+          </div>
+          <p class="text-gray-700 mb-3">
+            We supply and configure everyday operational and executive technology used across offices, control rooms,
+            and field locations.
+          </p>
+          <ul class="text-gray-700 text-sm space-y-1">
+            <li>• Laptops and desktops (standard, rugged, high-performance)</li>
+            <li>• Engineering & analytics workstations</li>
+            <li>• Printers, scanners, peripherals</li>
+            <li>• Collaboration and communication tools</li>
+          </ul>
+          <p class="mt-3 text-sm text-primary font-medium">Delivered ready-to-use, fully configured.</p>
+        </div>
+
+        <!-- Card 2: Enterprise & Industrial IT Infrastructure -->
+        <div class="flex flex-col">
+          <div class="flex items-start gap-4 mb-4">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
+              <i class="fas fa-server text-sm"></i>
+            </div>
+            <h3 class="font-heading text-xl font-bold text-gray-900">Enterprise & Industrial IT Infrastructure</h3>
+          </div>
+          <p class="text-gray-700 mb-3">
+            We design and deploy resilient infrastructure built for uptime and operational continuity.
+          </p>
+          <ul class="text-gray-700 text-sm space-y-1">
+            <li>• On-premise & hybrid servers</li>
+            <li>• Storage & backup systems</li>
+            <li>• Routers, switches, firewalls, APs</li>
+            <li>• Satellite & long-range comms</li>
+            <li>• Industrial PCs & edge devices</li>
+          </ul>
+          <p class="mt-3 text-sm text-primary font-medium">Built for harsh, remote, and mission-critical environments.
+          </p>
+        </div>
+
+        <!-- Card 3: Software Installation & Configuration -->
+        <div class="flex flex-col">
+          <div class="flex items-start gap-4 mb-4">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
+              <i class="fas fa-code text-sm"></i>
+            </div>
+            <h3 class="font-heading text-xl font-bold text-gray-900">Software Installation & Configuration</h3>
+          </div>
+          <p class="text-gray-700 mb-3">
+            Every device is delivered with the right software stack, properly installed, licensed, and secured.
+          </p>
+          <ul class="text-gray-700 text-sm space-y-1">
+            <li>• OS & enterprise security tools</li>
+            <li>• Fleet & asset tracking software</li>
+            <li>• Operations dashboards</li>
+            <li>• Procurement & supply chain systems</li>
+            <li>• ERP, SCADA & third-party integration</li>
+          </ul>
+          <p class="mt-3 text-sm text-primary font-medium">Technology aligned to real operational workflows.</p>
+        </div>
+
+        <!-- Card 4: On-Site Installation & Commissioning -->
+        <div class="flex flex-col">
+          <div class="flex items-start gap-4 mb-4">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
+              <i class="fas fa-tools text-sm"></i>
+            </div>
+            <h3 class="font-heading text-xl font-bold text-gray-900">On-Site Installation & Commissioning</h3>
+          </div>
+          <p class="text-gray-700 mb-3">
+            Our engineers handle physical setup and digital commissioning across offices, terminals, vessels, yards, and
+            offshore locations.
+          </p>
+          <ul class="text-gray-700 text-sm space-y-1">
+            <li>• Hardware deployment & cabling</li>
+            <li>• Network design & connectivity</li>
+            <li>• Device commissioning</li>
+            <li>• Integration with legacy systems</li>
+          </ul>
+          <p class="mt-3 text-sm text-primary font-medium">No vendor confusion. One accountable partner.</p>
+        </div>
+
+        <!-- Card 5: Training, Support & Lifecycle Management -->
+        <div class="flex flex-col">
+          <div class="flex items-start gap-4 mb-4">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
+              <i class="fas fa-headset text-sm"></i>
+            </div>
+            <h3 class="font-heading text-xl font-bold text-gray-900">Training, Support & Lifecycle Management</h3>
+          </div>
+          <p class="text-gray-700 mb-3">
+            We ensure smooth adoption and long-term reliability.
+          </p>
+          <ul class="text-gray-700 text-sm space-y-1">
+            <li>• User & admin training</li>
+            <li>• System documentation & handover</li>
+            <li>• Preventive maintenance</li>
+            <li>• SLA-backed support & monitoring</li>
+          </ul>
+          <p class="mt-3 text-sm text-primary font-medium">Technology that stays productive, not abandoned.</p>
+        </div>
+
+        <!-- Card 6: Why Cipher4? -->
+        <div class="flex flex-col bg-gray-50 border border-gray-200 rounded-xl p-6">
+          <div class="flex items-start gap-4 mb-4">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
+              <i class="fas fa-check-circle text-sm"></i>
+            </div>
+            <h3 class="font-heading text-xl font-bold text-gray-900">Why Cipher4?</h3>
+          </div>
+          <ul class="text-gray-700 text-sm space-y-2 mb-4">
+            <li>• One partner for devices, software & infrastructure</li>
+            <li>• Vendor-neutral procurement</li>
+            <li>• Experience in regulated & high-risk environments</li>
+            <li>• Seamless integration with existing systems</li>
+            <li>• Long-term support & accountability</li>
+          </ul>
+          <p class="text-sm italic text-gray-800 bg-gray-100 p-3 rounded-md">
+            “From laptops on desks to systems running offshore — we make technology work.”
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+    <path fill="#1E2B5C" fill-opacity="1"
       d="M0,288L0,160L288,160L288,128L576,128L576,32L864,32L864,96L1152,96L1152,96L1440,96L1440,320L1152,320L1152,320L864,320L864,320L576,320L576,320L288,320L288,320L0,320L0,320Z">
-    </path></svg>
+    </path>
+  </svg>
   <!-- CTA BANNER -->
   <div id="contact" class="w-full bg-[#1E2B5C] reveal">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
