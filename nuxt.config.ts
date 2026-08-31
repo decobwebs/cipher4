@@ -115,6 +115,26 @@ export default defineNuxtConfig({
   },
 
   image: {
+    // PIN THE PROVIDER.
+    // ------------------------------------------------------------------
+    // @nuxt/image picks its provider by sniffing the build environment, and
+    // on Vercel it finds `process.env.VERCEL` and switches to the `vercel`
+    // provider, which emits `/_vercel/image?url=...` URLs.
+    //
+    // That endpoint only exists when the deployment declares an `images`
+    // block in .vercel/output/config.json, and `nitro.preset: 'static'`
+    // never emits one. So every one of those URLs fell through to the
+    // catch-all and returned the 404 page: HTTP 200, Content-Type
+    // text/html, 3KB. The browser cannot decode HTML as an image, fired the
+    // onerror handler @nuxt/image attaches, and rendered the alt text.
+    //
+    // It passed every local check because VERCEL is not set locally, so the
+    // same config resolved to ipxStatic and worked.
+    //
+    // ipxStatic prerenders each variant to a real file under /_ipx/ at build
+    // time, which is what a static deployment needs and what the local build
+    // was already producing.
+    provider: 'ipxStatic',
     quality: 72,
     format: ['avif', 'webp'],
     screens: { xs: 360, sm: 640, md: 768, lg: 1024, xl: 1280, xxl: 1536, '2xl': 1920 },
