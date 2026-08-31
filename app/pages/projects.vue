@@ -90,13 +90,18 @@ const visible = computed(() =>
              screenshot faster than they read a summary. Everything structured
              sits underneath it. -->
         <article v-if="featured" class="feature">
+          <!-- `sizes` needs at least one breakpoint-prefixed entry. A bare
+               sizes="100vw" made @nuxt/image emit only `1w` and `2w`
+               candidates, which are literal 1x1 and 2x2 pixel files, and the
+               browser stretched the 2x2 across the full width. That is what
+               made this render as a blown-up square. -->
           <div v-reveal class="feature__media">
             <NuxtImg
               :src="featured.image"
               :alt="featured.imageAlt || ''"
-              width="1800"
-              height="1800"
-              sizes="100vw lg:1100px"
+              width="2200"
+              height="1264"
+              sizes="100vw lg:100vw"
               format="webp"
               preload
               class="feature__img"
@@ -124,6 +129,47 @@ const visible = computed(() =>
               <span>Visit {{ featured.client }}</span>
               <Icon name="lucide:arrow-up-right" size="18" />
             </a>
+          </div>
+
+          <!-- The rest of the product. The renders ship on transparent
+               grounds, so nothing is framed: the devices float on the page
+               and the white between them is the page itself.
+
+               The phone takes its own column rather than sitting in a row
+               with the laptops. At 0.48:1 against their 1.74:1 it cannot
+               share a cell without either being tiny or forcing a crop, and
+               two stacked laptops come out very close to one phone in height,
+               so the two columns finish level. -->
+          <div v-if="featured.gallery?.length" class="showcase">
+            <div v-reveal="'left'" class="showcase__phone">
+              <NuxtImg
+                v-for="shot in featured.gallery.filter((g) => g.device === 'phone')"
+                :key="shot.src"
+                :src="shot.src"
+                :alt="shot.alt"
+                width="868"
+                height="1770"
+                sizes="70vw lg:340px"
+                format="webp"
+                loading="lazy"
+                class="showcase__img"
+              />
+            </div>
+
+            <div v-reveal="'right'" class="showcase__stack">
+              <NuxtImg
+                v-for="shot in featured.gallery.filter((g) => g.device === 'laptop')"
+                :key="shot.src"
+                :src="shot.src"
+                :alt="shot.alt"
+                width="2200"
+                height="1264"
+                sizes="100vw lg:660px"
+                format="webp"
+                loading="lazy"
+                class="showcase__img"
+              />
+            </div>
           </div>
 
           <div class="feature__detail">
@@ -289,7 +335,7 @@ const visible = computed(() =>
   /* Square source. Unbounded it would be as tall as the viewport is wide on a
      large screen, which is a scroll of empty ground either side of the laptop.
      This is as big as it gets before that starts costing more than it gives. */
-  max-width: 1500px;
+  max-width: 1700px;
   height: auto;
   margin-inline: auto;
 }
@@ -297,6 +343,46 @@ const visible = computed(() =>
 .feature__title {
   font-size: var(--fs-h1);
   max-width: 22ch;
+}
+
+/* --- Device showcase ----------------------------------------------------- */
+
+.showcase {
+  display: grid;
+  gap: var(--space-8);
+  justify-items: center;
+}
+
+@media (min-width: 62rem) {
+  .showcase {
+    /* Phone column deliberately narrower. Two laptops stacked come to roughly
+       1.15 of their own column width in height; one phone comes to 2.07 of
+       its. 0.6 to 1 is where the two columns finish level. */
+    grid-template-columns: 0.6fr 1fr;
+    gap: var(--space-10);
+    align-items: center;
+  }
+}
+
+.showcase__phone {
+  max-width: 20rem;
+}
+
+.showcase__stack {
+  display: grid;
+  gap: var(--space-8);
+  width: 100%;
+}
+
+.showcase__img {
+  width: 100%;
+  height: auto;
+  display: block;
+  /* The renders are transparent PNGs, so the shadow has to come from CSS or
+     the devices sit flat on the page with nothing holding them there. A
+     drop-shadow filter follows the device silhouette; a box-shadow would
+     draw a rectangle around the transparent bounding box. */
+  filter: drop-shadow(0 24px 48px rgba(16, 32, 104, 0.16));
 }
 
 /* Two columns from 62rem. Below that they stack, which keeps the problem

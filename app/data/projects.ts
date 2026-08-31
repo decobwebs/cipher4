@@ -42,6 +42,13 @@ export interface Project {
   imageAlt?: string
   /** The live product, where there is a public one to visit. */
   url?: string
+  /**
+   * Further screens, shown under the lead image.
+   *
+   * `device` drives how each one is framed, because a phone render and a
+   * laptop render have very different aspect ratios and cannot share a cell.
+   */
+  gallery?: { src: string; alt: string; device: 'laptop' | 'phone' }[]
   /** Set true only once the client has signed off the published text. */
   approved: boolean
 }
@@ -72,9 +79,26 @@ export const projects: Project[] = [
       'Several currencies supported, and reporting built around Nigerian maritime and company rules, so a finished deal can be shown to a regulator.',
     ],
     outcome: [],
-    image: '/images/projects/harbours360.png',
+    image: '/images/projects/harbours360-home.png',
     imageAlt:
-      'The Harbours360 marketplace home page shown on a laptop, with a search bar and category filters for vessels, offshore equipment and marine machinery',
+      'The Harbours360 marketplace home page on a laptop, with a search bar and category filters for vessels, offshore equipment and marine machinery',
+    gallery: [
+      {
+        src: '/images/projects/harbours360-mobile.png',
+        alt: 'The Harbours360 home page on a phone, with the search field and the buyer and seller entry points stacked for a small screen',
+        device: 'phone',
+      },
+      {
+        src: '/images/projects/harbours360-demo.png',
+        alt: 'The Harbours360 demo booking page, offering a callback or a chosen slot in a three-step flow',
+        device: 'laptop',
+      },
+      {
+        src: '/images/projects/harbours360-fx.png',
+        alt: 'The exchange rate desk inside Harbours360, showing live conversion rates between African and international currencies',
+        device: 'laptop',
+      },
+    ],
     approved: true,
   },
 ]
