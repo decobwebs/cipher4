@@ -1,0 +1,27 @@
+# Nuxt
+.nuxt
+.output
+.data
+dist
+node_modules
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# Logs
+*.log
+npm-debug.log*
+
+# Scratch and tooling artefacts
+.playwright-mcp/
+mobile-390.png
+$SHOT/

@@ -1,0 +1,274 @@
+/* ============================================================================
+   BASE — reset, element defaults, motion policy
+   ========================================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  /* Sticky header height, so #anchor links don't land under the header */
+  scroll-padding-top: 6rem;
+}
+
+html,
+body {
+  /* Defensive backstop. The real fixes are min-width: 0 on grid/flex
+     children (see utilities.css) — this just guarantees a stray future
+     component can't reopen a horizontal scrollbar on mobile. */
+  overflow-x: clip;
+}
+
+body {
+  position: relative;
+  min-height: 100dvh;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  font-weight: var(--fw-regular);
+  color: var(--text-primary);
+  background-color: var(--bg-page);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-synthesis-weight: none;
+}
+
+
+/* --- Headings ----------------------------------------------------------- */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-heading);
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-primary);
+  text-wrap: balance;
+}
+
+/* Tracking per level. Type tightens as it grows: the same -0.022em that
+   steadies an h1 makes an h4 look cramped, and leaves a display headline
+   looking loose. */
+
+h1 {
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+}
+
+h2 {
+  font-size: var(--fs-h2);
+  letter-spacing: var(--tracking-tight);
+}
+
+h3 {
+  font-size: var(--fs-h3);
+  letter-spacing: var(--tracking-snug);
+}
+
+h4 {
+  font-size: var(--fs-h4);
+  letter-spacing: var(--tracking-snug);
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* --- Links -------------------------------------------------------------- */
+
+a {
+  color: inherit;
+  text-decoration: none;
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  color: var(--text-accent);
+}
+
+/* --- Media -------------------------------------------------------------- */
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+  /* Nothing on this site ships without intrinsic dimensions. The old build
+     had 20MB images with no width/height, so every scroll was a reflow. */
+}
+
+/* --- Forms -------------------------------------------------------------- */
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* --- Lists -------------------------------------------------------------- */
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+/* --- Focus -------------------------------------------------------------- */
+/* The old build used focus:outline-none with nothing in its place, which
+   made the site unusable by keyboard. Every interactive element gets a
+   visible ring, and it is defined once, here. */
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* White on signal-500 measures ~2.0:1 — selected text was the one place on
+   the site where the contrast rule in tokens.css was being broken. A pale
+   amber wash with ink on top clears AA comfortably and is far less jarring
+   than a saturated block mid-paragraph. */
+::selection {
+  background-color: var(--c4-signal-050);
+  color: var(--c4-ink);
+}
+
+.on-dark ::selection {
+  background-color: rgba(245, 165, 36, 0.35);
+  color: var(--c4-white);
+}
+
+/* --- Reduced motion ----------------------------------------------------- */
+/* One declaration disables every animation on the site. No exceptions,
+   no per-component opt-outs. */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- Page transitions --------------------------------------------------- */
+
+.page-enter-active,
+.page-leave-active {
+  transition: opacity var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.page-leave-to {
+  opacity: 0;
+}
+
+/* --- Printing ----------------------------------------------------------- */
+/* Procurement officers print capability pages. Make it not embarrassing. */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  /* The site is dark by default, and a dark page is genuinely unprintable —
+     it either comes out as a black rectangle or, with backgrounds disabled,
+     as pale grey text on white. Printing re-points the semantic tokens to
+     their light values, so every component keeps working from the same names
+     and simply resolves to ink-on-paper. */
+  :root {
+    --bg-page: #fff;
+    --bg-subtle: #fff;
+    --bg-raised: #fff;
+    --text-primary: #000;
+    --text-secondary: #333;
+    --text-tertiary: #555;
+    --text-accent: #026f92;
+    --border-default: #bbb;
+    --border-strong: #888;
+    --glass-1-tint: transparent;
+    --glass-2-tint: transparent;
+    --glass-3-tint: transparent;
+    --glass-1-blur: 0;
+    --glass-2-blur: 0;
+    --glass-3-blur: 0;
+  }
+
+  body {
+    color: #000;
+    background: #fff;
+  }
+
+  /* The fixed field and node texture would otherwise print on every page. */
+  body::before,
+  body::after {
+    display: none !important;
+  }
+
+  /* Glass loses its blur and rim; a hairline keeps the grouping legible. */
+  .glass,
+  .card {
+    background: #fff !important;
+    border: 1px solid #bbb !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .glass::before,
+  .glass::after,
+  .card::before,
+  .card::after {
+    display: none !important;
+  }
+
+  a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.8em;
+    color: #555;
+  }
+}

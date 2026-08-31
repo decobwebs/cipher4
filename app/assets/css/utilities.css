@@ -1,0 +1,265 @@
+/* ============================================================================
+   UTILITIES
+   ----------------------------------------------------------------------------
+   A deliberately small set. This is not a utility framework — if a rule is
+   needed in more than three places it belongs in components.css instead.
+   ========================================================================= */
+
+/* --- Screen reader ------------------------------------------------------ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* --- Grid ---------------------------------------------------------------
+   Auto-fit grids rather than fixed column counts. The old build hard-coded
+   xl:grid-cols-5, which squeezed five cards into unreadable columns at
+   1280px. These reflow on content width instead of on breakpoints.
+   ---------------------------------------------------------------------- */
+
+.grid {
+  display: grid;
+  gap: var(--space-6);
+}
+
+/* Grid items default to min-width: auto, which lets a fixed-aspect image
+   or long unbroken string refuse to shrink below its intrinsic size and
+   push the item past the viewport on narrow screens. */
+.grid > * {
+  min-width: 0;
+}
+
+.grid--2 {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+}
+
+.grid--3 {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+
+.grid--4 {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+}
+
+.grid--gap-lg {
+  gap: var(--space-10);
+}
+
+/* Two-column editorial split: content + media */
+.split {
+  display: grid;
+  gap: clamp(var(--space-8), 4vw, var(--space-16));
+  align-items: center;
+}
+
+/* Grid items default to min-width: auto, which lets a fixed-aspect-ratio
+   image refuse to shrink below its intrinsic size and push past the
+   viewport on narrow screens. This was causing a 2-3px horizontal overflow
+   on /about and the industry detail pages at 360-390px. */
+.split > * {
+  min-width: 0;
+}
+
+@media (min-width: 62rem) {
+  .split {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .split--content-first > :first-child {
+    order: 0;
+  }
+
+  /* Alternating rows put media on the left without reordering the DOM,
+     so the reading order stays correct for screen readers. */
+  .split--media-first > :last-child {
+    order: -1;
+  }
+}
+
+/* --- Flex --------------------------------------------------------------- */
+
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.cluster--gap-lg {
+  gap: var(--space-6);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.stack--gap-sm {
+  gap: var(--space-2);
+}
+
+.stack--gap-lg {
+  gap: var(--space-8);
+}
+
+.stack--center {
+  align-items: center;
+  text-align: center;
+}
+
+/* --- Spacing ------------------------------------------------------------ */
+
+.mt-2 { margin-block-start: var(--space-2); }
+.mt-4 { margin-block-start: var(--space-4); }
+.mt-6 { margin-block-start: var(--space-6); }
+.mt-8 { margin-block-start: var(--space-8); }
+.mt-10 { margin-block-start: var(--space-10); }
+.mt-12 { margin-block-start: var(--space-12); }
+.mt-16 { margin-block-start: var(--space-16); }
+
+.mb-4 { margin-block-end: var(--space-4); }
+.mb-6 { margin-block-end: var(--space-6); }
+.mb-8 { margin-block-end: var(--space-8); }
+.mb-12 { margin-block-end: var(--space-12); }
+
+.mx-auto { margin-inline: auto; }
+
+/* --- Text --------------------------------------------------------------- */
+
+.text-center { text-align: center; }
+.text-balance { text-wrap: balance; }
+
+/* --- Layout helpers ----------------------------------------------------- */
+
+.relative { position: relative; }
+.full-width { width: 100%; }
+.flex-1 { flex: 1; }
+
+/* --- Reveal-on-scroll ---------------------------------------------------
+   Paired with the v-reveal directive. Elements start hidden ONLY when JS
+   has confirmed it will run — .js-reveal is set on <html> by the directive's
+   plugin, so a no-JS visitor sees fully rendered content rather than a
+   blank page. The old build hid content unconditionally.
+   ---------------------------------------------------------------------- */
+
+.js-reveal [data-reveal] {
+  opacity: 0;
+  /* 20px of travel at this duration was close enough to a plain fade that the
+     motion read as absent. More distance, a touch of scale, and a curve with
+     an actual settle give the entrance somewhere to arrive from. */
+  transform: translateY(34px) scale(0.985);
+  transition:
+    opacity var(--dur-reveal) var(--ease-reveal) var(--reveal-delay, 0ms),
+    transform var(--dur-reveal) var(--ease-reveal) var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.js-reveal [data-reveal='left'] {
+  transform: translateX(-40px) scale(0.985);
+}
+
+.js-reveal [data-reveal='right'] {
+  transform: translateX(40px) scale(0.985);
+}
+
+.js-reveal [data-reveal='scale'] {
+  transform: scale(0.97);
+}
+
+.js-reveal [data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+/* Stagger children of a revealed container. --i is set by the directive. */
+.js-reveal [data-reveal-stagger] > * {
+  opacity: 0;
+  transform: translateY(26px) scale(0.99);
+  transition: opacity var(--dur-slow) var(--ease-out)
+      calc(var(--i, 0) * var(--reveal-stagger)),
+    transform var(--dur-slow) var(--ease-out)
+      calc(var(--i, 0) * var(--reveal-stagger));
+}
+
+.js-reveal [data-reveal-stagger].is-revealed > * {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js-reveal [data-reveal],
+  .js-reveal [data-reveal-stagger] > * {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+
+/* --- Scroll-driven motion ------------------------------------------------
+   Native CSS scroll-driven animations. No library: `animation-timeline: view()`
+   runs on the compositor, costs no JavaScript, and cannot stall the main
+   thread the way a scrubbed JS timeline can. That is why GSAP was dropped.
+
+   IMPORTANT: everything here is ADDITIVE. Nothing in this block sets opacity
+   to 0 or otherwise hides content. The reveal above is driven by
+   IntersectionObserver and stays the single mechanism responsible for
+   visibility, so a browser that half-supports scroll timelines cannot leave
+   the page blank. These rules only move things that are already visible.
+   ---------------------------------------------------------------------- */
+
+@keyframes c4-parallax {
+  from { transform: translate3d(0, var(--parallax-from, 7%), 0) scale(1.12); }
+  to   { transform: translate3d(0, var(--parallax-to, -7%), 0) scale(1.12); }
+}
+
+@keyframes c4-drift-up {
+  from { transform: translate3d(0, 2.5rem, 0); }
+  to   { transform: translate3d(0, -2.5rem, 0); }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* NAMED timeline, not anonymous `view()`.
+       ------------------------------------------------------------------
+       The image being parallaxed lives inside a frame with `overflow:
+       hidden`, and that makes the frame a scroll container. An anonymous
+       `view()` on the image therefore resolves against a box that never
+       scrolls, so the animation pins at a fixed progress and nothing moves —
+       which is exactly what it did.
+
+       Declaring the timeline on the FRAME measures it against the page
+       scroller where it actually travels, and the image drives its animation
+       from that named timeline instead. */
+    [data-parallax-frame] {
+      view-timeline-name: --c4-media;
+      view-timeline-axis: block;
+    }
+
+    /* Media drifts against the scroll. The scale is not decoration — it is
+       what stops the shifted image exposing an empty edge inside its frame. */
+    [data-parallax] {
+      animation: c4-parallax linear both;
+      animation-timeline: --c4-media;
+      animation-range: cover 0% cover 100%;
+      will-change: transform;
+    }
+
+    /* A slower counter-drift for a decorative layer sitting behind content. */
+    [data-drift] {
+      animation: c4-drift-up linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+      will-change: transform;
+    }
+  }
+}

@@ -1,0 +1,1084 @@
+/* ============================================================================
+   CIPHER4 COMPONENTS — v2, "Signal Glass"
+   ----------------------------------------------------------------------------
+   Every value here resolves to a token from tokens.css. No raw hex, no raw
+   pixel font sizes, no one-off durations.
+
+   The class API is deliberately unchanged from v1 — .btn, .card, .section,
+   .container and the rest keep their names and their meanings. Only what they
+   look like has been replaced. That is what let the visual layer be rebuilt
+   without touching fourteen page templates in the same pass.
+
+   THE GLASS SYSTEM
+   ----------------
+   One primitive, `.glass`, at three elevations. Everything translucent on the
+   site is that primitive plus a role class. Do not hand-roll backdrop-filter
+   in a component; use the primitive, so the reduced-transparency and
+   no-backdrop-filter fallbacks in tokens.css keep working.
+
+   THE SHINE
+   ---------
+   `.shine` is the signature interaction: a specular highlight that tracks the
+   pointer across a glass surface, the way light moves across a real pane as
+   you turn it. It is one pseudo-element and one opacity transition; the
+   pointer position arrives as --mx / --my from the v-shine directive. There
+   is no per-frame JavaScript layout work and nothing animates that would
+   trigger layout — see app/plugins/shine.ts.
+   ========================================================================= */
+
+/* ============================================================================
+   LAYOUT PRIMITIVES
+   ========================================================================= */
+
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.container--wide { max-width: var(--container-wide); }
+.container--narrow { max-width: var(--container-narrow); }
+
+.section {
+  position: relative;
+  padding-block: var(--section-y);
+}
+
+.section--sm { padding-block: var(--section-y-sm); }
+.section--tight-top { padding-block-start: 0; }
+
+/* Section grounds. The page is light, so a dark band is a punch into it.
+   `.section--abyss` and `.section--inverse` should also carry `.on-dark` so
+   their contents pick up the inverted token values — see tokens.css. */
+.section--subtle { background: var(--grad-mist); }
+.section--abyss { background: var(--grad-abyss); }
+.section--inverse { background: var(--grad-navy); }
+
+/* A hairline seam where two sections of similar value meet, so the boundary
+   is legible without a heavy divider. */
+.section--seam { border-block-start: 1px solid var(--border-default); }
+
+/* ============================================================================
+   GLASS PRIMITIVE
+   ========================================================================= */
+
+.glass {
+  position: relative;
+  background-color: var(--glass-1-tint);
+  border: 1px solid var(--glass-1-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-glass);
+  backdrop-filter: blur(var(--glass-1-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-1-blur)) saturate(var(--glass-saturate));
+  /* Isolate so the rim and shine pseudo-elements cannot escape the corner
+     radius or blend with whatever sits behind the panel. */
+  isolation: isolate;
+}
+
+.glass--2 {
+  background-color: var(--glass-2-tint);
+  border-color: var(--glass-2-border);
+  backdrop-filter: blur(var(--glass-2-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-2-blur)) saturate(var(--glass-saturate));
+}
+
+.glass--3 {
+  background-color: var(--glass-3-tint);
+  border-color: var(--glass-3-border);
+  backdrop-filter: blur(var(--glass-3-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-3-blur)) saturate(var(--glass-saturate));
+}
+
+/* The lit rim. A real bevel catches light on one edge, not uniformly around
+   the box, so this is a masked gradient border rather than a border-color. */
+.glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--glass-rim);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ============================================================================
+   THE SHINE
+   ----------------------------------------------------------------------------
+   Two layers on hover:
+     ::after   a soft specular pool that follows the pointer
+     --lit     the rim brightens, so the edge catches the same light
+
+   --mx / --my default to the centre so a keyboard-focused or touch-activated
+   element still lights up sensibly without ever having received a pointer
+   event.
+   ========================================================================= */
+
+.shine {
+  --mx: 50%;
+  --my: 50%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Two stacked layers, because specular is two different things.
+
+   The angled bar is drawn with HARD stops rather than a smooth ramp — a
+   gradient that eases from transparent to bright and back reads as a glow,
+   while a band with defined shoulders reads as a reflection. That difference
+   is the whole reason the first version looked like a coloured circle.
+
+   --px is the pointer's horizontal position as a percentage, written by
+   app/plugins/shine.ts; it slides the bar across the pane as the pointer
+   moves, the way a reflection travels when you tilt real glass. */
+.shine::after {
+  content: '';
+  position: absolute;
+  /* Inset by -1px so the highlight reaches the rim rather than stopping a
+     hairline short of it. */
+  inset: -1px;
+  border-radius: inherit;
+  background:
+    /* 1. The hot core: small and hard-edged. */
+    radial-gradient(
+      var(--shine-size) var(--shine-size) at var(--mx) var(--my),
+      var(--shine-core) 0%,
+      var(--shine-core-mid) 24%,
+      transparent 46%
+    ),
+    /* 2. The angled reflection band. */
+    linear-gradient(
+      108deg,
+      transparent calc(var(--px, 50%) - 24%),
+      var(--shine-bar-soft) calc(var(--px, 50%) - 12%),
+      var(--shine-bar) calc(var(--px, 50%) - 3%),
+      var(--shine-bar) calc(var(--px, 50%) + 3%),
+      var(--shine-bar-soft) calc(var(--px, 50%) + 12%),
+      transparent calc(var(--px, 50%) + 24%)
+    );
+  opacity: 0;
+  transition: opacity var(--dur-shine) var(--ease-out);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.shine:hover::after,
+.shine:focus-visible::after,
+.shine:focus-within::after {
+  opacity: 1;
+}
+
+/* The rim catches light on the side facing the pointer. The gradient angle
+   is driven by --pa (pointer angle, in degrees, from shine.ts) so the lit
+   edge travels around the border instead of staying pinned to one corner —
+   a fixed-angle rim is the giveaway that a "reflection" is just a static
+   gradient. */
+.shine:hover::before,
+.shine:focus-within::before {
+  background:
+    linear-gradient(
+      var(--pa, 145deg),
+      var(--shine-edge) 0%,
+      rgba(255, 255, 255, 0.22) 22%,
+      transparent 52%
+    );
+}
+
+.shine::before {
+  transition: background var(--dur-shine) var(--ease-out);
+}
+
+/* Touch devices get the resting state only. A sweep that fires on tap and
+   then sticks until the next tap reads as a rendering bug, not a flourish. */
+@media (hover: none) {
+  .shine::after { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shine::after { transition: none; }
+  .shine::before { transition: none; }
+}
+
+/* ============================================================================
+   CARDS
+   ========================================================================= */
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--glass-1-tint);
+  border: 1px solid var(--glass-1-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-glass);
+  backdrop-filter: blur(var(--glass-1-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-1-blur)) saturate(var(--glass-saturate));
+  isolation: isolate;
+  overflow: hidden;
+
+  /* NO RESTING ACCENT MARK.
+     A short accent rule was added here at the top-left. It did not work: the
+     card has a 20px corner radius, so a straight rule starting at x=0 is
+     clipped by the curve and reads as a detached floating line rather than an
+     edge treatment. An element that has to be explained is not doing its job.
+
+     Card identity comes from the lit rim and the internal hierarchy instead.
+     The accent stays reserved for interactive cards, where it draws across the
+     top edge on hover and the movement makes its purpose obvious. */
+
+  /* DEFAULT PADDING.
+     Padding used to live only in `.card__body`, so any card that put content
+     straight inside `.card` — the insights list, the contact sidebar, careers,
+     the article page — rendered with text flush against its own border. Four
+     templates were doing that. Padding belongs on the card; the structured
+     slots opt out below. */
+  padding: var(--space-6);
+}
+
+/* ONLY a media card drops the padding, because only an image has to reach the
+   edge. An earlier version also matched `:has(> .card__body)`, which broke
+   FeatureCard: that puts `.icon-plate` and `.card__cue` as direct children
+   ALONGSIDE the body, so zeroing the card's padding left both flush against
+   the border and clipped "Learn more" against the rim. A card having a body
+   says nothing about whether its other children need padding. */
+.card:has(> .card__media),
+.card--flush {
+  padding: 0;
+}
+
+/* In a media card the padding moves inward to the slots that need it. */
+.card:has(> .card__media) > .card__body {
+  padding: var(--space-6) var(--space-6) var(--space-7);
+}
+
+.card:has(> .card__media) > .card__footer {
+  padding: var(--space-4) var(--space-6) var(--space-6);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--glass-rim);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 2;
+  transition: background var(--dur-shine) var(--ease-out);
+}
+
+.card__body {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  /* A card is a narrow column. At --lh-body (1.65) a three-line paragraph in
+     one reads as three separate statements rather than a sentence. */
+  line-height: var(--lh-compact);
+  /* No padding of its own: `.card` owns spacing, and the media-card rule
+     above puts it back where an image forces the card itself to go flush.
+     Two sources of padding for the same box is how the last version ended up
+     with some children inset and others against the border. */
+  flex: 1;
+}
+
+.card__title {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-heading);
+  letter-spacing: var(--tracking-snug);
+  color: var(--text-primary);
+}
+
+.card__media {
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+  aspect-ratio: 3 / 2;
+  background: var(--bg-raised);
+}
+
+.card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.card__footer {
+  position: relative;
+  z-index: 3;
+  margin-block-start: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+
+
+/* Interactive cards lift and light. Transform and opacity only — nothing
+   here can trigger layout. */
+.card--interactive,
+.card--link {
+  --mx: 50%;
+  --my: 50%;
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+  will-change: transform;
+}
+
+/* Identical specular to `.shine` — one material, one behaviour. */
+.card--interactive::after,
+.card--link::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background:
+    radial-gradient(
+      var(--shine-size) var(--shine-size) at var(--mx) var(--my),
+      var(--shine-core) 0%,
+      var(--shine-core-mid) 24%,
+      transparent 46%
+    ),
+    linear-gradient(
+      108deg,
+      transparent calc(var(--px, 50%) - 24%),
+      var(--shine-bar-soft) calc(var(--px, 50%) - 12%),
+      var(--shine-bar) calc(var(--px, 50%) - 3%),
+      var(--shine-bar) calc(var(--px, 50%) + 3%),
+      var(--shine-bar-soft) calc(var(--px, 50%) + 12%),
+      transparent calc(var(--px, 50%) + 24%)
+    );
+  opacity: 0;
+  transition: opacity var(--dur-shine) var(--ease-out);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.card--interactive:hover,
+.card--link:hover,
+.card--link:focus-within {
+  /* A larger lift with a matching shadow. The previous 4px with an unchanged
+     shadow read as the card twitching rather than rising. */
+  transform: translateY(-6px);
+  border-color: rgba(245, 165, 36, 0.38);
+  box-shadow:
+    0 2px 4px rgba(11, 18, 51, 0.06),
+    0 22px 48px rgba(11, 18, 51, 0.14),
+    var(--glow-accent);
+}
+
+.card--interactive:hover::after,
+.card--link:hover::after,
+.card--link:focus-within::after {
+  opacity: 1;
+}
+
+.card--interactive:hover::before,
+.card--link:hover::before,
+.card--link:focus-within::before {
+  background:
+    linear-gradient(
+      var(--pa, 145deg),
+      var(--shine-edge) 0%,
+      rgba(255, 255, 255, 0.22) 22%,
+      transparent 52%
+    );
+}
+
+.card--link:hover .card__media img,
+.card--link:focus-within .card__media img {
+  transform: scale(1.04);
+}
+
+/* An accent hairline that draws in across the top edge on hover.
+   Drawn as a background-image on the card itself rather than a pseudo-element
+   on `.card__body` — both pseudo-elements are already spoken for (rim and
+   specular), and half the cards on the site have no `.card__body` to hang it
+   from. Animating background-size is paint-only, which for a 2px line is
+   cheaper than the extra compositing layer a third pseudo-element would need. */
+/* Interactive cards draw the same mark the full width on hover. It is the
+   card's own resting mark extending, not a second decoration appearing. */
+.card--interactive,
+.card--link {
+  background-image: var(--grad-accent);
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-size: 0% 2px;
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out),
+    background-size var(--dur-slow) var(--ease-out);
+}
+
+.card--interactive:hover,
+.card--link:hover,
+.card--link:focus-within {
+  background-size: 100% 2px;
+}
+
+/* Stretched link: the whole card is the hit area, but the accessible name
+   and the focus ring still come from the real anchor inside it. */
+.card--link a::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+}
+
+/* A card with the accent edge lit permanently — for the one card in a group
+   that is the recommended or primary option. */
+.card--lit {
+  border-color: rgba(245, 165, 36, 0.34);
+}
+
+.card--lit::before {
+  background: var(--grad-edge);
+}
+
+@media (hover: none) {
+  .card--interactive::after,
+  .card--link::after { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card--interactive,
+  .card--link { transition: none; }
+  .card--interactive:hover,
+  .card--link:hover { transform: none; }
+  .card__media img { transition: none; }
+  .card--link:hover .card__media img { transform: none; }
+}
+
+/* ============================================================================
+   BUTTONS
+   ========================================================================= */
+
+.btn {
+  --mx: 50%;
+  --my: 50%;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+  text-align: center;
+  cursor: pointer;
+  isolation: isolate;
+  overflow: hidden;
+  /* 44px minimum target, which is the touch guidance and also just the
+     height this type size wants. */
+  min-height: 2.75rem;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+/* THE SPECULAR RIM.
+   ----------------------------------------------------------------------
+   This is the SpecularButton effect, in CSS. That component draws a
+   signed-distance rounded rect in a WebGL fragment shader and lights its
+   edge toward the pointer — one canvas, one renderer, one rAF loop PER
+   BUTTON. Browsers cap simultaneous WebGL contexts at roughly 16; a page
+   here has eight or more buttons alongside the hero shader and the globe,
+   so that approach would exhaust the cap and the browser would start
+   silently discarding live contexts.
+
+   A masked gradient border reaches the same place: a bright arc on the
+   edge nearest the pointer, falling off around the perimeter. --pa is the
+   pointer angle already published by app/plugins/shine.ts, so the rim
+   travels with the cursor exactly as the shader version does — for the
+   cost of one pseudo-element and no dependency. */
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    var(--pa, 145deg),
+    var(--btn-rim-hot) 0%,
+    var(--btn-rim) 26%,
+    transparent 58%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition:
+    opacity var(--dur-base) var(--ease-out),
+    background var(--dur-base) var(--ease-out);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.btn:hover::before,
+.btn:focus-visible::before {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn::before { transition: none; }
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  /* Buttons are small, so they get the band only — a radial core inside a
+     44px-tall pill just reads as the whole button lightening. */
+  background:
+    linear-gradient(
+      104deg,
+      transparent calc(var(--px, 50%) - 30%),
+      rgba(255, 255, 255, 0.1) calc(var(--px, 50%) - 12%),
+      rgba(255, 255, 255, 0.38) var(--px, 50%),
+      rgba(255, 255, 255, 0.1) calc(var(--px, 50%) + 12%),
+      transparent calc(var(--px, 50%) + 30%)
+    );
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.btn:hover::after,
+.btn:focus-visible::after { opacity: 1; }
+
+.btn > * { position: relative; z-index: 2; }
+
+.btn:active { transform: translateY(1px); }
+
+/* Accent — the primary call to action. Solid amber, dark text on it. */
+.btn--accent {
+  background: var(--grad-accent);
+  color: var(--text-on-accent);
+  box-shadow: var(--shadow-accent);
+}
+
+.btn--accent:hover {
+  box-shadow: var(--glow-accent);
+}
+
+/* Primary — glass with a lit rim. The default for most actions. */
+.btn--primary {
+  background-color: var(--glass-2-tint);
+  border-color: var(--glass-2-border);
+  color: var(--text-primary);
+  backdrop-filter: blur(var(--glass-2-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-2-blur)) saturate(var(--glass-saturate));
+}
+
+.btn--primary:hover {
+  border-color: rgba(56, 189, 240, 0.5);
+  box-shadow: var(--shadow-2);
+}
+
+/* Secondary — glass rather than a bare outline, so it is the same material
+   as every other surface on the site instead of the one flat exception. */
+.btn--secondary {
+  background-color: var(--glass-1-tint);
+  border-color: var(--glass-2-border);
+  color: var(--text-primary);
+  backdrop-filter: blur(var(--glass-1-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-1-blur)) saturate(var(--glass-saturate));
+  box-shadow: var(--shadow-1);
+}
+
+.btn--secondary:hover {
+  border-color: var(--c4-signal-400);
+  background-color: var(--bg-accent-wash);
+}
+
+/* Ghost — no chrome at rest. Toolbar and inline actions. */
+.btn--ghost {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--text-secondary);
+  padding-inline: var(--space-4);
+}
+
+.btn--ghost:hover {
+  color: var(--text-primary);
+  background-color: var(--surface-hover);
+}
+
+.btn--lg {
+  padding: var(--space-4) var(--space-8);
+  font-size: var(--fs-body);
+  min-height: 3.25rem;
+}
+
+.btn--block {
+  display: flex;
+  width: 100%;
+}
+
+.btn[disabled],
+.btn[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (hover: none) {
+  .btn::after { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn { transition: none; }
+  .btn:active { transform: none; }
+}
+
+/* ============================================================================
+   TYPE HELPERS
+   ========================================================================= */
+
+.display {
+  font-family: var(--font-heading);
+  font-size: var(--fs-display);
+  /* Light, not bold. At this size on a dark ground, weight reads as volume;
+     the restraint is what makes it look considered. */
+  font-weight: var(--fw-light);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+  color: var(--text-primary);
+}
+
+.lead {
+  font-size: var(--fs-body-lg);
+  line-height: var(--lh-body);
+  color: var(--text-secondary);
+  max-width: var(--measure);
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--text-accent);
+}
+
+.measure { max-width: var(--measure); }
+.measure-narrow { max-width: var(--measure-narrow); }
+.text-secondary { color: var(--text-secondary); }
+.text-accent { color: var(--text-accent); }
+
+/* ============================================================================
+   PILLS, PLATES, RULES
+   ========================================================================= */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  background-color: var(--surface-sunken);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+a.pill:hover {
+  color: var(--text-primary);
+  border-color: var(--c4-signal-500);
+  background-color: var(--bg-accent-wash);
+}
+
+.pill--accent {
+  border-color: rgba(245, 165, 36, 0.4);
+  background-color: var(--bg-accent-wash);
+  color: var(--text-accent);
+}
+
+/* The icon plate: a small glass tile behind an icon. Used everywhere a
+   feature or capability is introduced. */
+.icon-plate {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--glass-1-border);
+  background-color: var(--surface-sunken);
+  color: var(--text-accent);
+}
+
+.icon-plate--accent {
+  border-color: rgba(245, 165, 36, 0.36);
+  background: var(--grad-accent-soft);
+}
+
+.icon-plate--solid {
+  background: var(--grad-accent);
+  border-color: transparent;
+  color: var(--text-on-accent);
+}
+
+.icon-plate--lg {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: var(--radius-lg);
+}
+
+.rule {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(
+    90deg,
+    var(--border-default) 0%,
+    var(--border-default) 60%,
+    transparent 100%
+  );
+}
+
+.rule--accent {
+  background: linear-gradient(
+    90deg,
+    var(--c4-signal-500) 0%,
+    rgba(245, 165, 36, 0.2) 40%,
+    transparent 100%
+  );
+}
+
+/* The sector chip used under the hero and on index pages. */
+.sector {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+.sector:hover {
+  color: var(--text-primary);
+  border-color: var(--c4-signal-500);
+  background-color: var(--bg-accent-wash);
+}
+
+/* ============================================================================
+   STATS
+   ========================================================================= */
+
+.stat__value {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--text-primary);
+  /* Tabular figures so a row of numbers aligns on the decimal rather than
+     shimmering as values change width. */
+  font-variant-numeric: tabular-nums;
+}
+
+.stat__label {
+  display: block;
+  margin-block-start: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+/* ============================================================================
+   FORMS
+   ========================================================================= */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.field__label {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text-primary);
+}
+
+.field__required {
+  color: var(--text-accent);
+  margin-inline-start: var(--space-1);
+}
+
+.field__control {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  min-height: 2.75rem;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-sunken);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  color: var(--text-primary);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.field__control::placeholder { color: var(--text-tertiary); }
+
+.field__control:hover { border-color: var(--border-strong); }
+
+.field__control:focus {
+  outline: none;
+  border-color: var(--c4-signal-500);
+  background-color: var(--surface-sunken-strong);
+  box-shadow: 0 0 0 3px rgba(245, 165, 36, 0.22);
+}
+
+.field__control[aria-invalid='true'] {
+  border-color: var(--c4-danger);
+}
+
+.field__control[aria-invalid='true']:focus {
+  box-shadow: 0 0 0 3px rgba(255, 107, 97, 0.24);
+}
+
+textarea.field__control {
+  min-height: 8rem;
+  resize: vertical;
+}
+
+select.field__control {
+  appearance: none;
+  /* Chevron drawn in CSS so no icon request is needed for a control that
+     appears on every form on the site. */
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text-secondary) 50%),
+    linear-gradient(135deg, var(--text-secondary) 50%, transparent 50%);
+  background-position:
+    calc(100% - 1.25rem) calc(50% + 2px),
+    calc(100% - 1rem) calc(50% + 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-inline-end: var(--space-10);
+}
+
+/* Native select options render in the OS layer, which does not inherit the
+   page's dark palette on every platform. Set both explicitly. */
+select.field__control option {
+  background-color: var(--c4-indigo-800);
+  color: var(--text-primary);
+}
+
+.field__hint {
+  font-size: var(--fs-sm);
+  color: var(--text-tertiary);
+}
+
+.field__error {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--c4-danger);
+}
+
+/* Honeypot. Off-screen rather than display:none, because some bots skip
+   fields that are not rendered at all. */
+.field--honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* ============================================================================
+   NOTICES
+   ========================================================================= */
+
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-sunken);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+  color: var(--text-secondary);
+}
+
+.notice--success {
+  border-color: rgba(46, 207, 160, 0.4);
+  background-color: var(--c4-success-bg);
+  color: var(--text-primary);
+}
+
+.notice--danger {
+  border-color: rgba(255, 107, 97, 0.4);
+  background-color: var(--c4-danger-bg);
+  color: var(--text-primary);
+}
+
+/* ============================================================================
+   PROSE — long-form content from @nuxt/content
+   ========================================================================= */
+
+.prose {
+  max-width: var(--measure);
+  color: var(--text-secondary);
+  font-size: var(--fs-body-lg);
+  line-height: var(--lh-body);
+}
+
+.prose > * + * { margin-block-start: var(--space-5); }
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  font-family: var(--font-heading);
+  color: var(--text-primary);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--lh-heading);
+  margin-block-start: var(--space-12);
+}
+
+.prose h2 { font-size: var(--fs-h2); font-weight: var(--fw-semibold); }
+.prose h3 { font-size: var(--fs-h3); font-weight: var(--fw-semibold); }
+.prose h4 { font-size: var(--fs-h4); font-weight: var(--fw-semibold); }
+
+.prose a {
+  color: var(--text-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+.prose a:hover { color: var(--c4-signal-300); }
+
+.prose strong { color: var(--text-primary); font-weight: var(--fw-semibold); }
+
+.prose ul,
+.prose ol { padding-inline-start: var(--space-6); }
+
+.prose li + li { margin-block-start: var(--space-2); }
+
+.prose li::marker { color: var(--c4-signal-500); }
+
+.prose blockquote {
+  padding-inline-start: var(--space-5);
+  border-inline-start: 2px solid var(--c4-signal-500);
+  color: var(--text-primary);
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-light);
+  line-height: var(--lh-snug);
+}
+
+.prose code {
+  padding: 0.15em 0.4em;
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-inset);
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  color: var(--text-primary);
+}
+
+.prose pre {
+  padding: var(--space-5);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background-color: var(--c4-indigo-950);
+  overflow-x: auto;
+}
+
+.prose pre code {
+  padding: 0;
+  background: none;
+  font-size: var(--fs-sm);
+}
+
+.prose img {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+}
+
+.prose hr {
+  height: 1px;
+  border: 0;
+  background: var(--border-default);
+  margin-block: var(--space-12);
+}
+
+/* ============================================================================
+   SKIP LINK
+   ========================================================================= */
+
+.skip-link {
+  position: absolute;
+  inset-inline-start: var(--space-4);
+  inset-block-start: -100%;
+  z-index: var(--z-modal);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+  /* Indigo fill with white text (14.7:1) rather than amber with white (2.0:1).
+     The skip link is the first thing a keyboard user hits — it is the last
+     place to be clever about colour. */
+  background: var(--c4-indigo-800);
+  color: var(--c4-white);
+  font-weight: var(--fw-semibold);
+  transition: inset-block-start var(--dur-fast) var(--ease-out);
+}
+
+.skip-link:focus {
+  inset-block-start: var(--space-4);
+}
