@@ -33,9 +33,26 @@ const heroLead = computed(() =>
     : 'We publish a case study only once the client has approved the write-up, so this page grows slowly. If you are evaluating us now, we will arrange a reference call with a comparable client instead.',
 )
 
+/**
+ * The first project is rendered as a full feature, the rest as cards.
+ *
+ * A single case study in a two-up card grid reads as a page with one item
+ * missing, and the card only showed title, client and summary anyway — the
+ * challenge, built and outcome fields were carried in the data and never
+ * rendered anywhere. The feature block is where they finally appear.
+ *
+ * The sector filter only makes sense once there is more than one thing to
+ * filter, so it is gated on the remainder rather than shown with a single
+ * card behind it.
+ */
+const featured = computed(() => all[0])
+const rest = computed(() => all.slice(1))
+
 const filter = ref<(typeof sectors)[number]>('All')
 const visible = computed(() =>
-  filter.value === 'All' ? all : all.filter((p) => p.sector === filter.value),
+  filter.value === 'All'
+    ? rest.value
+    : rest.value.filter((p) => p.sector === filter.value),
 )
 </script>
 
@@ -68,7 +85,69 @@ const visible = computed(() =>
     <!-- Projects -->
     <section class="section">
       <div class="container">
-        <template v-if="all.length">
+        <!-- Featured project. The image leads at full container width and
+             stands alone: it is the product, and a reader recognises a
+             screenshot faster than they read a summary. Everything structured
+             sits underneath it. -->
+        <article v-if="featured" class="feature">
+          <div v-reveal class="feature__media">
+            <NuxtImg
+              :src="featured.image"
+              :alt="featured.imageAlt || ''"
+              width="1800"
+              height="1800"
+              sizes="100vw lg:1100px"
+              format="webp"
+              preload
+              class="feature__img"
+            />
+          </div>
+
+          <div v-reveal class="feature__intro">
+            <div class="cluster">
+              <span class="pill pill--accent">{{ featured.sector }}</span>
+              <span class="pill">{{ featured.year }}</span>
+              <span class="pill">{{ featured.client }}</span>
+            </div>
+            <h2 class="feature__title mt-5">{{ featured.title }}</h2>
+            <p class="lead mt-4 measure">{{ featured.summary }}</p>
+
+            <!-- The live product is the strongest evidence on this page, so
+                 it gets a real link rather than a mention in the copy. -->
+            <a
+              v-if="featured.url"
+              :href="featured.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn btn--accent mt-6"
+            >
+              <span>Visit {{ featured.client }}</span>
+              <Icon name="lucide:arrow-up-right" size="18" />
+            </a>
+          </div>
+
+          <div class="feature__detail">
+            <section v-if="featured.challenge.length" v-reveal class="feature__col">
+              <h3 class="feature__label">The problem</h3>
+              <ul class="feature__list">
+                <li v-for="line in featured.challenge" :key="line">{{ line }}</li>
+              </ul>
+            </section>
+
+            <section v-if="featured.built.length" v-reveal class="feature__col">
+              <h3 class="feature__label">What we built</h3>
+              <ul class="feature__list feature__list--checked">
+                <li v-for="line in featured.built" :key="line">
+                  <Icon name="lucide:check" size="17" />
+                  <span>{{ line }}</span>
+                </li>
+              </ul>
+            </section>
+          </div>
+
+        </article>
+
+        <template v-if="rest.length">
           <div class="filters" role="group" aria-label="Filter projects by sector">
             <button
               v-for="sector in sectors"
@@ -114,7 +193,7 @@ const visible = computed(() =>
         </template>
 
         <!-- Honest empty state. We do not ship invented case studies. -->
-        <div v-else v-reveal class="empty card">
+        <div v-else-if="!featured" v-reveal class="empty card">
           <div class="icon-plate icon-plate--lg">
             <Icon name="lucide:folder-open" size="26" />
           </div>
@@ -185,6 +264,80 @@ const visible = computed(() =>
 </template>
 
 <style scoped>
+/* --- Featured project ---------------------------------------------------- */
+
+.feature {
+  display: grid;
+  gap: var(--space-10);
+}
+
+/* The image carries the section, so it gets the full container width and a
+   frame rather than being cropped into a card. `contain` because the source
+   is a square render on its own ground: cropping it to a banner would cut the
+   laptop. */
+.feature__media {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-default);
+  background: var(--surface-sunken);
+  overflow: hidden;
+}
+
+.feature__img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.feature__title {
+  font-size: var(--fs-h1);
+  max-width: 22ch;
+}
+
+/* Two columns from 62rem. Below that they stack, which keeps the problem
+   directly above the response rather than side by side in 30ch gutters. */
+.feature__detail {
+  display: grid;
+  gap: var(--space-8);
+}
+
+@media (min-width: 62rem) {
+  .feature__detail {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-12);
+  }
+}
+
+.feature__label {
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--text-accent);
+  padding-block-end: var(--space-4);
+  border-block-end: 1px solid var(--border-default);
+}
+
+.feature__list {
+  display: grid;
+  gap: var(--space-4);
+  margin-block-start: var(--space-5);
+  color: var(--text-secondary);
+  line-height: var(--lh-body);
+  max-width: var(--measure);
+}
+
+.feature__list--checked > li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-3);
+  align-items: start;
+}
+
+.feature__list--checked :deep(svg) {
+  margin-block-start: 0.28em;
+  color: var(--c4-signal-600);
+}
+
 .logos {
   display: flex;
   flex-wrap: wrap;

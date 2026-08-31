@@ -243,15 +243,6 @@ const differentiators = [
             </p>
           </div>
         </div>
-
-        <div v-reveal class="proof__note">
-          <Icon name="lucide:folder-open" size="20" />
-          <p>
-            Case studies are being written up. Each one goes to the client for
-            approval before we publish it, which is why the
-            <NuxtLink to="/projects">projects page</NuxtLink> is short.
-          </p>
-        </div>
       </div>
     </section>
 
@@ -372,31 +363,6 @@ const differentiators = [
 
 .proof:hover .proof__link :deep(svg) {
   transform: translateX(4px);
-}
-
-.proof__note {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-4);
-  align-items: start;
-  max-width: 46rem;
-  margin-block-start: var(--space-10);
-  padding: var(--space-5);
-  border-radius: var(--radius-md);
-  background-color: var(--bg-subtle);
-  font-size: var(--fs-sm);
-  line-height: var(--lh-body);
-  color: var(--text-secondary);
-}
-
-.proof__note :deep(svg) {
-  color: var(--text-accent);
-  margin-block-start: 0.15em;
-}
-
-.proof__note a {
-  color: var(--text-accent);
-  text-decoration: underline;
 }
 
 </style>
