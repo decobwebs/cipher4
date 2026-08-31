@@ -271,21 +271,27 @@ const visible = computed(() =>
   gap: var(--space-10);
 }
 
-/* The image carries the section, so it gets the full container width and a
-   frame rather than being cropped into a card. `contain` because the source
-   is a square render on its own ground: cropping it to a banner would cut the
-   laptop. */
+/* NO FRAME.
+   The render already sits on its own near-white ground, so a border and a
+   tinted panel behind it drew a box around something that did not need one
+   and stopped it reading as part of the page. It breaks the container instead
+   and runs the full width, because the product is the strongest evidence here
+   and it should arrive at full size. */
 .feature__media {
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--border-default);
-  background: var(--surface-sunken);
-  overflow: hidden;
+  width: 100vw;
+  max-width: 100vw;
+  margin-inline: calc(50% - 50vw);
 }
 
 .feature__img {
-  width: 100%;
-  height: auto;
   display: block;
+  width: 100%;
+  /* Square source. Unbounded it would be as tall as the viewport is wide on a
+     large screen, which is a scroll of empty ground either side of the laptop.
+     This is as big as it gets before that starts costing more than it gives. */
+  max-width: 1500px;
+  height: auto;
+  margin-inline: auto;
 }
 
 .feature__title {
