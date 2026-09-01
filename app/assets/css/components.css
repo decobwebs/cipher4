@@ -9,6 +9,24 @@
    look like has been replaced. That is what let the visual layer be rebuilt
    without touching fourteen page templates in the same pass.
 
+   PREFIX ORDER IS LOAD-BEARING
+   ----------------------------
+   Every backdrop-filter here lists `-webkit-backdrop-filter` FIRST and the
+   standard property SECOND. Do not reverse them.
+
+   The build's CSS minifier collapses a prefixed/unprefixed pair down to one
+   declaration and keeps whichever came last. With the standard property first,
+   the shipped stylesheet carried only `-webkit-backdrop-filter`, and Chrome
+   does not support that form at all: it is Safari's. The result was that every
+   glass surface on the production site had no blur whatsoever. The header read
+   as plain transparent, with the hero headline scrolling through it unchanged.
+
+   It survived every local check because the dev server does not minify, and
+   because getComputedStyle reports `backdrop-filter` as `none` in both the
+   working and the broken case, so measuring that property proves nothing.
+   Verify this visually, or by grepping the built CSS in .output for an
+   unprefixed `backdrop-filter:`.
+
    THE GLASS SYSTEM
    ----------------
    One primitive, `.glass`, at three elevations. Everything translucent on the
@@ -69,8 +87,8 @@
   border: 1px solid var(--glass-1-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-glass);
-  backdrop-filter: blur(var(--glass-1-blur)) saturate(var(--glass-saturate));
   -webkit-backdrop-filter: blur(var(--glass-1-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-1-blur)) saturate(var(--glass-saturate));
   /* Isolate so the rim and shine pseudo-elements cannot escape the corner
      radius or blend with whatever sits behind the panel. */
   isolation: isolate;
@@ -79,15 +97,15 @@
 .glass--2 {
   background-color: var(--glass-2-tint);
   border-color: var(--glass-2-border);
-  backdrop-filter: blur(var(--glass-2-blur)) saturate(var(--glass-saturate));
   -webkit-backdrop-filter: blur(var(--glass-2-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-2-blur)) saturate(var(--glass-saturate));
 }
 
 .glass--3 {
   background-color: var(--glass-3-tint);
   border-color: var(--glass-3-border);
-  backdrop-filter: blur(var(--glass-3-blur)) saturate(var(--glass-saturate));
   -webkit-backdrop-filter: blur(var(--glass-3-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-3-blur)) saturate(var(--glass-saturate));
 }
 
 /* The lit rim. A real bevel catches light on one edge, not uniformly around
@@ -220,8 +238,8 @@
   border: 1px solid var(--glass-1-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-glass);
-  backdrop-filter: blur(var(--glass-1-blur)) saturate(var(--glass-saturate));
   -webkit-backdrop-filter: blur(var(--glass-1-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-1-blur)) saturate(var(--glass-saturate));
   isolation: isolate;
   overflow: hidden;
 
@@ -604,8 +622,8 @@
   background-color: var(--glass-2-tint);
   border-color: var(--glass-2-border);
   color: var(--text-primary);
-  backdrop-filter: blur(var(--glass-2-blur)) saturate(var(--glass-saturate));
   -webkit-backdrop-filter: blur(var(--glass-2-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-2-blur)) saturate(var(--glass-saturate));
 }
 
 .btn--primary:hover {
@@ -619,8 +637,8 @@
   background-color: var(--glass-1-tint);
   border-color: var(--glass-2-border);
   color: var(--text-primary);
-  backdrop-filter: blur(var(--glass-1-blur)) saturate(var(--glass-saturate));
   -webkit-backdrop-filter: blur(var(--glass-1-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-1-blur)) saturate(var(--glass-saturate));
   box-shadow: var(--shadow-1);
 }
 

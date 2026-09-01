@@ -232,12 +232,23 @@ const scales = computed(() => ({
 /* Only applied where the filter genuinely works. Everywhere else the element
    keeps the `.glass` treatment it already has, so the fallback is the site's
    own material rather than a different one. */
+/* REFRACTION IS ADDITIVE, NOT A REPLACEMENT.
+   This rule used to swap the blur out for the displacement map and then drop
+   the tint to 55% on the theory that a flat fill would hide the refraction.
+   The result was a pane with no frost and barely any tint: page content read
+   straight through the header, and the displacement pulled a mirrored copy of
+   whatever sat behind it into the top edge, so the only thing the effect
+   contributed was a doubled ghost of the text underneath.
+
+   Displacement first, then blur. Filters apply left to right, so the blur
+   lands on the already-displaced backdrop and softens the seam the
+   displacement creates at the element's edge. The tint override is gone;
+   whichever `.glass` level the caller asked for supplies it. */
 .gsurface--refracting {
-  backdrop-filter: var(--gs-filter) saturate(var(--gs-saturation));
-  -webkit-backdrop-filter: var(--gs-filter) saturate(var(--gs-saturation));
-  /* The displacement map supplies the edge, so the flat tint comes down —
-     leaving it at full strength would hide the refraction behind it. */
-  background-color: color-mix(in srgb, var(--glass-1-tint) 55%, transparent);
+  -webkit-backdrop-filter: var(--gs-filter) blur(var(--gs-blur, 14px))
+    saturate(var(--gs-saturation));
+  backdrop-filter: var(--gs-filter) blur(var(--gs-blur, 14px))
+    saturate(var(--gs-saturation));
 }
 
 .gsurface--refracting.glass--2 {

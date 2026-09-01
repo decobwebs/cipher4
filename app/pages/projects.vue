@@ -324,18 +324,20 @@ const visible = computed(() =>
    and runs the full width, because the product is the strongest evidence here
    and it should arrive at full size. */
 .feature__media {
-  width: 100vw;
-  max-width: 100vw;
-  margin-inline: calc(50% - 50vw);
+  /* Was full-bleed. At 1.74:1 a 1440px viewport gave an 827px-tall image
+     that filled the fold on its own, which is more room than one screenshot
+     earns. It now stays inside the container and is capped well below it. */
+  width: 100%;
 }
 
 .feature__img {
   display: block;
   width: 100%;
-  /* Square source. Unbounded it would be as tall as the viewport is wide on a
-     large screen, which is a scroll of empty ground either side of the laptop.
-     This is as big as it gets before that starts costing more than it gives. */
-  max-width: 1700px;
+  /* 1.74:1, so height follows width directly. At the old full-bleed width a
+     1440px viewport gave an 827px-tall image that filled the fold on its own.
+     980px puts the laptop around 560px tall, which reads as a product shot
+     rather than a takeover. */
+  max-width: 980px;
   height: auto;
   margin-inline: auto;
 }
