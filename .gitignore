@@ -29,3 +29,6 @@ docs/profile/preview/
 
 # Design handoff pack (client logos and screenshots; never commit)
 design-handoff/
+
+# Screen recordings for phase reports (large; kept locally, not in git)
+docs/redesign/**/*.webm

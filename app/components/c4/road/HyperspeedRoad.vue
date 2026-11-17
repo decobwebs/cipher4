@@ -17,7 +17,7 @@
  * Exposes speedUp(ms) for a short burst and setSpeed(n) for a base speed.
  */
 import { roads, stillSrc, type RoadName, type RoadMask } from '~/lib/hyperspeed/roads'
-import type { RoadHandle, RoadOptions } from '~/lib/hyperspeed/index'
+import type { RoadHandle, RoadOptions, Distortion } from '~/lib/hyperspeed/index'
 import type { RoadEntry } from '~/composables/useRoadController'
 
 const props = defineProps<{
@@ -29,7 +29,15 @@ const props = defineProps<{
   /** Base speed; 1 = the live hero. */
   speed?: number
   mask?: RoadMask
+  /** Phase 2b: start fast and settle, once per visit (sessionStorage). */
+  arrival?: boolean
+  /** Phase 2b: the camera leans towards the mouse. Mouse and trackpad only;
+      never on touch devices or with reduced motion. */
+  steering?: boolean
 }>()
+
+const ARRIVED_KEY = 'c4-road-arrived'
+const ARRIVAL_MS = 1200
 
 const road = computed(() => roads[props.preset])
 const maskClass = computed(() => `c4-road--${props.mask ?? road.value.mask}`)
@@ -71,6 +79,15 @@ async function start() {
   handle = lib.mount(canvas.value, options())
   if (!handle.supported) { handle = null; mode.value = 'still'; return }
   ctl.attach(entry!, handle)
+  if (props.arrival) {
+    let seen = false
+    try { seen = sessionStorage.getItem(ARRIVED_KEY) === '1' } catch { /* private mode */ }
+    if (!seen) {
+      handle.arrive(ARRIVAL_MS)
+      try { sessionStorage.setItem(ARRIVED_KEY, '1') } catch { /* private mode */ }
+    }
+  }
+  if (props.steering) wireSteering()
   // Fade in once the first frame is on the canvas.
   requestAnimationFrame(() => requestAnimationFrame(() => { ready.value = true }))
 }
@@ -89,8 +106,28 @@ onMounted(() => {
   ctl.register(entry)
 })
 
+// --- Steering ----------------------------------------------------------------
+let unSteer: (() => void) | null = null
+function wireSteering() {
+  const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (!fine || reduce || unSteer) return
+  const move = (e: PointerEvent) => {
+    if (e.pointerType !== 'mouse') return
+    handle?.setSteer((e.clientX / window.innerWidth) * 2 - 1, (e.clientY / window.innerHeight) * 2 - 1)
+  }
+  const leave = () => handle?.setSteer(0, 0)
+  window.addEventListener('pointermove', move, { passive: true })
+  document.documentElement.addEventListener('pointerleave', leave)
+  unSteer = () => {
+    window.removeEventListener('pointermove', move)
+    document.documentElement.removeEventListener('pointerleave', leave)
+  }
+}
+
 onBeforeUnmount(() => {
   unmounted = true
+  unSteer?.()
   if (entry) ctl.unregister(entry)
   handle?.destroy()
   handle = null
@@ -112,6 +149,21 @@ defineExpose({
   setSpeed(n: number) {
     if (entry) entry.baseSpeed = n
     handle?.setSpeed(n)
+  },
+  /** What is showing: 'canvas' (moving road), 'still', 'off' or 'idle'. */
+  mode: () => mode.value,
+  // --- Phase 2b ---------------------------------------------------------------
+  /** Play the arrival again (demo replay). */
+  replayArrival() { handle?.arrive(ARRIVAL_MS) },
+  /** 0 = light theme, 1 = night theme. */
+  themeMix(t: number) { handle?.setThemeMix(t) },
+  morphTo(name: Distortion, ms = 800) { handle?.morphTo(name, ms) },
+  /** The amber car races away, with the 400 ms burst. */
+  launch() {
+    if (!handle) return
+    handle.launchCar()
+    handle.speedUp(true)
+    setTimeout(() => handle?.speedUp(false), 400)
   },
 })
 </script>

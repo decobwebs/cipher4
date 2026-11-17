@@ -178,7 +178,12 @@ export default defineNuxtConfig({
       crawlLinks: true,
       // `/_styleguide` and `/_roads` are linked from nowhere, so the crawler
       // cannot find them.
-      routes: ['/', '/sitemap.xml', '/robots.txt', '/_styleguide', '/_roads'],
+      routes: [
+        '/', '/sitemap.xml', '/robots.txt', '/_styleguide', '/_roads',
+        // Phase 2b road experiments (internal, removed at launch).
+        '/_roads/demos', '/_roads/arrival', '/_roads/day-to-night', '/_roads/sectors',
+        '/_roads/steering', '/_roads/message-sent', '/_roads/not-found',
+      ],
       failOnError: false,
     },
   },

@@ -15,6 +15,14 @@ export interface RoadOptions {
   maxPixelRatio?: number
   pauseOffscreen?: boolean
   reducedMotion?: 'still' | 'off' | 'animate'
+  /** Phase 2b: 0 light to 1 night colour blend (bloom pass always present). */
+  themeMix?: number
+  /** Phase 2b: several shapes in one road, blended live by morphTo(). */
+  morph?: { presets: Distortion[]; uniforms?: Record<string, number[]>[]; start?: number }
+  /** Phase 2b: one bright car that races away on launchCar(). */
+  launchCar?: boolean | { color?: string; speed?: number; length?: number; radius?: number }
+  fogNear?: number
+  fogFar?: number
   [key: string]: unknown
 }
 
@@ -29,6 +37,13 @@ export interface RoadHandle {
   setSpeed(n: number): void
   /** Draw the frame at effect time t (seconds). */
   setTime(t: number): void
+  /** Phase 2b: start fast with a stretched view, settle over ms. */
+  arrive(ms?: number, boost?: number): void
+  setThemeMix(t: number): void
+  morphTo(name: Distortion, ms?: number): void
+  /** Pointer position, -1 to 1 on each axis. */
+  setSteer(x: number, y: number): void
+  launchCar(): void
   pause(): void
   resume(): void
   destroy(): void

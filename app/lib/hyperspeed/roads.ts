@@ -89,6 +89,40 @@ export const roads = {
     options: { seed: 40, distortion: 'deepDistortion' },
     speed: 0.6,
   },
+
+  // --- Phase 2b experiments (only on /_roads demo pages) -------------------
+  // Day to night: the hero road with the colour blend switched on.
+  'demo-daynight': {
+    kind: 'hero', mask: 'header',
+    options: { seed: 3, themeMix: 0 },
+  },
+  // Sector road: the four sector shapes in one road, morphing live. Same
+  // shapes and settings as the four sector header roads.
+  'demo-sectors': {
+    kind: 'header', mask: 'none',
+    options: {
+      seed: 14,
+      morph: {
+        presets: ['turbulentDistortion', 'deepDistortion', 'LongRaceDistortion', 'xyDistortion'],
+        uniforms: [{ uAmp: [18, 4, 8, 8] }, {}, {}, { uAmp: [12, 8] }],
+        start: 0,
+      },
+    },
+  },
+  // Message sent: the contact road with the one-off amber car.
+  'demo-launch': {
+    kind: 'header', mask: 'none',
+    options: { seed: 8, distortion: 'deepDistortion', distortionUniforms: { uAmp: [8, 14] }, launchCar: true },
+    speed: 0.45,
+  },
+  // 404: the road fades into empty space ahead. Fog closes in at 12 to 48
+  // units: the deep road's climb all happens within about 50 units. It sits
+  // in its own band under the text, so it needs no side fade.
+  'demo-void': {
+    kind: 'header', mask: 'none',
+    options: { seed: 40, distortion: 'deepDistortion', fogNear: 0.03, fogFar: 0.12 },
+    speed: 0.6,
+  },
 } satisfies Record<string, RoadPreset>
 
 export type RoadName = keyof typeof roads

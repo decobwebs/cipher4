@@ -25,6 +25,8 @@ const QUALITY = 0.82
 const ROADS = [
   'hero', 'service', 'sector-maritime', 'sector-oil-gas', 'sector-logistics',
   'sector-supply-chain', 'case', 'contact', 'strip', 'deliver', 'closing', 'notfound',
+  // Phase 2b experiments
+  'demo-daynight', 'demo-sectors', 'demo-launch', 'demo-void',
 ]
 const SIZES = [
   { key: 'desktop', w: 1440, h: 700 },
