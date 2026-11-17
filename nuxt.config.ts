@@ -183,6 +183,12 @@ export default defineNuxtConfig({
     },
   },
 
+  // Dev server only: prepare the road's 3D libraries up front. Otherwise the
+  // first page that loads the road makes Vite stop and reload the page.
+  vite: {
+    optimizeDeps: { include: ['three', 'postprocessing'] },
+  },
+
   experimental: {
     payloadExtraction: true,
   },
