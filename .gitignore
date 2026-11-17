@@ -25,3 +25,7 @@ npm-debug.log*
 .playwright-mcp/
 mobile-390.png
 $SHOT/
+docs/profile/preview/
+
+# Design handoff pack (client logos and screenshots; never commit)
+design-handoff/
