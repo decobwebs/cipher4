@@ -1,0 +1,673 @@
+/*!
+ * C4Hyperspeed: portable build of the Cipher4 home-page hero effect.
+ * Scene, shaders and defaults from Cipher4's HyperspeedField.vue, which is a
+ * port of the React Bits "Hyperspeed" component by David Haz
+ * (MIT + Commons Clause; see LICENSE-REACT-BITS.md next to this file).
+ *
+ * Source of this copy: C:\Users\HP\cipher4-hyperspeed\build\src (v1.0.0).
+ * Cipher4 site changes, all marked "C4 site:":
+ *   - an ES module export instead of the window.C4Hyperspeed global;
+ *   - handle.setTime(t), to draw a still frame at an exact effect time.
+ * Licence: for use on Cipher4's own site. Never publish or sell this code as
+ * a separate package (plan, section 8).
+ */
+import {
+  WebGLRenderer, Scene, PerspectiveCamera, Fog, Color, Vector2, Vector3, Vector4,
+  LineCurve3, TubeGeometry, InstancedBufferGeometry, InstancedBufferAttribute,
+  ShaderMaterial, Mesh, PlaneGeometry, ShaderChunk, DoubleSide,
+} from 'three'
+import {
+  EffectComposer, RenderPass, EffectPass, BloomEffect, SMAAEffect, SMAAPreset,
+} from 'postprocessing'
+import { presets as PRESETS } from './presets.js'
+
+// ------------------------------------------------------------------ palettes
+// Exact values from HyperspeedField.vue.
+const THEMES = {
+  light: {
+    bloom: false, // live: bloom only in the dark theme
+    colors: {
+      background: '#ffffff',
+      roadColor: '#dde6f0',
+      islandColor: '#d0dbe8',
+      shoulderLines: '#a9b7c7',
+      brokenLines: '#bcc9d8',
+      leftCars: ['#f5a524', '#f8b542', '#fbc96a'],
+      rightCars: ['#1a3ab5', '#152e8e', '#102068'],
+      sticks: '#f5a524',
+    },
+  },
+  dark: {
+    bloom: true,
+    colors: {
+      background: '#060a1c',
+      roadColor: '#0a1030',
+      islandColor: '#102068',
+      shoulderLines: '#2a4fd0',
+      brokenLines: '#2a4fd0',
+      leftCars: ['#f8b542', '#f5a524', '#fbc96a'],
+      rightCars: ['#f4f7ff', '#d8e2f7', '#b9c4de'],
+      sticks: '#f5a524',
+    },
+  },
+}
+
+const clone = (o) => JSON.parse(JSON.stringify(o))
+
+// The live hero: <UiHyperspeedField theme="light" distortion="mountainDistortion" />
+const DEFAULTS = {
+  theme: 'light',
+  distortion: 'mountainDistortion',
+  distortionUniforms: null, // e.g. { uFreq: [3,6,10], uAmp: [30,30,20] } to override the preset's
+
+  length: 400,
+  roadWidth: 6,
+  islandWidth: 2,
+  lanesPerRoad: 3,
+  fov: 90,
+  fovSpeedUp: 150, // not in the live port (no interaction there); React Bits default
+  speedUp: 1.2, // set in the live port but unused there; used here by speedUp()/hold
+  carLightsFade: 0.55,
+  totalSideLightSticks: 16,
+  lightPairsPerRoadWay: 34,
+  shoulderLinesWidthPercentage: 0.05,
+  brokenLinesWidthPercentage: 0.1,
+  brokenLinesLengthPercentage: 0.5,
+  lightStickWidth: [0.12, 0.5],
+  lightStickHeight: [1.3, 1.7],
+  movingAwaySpeed: [50, 70],
+  movingCloserSpeed: [-90, -120],
+  carLightsLength: [12, 36],
+  carLightsRadius: [0.05, 0.12],
+  carWidthPercentage: [0.3, 0.45],
+  carShiftX: [-0.25, 0.25],
+  carFloorSeparation: [0.05, 0.8],
+  colors: clone(THEMES.light.colors),
+
+  cameraPosition: [0, 8, -5],
+  fogNear: 0.2, // x length
+  fogFar: 500, // x length
+
+  // Canvas clear colour. The live canvas is transparent (alpha renderer,
+  // clear alpha 0); the white you see on the site is the page behind it.
+  background: 'transparent',
+  bloom: null, // null = follow theme (light: off, dark: on)
+  bloomOptions: { luminanceThreshold: 0.2, luminanceSmoothing: 0, resolutionScale: 1 },
+  smaa: true,
+  maxPixelRatio: 1.75, // the live cap (its comment says 2; the code says 1.75)
+
+  holdToSpeedUp: false, // live hero has no pointer interaction
+  reducedMotion: 'still', // 'still' | 'off' (= live: draw nothing) | 'animate'
+  saveData: 'ignore', // 'ignore' | 'off' (= live: draw nothing when Save-Data is on)
+  pauseOffscreen: true,
+  seed: null, // number = repeatable layout; null = Math.random like live
+}
+
+function presetsPublic() {
+  const out = {}
+  for (const [k, p] of Object.entries(PRESETS)) {
+    out[k] = {
+      source: p.source,
+      uniforms: clone(p.uniforms),
+      lookAtAmp: p.lookAtAmp && p.lookAtAmp.slice(),
+      lookAtOffset: p.lookAtOffset && p.lookAtOffset.slice(),
+      glsl: p.glsl,
+    }
+  }
+  return out
+}
+
+function deepMerge(target, src) {
+  for (const k of Object.keys(src || {})) {
+    const v = src[k]
+    if (v && typeof v === 'object' && !Array.isArray(v) && target[k] && typeof target[k] === 'object' && !Array.isArray(target[k])) {
+      deepMerge(target[k], v)
+    } else {
+      target[k] = Array.isArray(v) ? v.slice() : v && typeof v === 'object' ? clone(v) : v
+    }
+  }
+  return target
+}
+
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6d2b79f5) | 0
+    let t = Math.imul(a ^ (a >>> 15), 1 | a)
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+function vec(arr) {
+  if (arr.length === 2) return new Vector2(arr[0], arr[1])
+  if (arr.length === 3) return new Vector3(arr[0], arr[1], arr[2])
+  return new Vector4(arr[0], arr[1], arr[2], arr[3])
+}
+
+// Resolve user options against defaults + theme.
+function resolve(user) {
+  const theme = THEMES[user.theme] ? user.theme : DEFAULTS.theme
+  const o = deepMerge(clone(DEFAULTS), { colors: THEMES[theme].colors })
+  deepMerge(o, user)
+  o.theme = theme
+  if (o.bloom == null) o.bloom = THEMES[theme].bloom
+  if (!PRESETS[o.distortion]) o.distortion = DEFAULTS.distortion
+  return o
+}
+
+function lerp(current, target, speed = 0.1, limit = 0.001) {
+  let change = (target - current) * speed
+  if (Math.abs(change) < limit) change = target - current
+  return change
+}
+
+// --------------------------------------------------------------- shaders
+const carLightsVertex = (d) => `
+  #define USE_FOG;
+  ${ShaderChunk.fog_pars_vertex}
+  attribute vec3 aOffset;
+  attribute vec3 aMetrics;
+  attribute vec3 aColor;
+  uniform float uTravelLength;
+  uniform float uTime;
+  varying vec2 vUv;
+  varying vec3 vColor;
+  ${d}
+  void main() {
+    vec3 transformed = position.xyz;
+    float radius = aMetrics.r;
+    float myLength = aMetrics.g;
+    float speed = aMetrics.b;
+    transformed.xy *= radius;
+    transformed.z *= myLength;
+    transformed.z += myLength - mod(uTime * speed + aOffset.z, uTravelLength);
+    transformed.xy += aOffset.xy;
+    float progress = abs(transformed.z / uTravelLength);
+    transformed.xyz += getDistortion(progress);
+    vec4 mvPosition = modelViewMatrix * vec4(transformed, 1.);
+    gl_Position = projectionMatrix * mvPosition;
+    vUv = uv;
+    vColor = aColor;
+    ${ShaderChunk.fog_vertex}
+  }
+`
+const carLightsFragment = `
+  #define USE_FOG;
+  ${ShaderChunk.fog_pars_fragment}
+  varying vec3 vColor;
+  varying vec2 vUv;
+  uniform vec2 uFade;
+  void main() {
+    vec3 color = vec3(vColor);
+    float alpha = smoothstep(uFade.x, uFade.y, vUv.x);
+    gl_FragColor = vec4(color, alpha);
+    if (gl_FragColor.a < 0.0001) discard;
+    ${ShaderChunk.fog_fragment}
+  }
+`
+const sticksVertex = (d) => `
+  #define USE_FOG;
+  ${ShaderChunk.fog_pars_vertex}
+  attribute float aOffset;
+  attribute vec3 aColor;
+  attribute vec2 aMetrics;
+  uniform float uTravelLength;
+  uniform float uTime;
+  varying vec3 vColor;
+  mat4 rotationY(in float angle) {
+    return mat4(cos(angle), 0, sin(angle), 0, 0, 1.0, 0, 0, -sin(angle), 0, cos(angle), 0, 0, 0, 0, 1);
+  }
+  ${d}
+  void main(){
+    vec3 transformed = position.xyz;
+    float width = aMetrics.x;
+    float height = aMetrics.y;
+    transformed.xy *= vec2(width, height);
+    float time = mod(uTime * 60. * 2. + aOffset, uTravelLength);
+    transformed = (rotationY(3.14/2.) * vec4(transformed,1.)).xyz;
+    transformed.z += -uTravelLength + time;
+    float progress = abs(transformed.z / uTravelLength);
+    transformed.xyz += getDistortion(progress);
+    transformed.y += height / 2.;
+    transformed.x += -width / 2.;
+    vec4 mvPosition = modelViewMatrix * vec4(transformed, 1.);
+    gl_Position = projectionMatrix * mvPosition;
+    vColor = aColor;
+    ${ShaderChunk.fog_vertex}
+  }
+`
+const sticksFragment = `
+  #define USE_FOG;
+  ${ShaderChunk.fog_pars_fragment}
+  varying vec3 vColor;
+  void main(){
+    gl_FragColor = vec4(vec3(vColor), 1.);
+    ${ShaderChunk.fog_fragment}
+  }
+`
+const roadVertex = (d) => `
+  #define USE_FOG;
+  uniform float uTime;
+  ${ShaderChunk.fog_pars_vertex}
+  uniform float uTravelLength;
+  varying vec2 vUv;
+  ${d}
+  void main() {
+    vec3 transformed = position.xyz;
+    vec3 distortion = getDistortion((transformed.y + uTravelLength / 2.) / uTravelLength);
+    transformed.x += distortion.x;
+    transformed.z += distortion.y;
+    transformed.y += -1. * distortion.z;
+    vec4 mvPosition = modelViewMatrix * vec4(transformed, 1.);
+    gl_Position = projectionMatrix * mvPosition;
+    vUv = uv;
+    ${ShaderChunk.fog_vertex}
+  }
+`
+const roadMarkingsVars = `
+  uniform float uLanes;
+  uniform vec3 uBrokenLinesColor;
+  uniform vec3 uShoulderLinesColor;
+  uniform float uShoulderLinesWidthPercentage;
+  uniform float uBrokenLinesWidthPercentage;
+  uniform float uBrokenLinesLengthPercentage;
+`
+const roadMarkingsFragment = `
+  uv.y = mod(uv.y + uTime * 0.05, 1.);
+  float laneWidth = 1.0 / uLanes;
+  float brokenLineWidth = laneWidth * uBrokenLinesWidthPercentage;
+  float laneEmptySpace = 1. - uBrokenLinesLengthPercentage;
+  float brokenLines = step(1.0 - brokenLineWidth, fract(uv.x * 2.0)) * step(laneEmptySpace, fract(uv.y * 10.0));
+  float sideLines = step(1.0 - brokenLineWidth, fract((uv.x - laneWidth * (uLanes - 1.0)) * 2.0)) + step(brokenLineWidth, uv.x);
+  brokenLines = mix(brokenLines, sideLines, uv.x);
+  color = mix(color, uBrokenLinesColor, brokenLines);
+`
+const roadBase = (vars, frag) => `
+  #define USE_FOG;
+  varying vec2 vUv;
+  uniform vec3 uColor;
+  uniform float uTime;
+  ${vars}
+  ${ShaderChunk.fog_pars_fragment}
+  void main() {
+    vec2 uv = vUv;
+    vec3 color = vec3(uColor);
+    ${frag}
+    gl_FragColor = vec4(color, 1.);
+    ${ShaderChunk.fog_fragment}
+  }
+`
+
+// ------------------------------------------------------------------ mount
+function supportsWebGL() {
+  try {
+    const c = new OffscreenCanvas(1, 1)
+    const gl = c.getContext('webgl2') || c.getContext('webgl')
+    if (gl) { const e = gl.getExtension('WEBGL_lose_context'); e && e.loseContext() }
+    return !!gl
+  } catch (e) {
+    // OffscreenCanvas missing: assume yes and let the renderer constructor decide.
+    return typeof WebGLRenderingContext !== 'undefined'
+  }
+}
+
+function mount(canvas, userOptions) {
+  if (!canvas || canvas.tagName !== 'CANVAS') throw new Error('C4Hyperspeed.mount: pass a <canvas> element')
+
+  let user = clone(userOptions || {})
+  let o = resolve(user)
+
+  const mqReduce = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null
+  const reduce = () => !!(mqReduce && mqReduce.matches) && o.reducedMotion !== 'animate'
+  const saveData = () => !!(navigator.connection && navigator.connection.saveData) && o.saveData === 'off'
+
+  const inert = {
+    supported: false, reason: '', setOptions() {}, speedUp() {}, setSpeed() {}, pause() {}, resume() {}, destroy() {},
+    getOptions: () => clone(o),
+  }
+  if (reduce() && o.reducedMotion === 'off') return Object.assign(inert, { reason: 'reduced-motion' })
+  if (saveData()) return Object.assign(inert, { reason: 'save-data' })
+  if (!supportsWebGL()) return Object.assign(inert, { reason: 'no-webgl' })
+
+  let renderer
+  try {
+    renderer = new WebGLRenderer({ canvas, antialias: false, alpha: true })
+  } catch (e) {
+    return Object.assign(inert, { reason: 'no-webgl' })
+  }
+
+  const camera = new PerspectiveCamera(o.fov, 1, 0.1, 10000)
+  let scene, composer, built // built = { cars:[], sticks, roadTime, distortion, disposables }
+  // Same maths as THREE.Clock.getDelta() (which three r185 marks deprecated).
+  const clock = { last: 0, getDelta() { const n = performance.now(); const d = this.last ? (n - this.last) / 1000 : 0; this.last = n; return d } }
+  let elapsed = 0 // scaled seconds; equals clock.elapsedTime on the live site at speed 1
+  let timeOffset = 0
+  let speedUpCur = 0
+  let speedUpTarget = 0
+  let fovTarget = o.fov
+  let speed = 1
+
+  let userPaused = false
+  let onScreen = true
+  let tabVisible = !document.hidden
+  let running = false
+  let destroyed = false
+
+  function applyClear() {
+    if (o.background === 'transparent' || o.background == null) renderer.setClearColor(0x000000, 0)
+    else renderer.setClearColor(new Color(o.background), 1)
+  }
+
+  function build() {
+    teardownScene()
+    const rand = o.seed == null ? Math.random : mulberry32(o.seed)
+    const random = (b) => (Array.isArray(b) ? rand() * (b[1] - b[0]) + b[0] : rand() * b)
+    const pick = (a) => (Array.isArray(a) ? a[Math.floor(rand() * a.length)] : a)
+    const disposables = []
+    const c = o.colors
+
+    scene = new Scene()
+    scene.background = null
+    const fog = new Fog(new Color(c.background), o.length * o.fogNear, o.length * o.fogFar)
+    scene.fog = fog
+    const fogUniforms = { fogColor: { value: fog.color }, fogNear: { value: fog.near }, fogFar: { value: fog.far } }
+
+    const preset = PRESETS[o.distortion]
+    const uvals = Object.assign(clone(preset.uniforms), o.distortionUniforms || {})
+    const dUniforms = {}
+    for (const k of Object.keys(uvals)) dUniforms[k] = { value: vec(uvals[k]) }
+    const distortion = { preset, uvals, uniforms: dUniforms }
+
+    camera.fov = o.fov
+    camera.position.set(o.cameraPosition[0], o.cameraPosition[1], o.cameraPosition[2])
+    camera.rotation.set(0, 0, 0)
+
+    // car lights
+    function makeCarLights(colors, spd, fade, xPos) {
+      const curve = new LineCurve3(new Vector3(0, 0, 0), new Vector3(0, 0, -1))
+      const geometry = new TubeGeometry(curve, 40, 1, 8, false)
+      const inst = new InstancedBufferGeometry().copy(geometry)
+      inst.instanceCount = o.lightPairsPerRoadWay * 2
+      const laneWidth = o.roadWidth / o.lanesPerRoad
+      const aOffset = [], aMetrics = [], aColor = []
+      const cols = (Array.isArray(colors) ? colors : [colors]).map((x) => new Color(x))
+      for (let i = 0; i < o.lightPairsPerRoadWay; i++) {
+        const radius = random(o.carLightsRadius)
+        const length = random(o.carLightsLength)
+        const sp = random(spd)
+        const carLane = i % o.lanesPerRoad
+        let laneX = carLane * laneWidth - o.roadWidth / 2 + laneWidth / 2
+        const carWidth = random(o.carWidthPercentage) * laneWidth
+        laneX += random(o.carShiftX) * laneWidth
+        const offsetY = random(o.carFloorSeparation) + radius * 1.3
+        const offsetZ = -random(o.length)
+        aOffset.push(laneX - carWidth / 2, offsetY, offsetZ, laneX + carWidth / 2, offsetY, offsetZ)
+        aMetrics.push(radius, length, sp, radius, length, sp)
+        const col = pick(cols)
+        aColor.push(col.r, col.g, col.b, col.r, col.g, col.b)
+      }
+      inst.setAttribute('aOffset', new InstancedBufferAttribute(new Float32Array(aOffset), 3, false))
+      inst.setAttribute('aMetrics', new InstancedBufferAttribute(new Float32Array(aMetrics), 3, false))
+      inst.setAttribute('aColor', new InstancedBufferAttribute(new Float32Array(aColor), 3, false))
+      const material = new ShaderMaterial({
+        fragmentShader: carLightsFragment,
+        vertexShader: carLightsVertex(preset.glsl),
+        transparent: true,
+        uniforms: Object.assign({ uTime: { value: 0 }, uTravelLength: { value: o.length }, uFade: { value: fade } }, fogUniforms, dUniforms),
+      })
+      const mesh = new Mesh(inst, material)
+      mesh.frustumCulled = false
+      mesh.position.setX(xPos)
+      scene.add(mesh)
+      disposables.push(inst, material, geometry)
+      return material
+    }
+    const left = makeCarLights(c.leftCars, o.movingAwaySpeed, new Vector2(0, 1 - o.carLightsFade), -o.roadWidth / 2 - o.islandWidth / 2)
+    const right = makeCarLights(c.rightCars, o.movingCloserSpeed, new Vector2(1, o.carLightsFade), o.roadWidth / 2 + o.islandWidth / 2)
+
+    // sticks
+    const stickGeo = new PlaneGeometry(1, 1)
+    const stickInst = new InstancedBufferGeometry().copy(stickGeo)
+    const total = o.totalSideLightSticks
+    stickInst.instanceCount = total
+    {
+      const so = o.length / (total - 1)
+      const aOffset = [], aColor = [], aMetrics = []
+      const sc = new Color(c.sticks)
+      for (let i = 0; i < total; i++) {
+        aOffset.push((i - 1) * so * 2 + so * rand())
+        aColor.push(sc.r, sc.g, sc.b)
+        aMetrics.push(random(o.lightStickWidth), random(o.lightStickHeight))
+      }
+      stickInst.setAttribute('aOffset', new InstancedBufferAttribute(new Float32Array(aOffset), 1, false))
+      stickInst.setAttribute('aColor', new InstancedBufferAttribute(new Float32Array(aColor), 3, false))
+      stickInst.setAttribute('aMetrics', new InstancedBufferAttribute(new Float32Array(aMetrics), 2, false))
+    }
+    const stickMat = new ShaderMaterial({
+      fragmentShader: sticksFragment,
+      vertexShader: sticksVertex(preset.glsl),
+      side: DoubleSide,
+      uniforms: Object.assign({ uTravelLength: { value: o.length }, uTime: { value: 0 } }, fogUniforms, dUniforms),
+    })
+    const stickMesh = new Mesh(stickInst, stickMat)
+    stickMesh.frustumCulled = false
+    stickMesh.position.setX(-(o.roadWidth + o.islandWidth / 2))
+    scene.add(stickMesh)
+    disposables.push(stickGeo, stickInst, stickMat)
+
+    // road + island
+    const roadTime = { value: 0 }
+    const roadFrag = roadBase(roadMarkingsVars, roadMarkingsFragment)
+    const islandFrag = roadBase('', '')
+    function plane(side, isRoad) {
+      const geometry = new PlaneGeometry(isRoad ? o.roadWidth : o.islandWidth, o.length, 20, 100)
+      let uniforms = {
+        uTravelLength: { value: o.length },
+        uColor: { value: new Color(isRoad ? c.roadColor : c.islandColor) },
+        uTime: roadTime,
+      }
+      if (isRoad) {
+        uniforms = Object.assign(uniforms, {
+          uLanes: { value: o.lanesPerRoad },
+          uBrokenLinesColor: { value: new Color(c.brokenLines) },
+          uShoulderLinesColor: { value: new Color(c.shoulderLines) },
+          uShoulderLinesWidthPercentage: { value: o.shoulderLinesWidthPercentage },
+          uBrokenLinesLengthPercentage: { value: o.brokenLinesLengthPercentage },
+          uBrokenLinesWidthPercentage: { value: o.brokenLinesWidthPercentage },
+        })
+      }
+      const material = new ShaderMaterial({
+        fragmentShader: isRoad ? roadFrag : islandFrag,
+        vertexShader: roadVertex(preset.glsl),
+        side: DoubleSide,
+        uniforms: Object.assign(uniforms, fogUniforms, dUniforms),
+      })
+      const mesh = new Mesh(geometry, material)
+      mesh.rotation.x = -Math.PI / 2
+      mesh.position.z = -o.length / 2
+      mesh.position.x += (o.islandWidth / 2 + o.roadWidth / 2) * side
+      scene.add(mesh)
+      disposables.push(geometry, material)
+    }
+    plane(-1, true)
+    plane(1, true)
+    plane(0, false)
+
+    // post-processing: same pass order as live
+    composer = new EffectComposer(renderer)
+    composer.addPass(new RenderPass(scene, camera))
+    if (o.bloom) composer.addPass(new EffectPass(camera, new BloomEffect(o.bloomOptions)))
+    if (o.smaa) composer.addPass(new EffectPass(camera, new SMAAEffect({ preset: SMAAPreset.MEDIUM })))
+
+    applyClear()
+    built = { left, right, stickMat, roadTime, distortion, disposables }
+    resize()
+  }
+
+  function teardownScene() {
+    if (!built) return
+    scene.clear()
+    for (const d of built.disposables) d.dispose()
+    composer.dispose()
+    built = null
+  }
+
+  function setTime(t) {
+    built.left.uniforms.uTime.value = t
+    built.right.uniforms.uTime.value = t
+    built.stickMat.uniforms.uTime.value = t
+    built.roadTime.value = t
+    const p = built.distortion.preset
+    if (p.js) {
+      const d = p.js(0.025, t, built.distortion.uvals)
+      const amp = p.lookAtAmp, off = p.lookAtOffset
+      camera.lookAt(
+        camera.position.x + d[0] * amp[0] + off[0],
+        camera.position.y + d[1] * amp[1] + off[1],
+        camera.position.z + d[2] * amp[2] + off[2],
+      )
+    }
+    camera.updateProjectionMatrix()
+  }
+
+  function frame() {
+    const delta = clock.getDelta()
+    const dt = delta * speed
+    // React Bits speed-up model. With speedUpTarget 0 (always, on the live
+    // site) speedUpCur stays 0 and time === elapsed, i.e. the live clock.
+    const lp = Math.exp(-(-60 * Math.log2(1 - 0.1)) * delta)
+    speedUpCur += lerp(speedUpCur, speedUpTarget, lp, 0.00001)
+    timeOffset += speedUpCur * dt
+    elapsed += dt
+    const fc = lerp(camera.fov, fovTarget, lp)
+    if (fc !== 0) camera.fov += fc * delta * 6
+    setTime(elapsed + timeOffset)
+    composer.render(delta)
+  }
+
+  function renderStill() {
+    if (!built) return
+    setTime(elapsed + timeOffset)
+    composer.render(0)
+  }
+
+  function shouldRun() {
+    return !destroyed && !userPaused && tabVisible && (onScreen || !o.pauseOffscreen) && !reduce()
+  }
+  function sync() {
+    if (shouldRun()) {
+      if (!running) { running = true; clock.getDelta(); renderer.setAnimationLoop(frame) }
+    } else {
+      if (running) { running = false; renderer.setAnimationLoop(null) }
+    }
+  }
+
+  function resize() {
+    const cw = canvas.clientWidth, ch = canvas.clientHeight
+    if (!cw || !ch) return
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, o.maxPixelRatio))
+    renderer.setSize(cw, ch, false)
+    camera.aspect = cw / ch
+    camera.updateProjectionMatrix()
+    if (composer) composer.setSize(cw, ch)
+    if (!running) renderStill()
+  }
+
+  const ro = new ResizeObserver(resize)
+  ro.observe(canvas)
+  const io = new IntersectionObserver(([e]) => { onScreen = !!(e && e.isIntersecting); sync() }, { rootMargin: '0px 0px -10% 0px' })
+  io.observe(canvas)
+  const onVis = () => { tabVisible = !document.hidden; sync() }
+  document.addEventListener('visibilitychange', onVis)
+  const onMq = () => { sync(); if (!running) renderStill() }
+  if (mqReduce) mqReduce.addEventListener ? mqReduce.addEventListener('change', onMq) : mqReduce.addListener(onMq)
+
+  // pointer hold (React Bits behaviour), only when holdToSpeedUp is on
+  const down = () => { fovTarget = o.fovSpeedUp; speedUpTarget = o.speedUp }
+  const up = () => { fovTarget = o.fov; speedUpTarget = 0 }
+  const ctx = (e) => e.preventDefault()
+  let listening = false
+  function wirePointer() {
+    const want = !!o.holdToSpeedUp
+    if (want === listening) return
+    const m = want ? 'addEventListener' : 'removeEventListener'
+    canvas[m]('mousedown', down)
+    canvas[m]('mouseup', up)
+    canvas[m]('mouseout', up)
+    canvas[m]('touchstart', down, { passive: true })
+    canvas[m]('touchend', up, { passive: true })
+    canvas[m]('touchcancel', up, { passive: true })
+    canvas[m]('contextmenu', ctx)
+    listening = want
+  }
+
+  build()
+  wirePointer()
+  sync()
+  if (!running) renderStill()
+
+  return {
+    supported: true,
+    canvas,
+    setOptions(partial) {
+      if (destroyed || !partial) return
+      partial = clone(partial)
+      // Switching theme resets colours and bloom to that theme's, unless the
+      // same call sets them too.
+      if (partial.theme && partial.theme !== o.theme) {
+        if (!partial.colors) delete user.colors
+        if (!('bloom' in partial)) delete user.bloom
+      }
+      if (partial.distortion && partial.distortion !== o.distortion && !('distortionUniforms' in partial)) delete user.distortionUniforms
+      deepMerge(user, partial)
+      const prevFov = o.fov
+      o = resolve(user)
+      if (fovTarget === prevFov) fovTarget = o.fov
+      build()
+      wirePointer()
+      sync()
+      if (!running) renderStill()
+    },
+    getOptions: () => clone(o),
+    speedUp(on) {
+      if (on) down(); else up()
+    },
+    setSpeed(n) {
+      speed = Math.max(0, Number(n) || 0)
+    },
+    // C4 site: draw the frame at effect time t (seconds). For still frames
+    // and for side-by-side checks against the old hero.
+    setTime(t) {
+      if (destroyed) return
+      elapsed = Math.max(0, Number(t) || 0)
+      timeOffset = 0
+      renderStill()
+    },
+    pause() { userPaused = true; sync() },
+    resume() { userPaused = false; sync() },
+    destroy() {
+      if (destroyed) return
+      destroyed = true
+      sync()
+      io.disconnect(); ro.disconnect()
+      document.removeEventListener('visibilitychange', onVis)
+      if (mqReduce) mqReduce.removeEventListener ? mqReduce.removeEventListener('change', onMq) : mqReduce.removeListener(onMq)
+      o.holdToSpeedUp = false; wirePointer()
+      teardownScene()
+      renderer.dispose()
+      renderer.forceContextLoss()
+    },
+  }
+}
+
+// C4 site: exported, not attached to window.
+const api = {
+  version: '1.0.0',
+  mount,
+  get defaults() { return clone(DEFAULTS) },
+  get themes() { return clone(THEMES) },
+  get presets() { return presetsPublic() },
+}
+
+export { mount }
+export default api

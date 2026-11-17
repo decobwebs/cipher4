@@ -46,6 +46,6 @@ useSiteSchema()
        phone it never initialises at all. -->
   <ClientOnly>
     <!-- Old site only. The redesign (layout `c4`) has no pointer trail. -->
-    <UiSplashCursor v-if="route.meta.layout !== 'c4'" />
+    <UiSplashCursor v-if="route.meta.layout !== 'c4' && !route.path.startsWith('/_')" />
   </ClientOnly>
 </template>

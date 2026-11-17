@@ -105,6 +105,31 @@ const coreCount = iconNames.filter((n) => icons[n].group !== 'contact').length
 // Remounting replays the draw-on.
 const replay = ref(0)
 
+// --- Roads ----------------------------------------------------------------
+// Header roads are shown with mask "none" here: in a small card the header
+// fade would hide most of them. On the pages they use their real masks.
+const roadDemos = [
+  { name: 'service', label: 'Service page headers', spec: 'mountain · uAmp [20,20,14]', mask: 'none' },
+  { name: 'sector-maritime', label: 'Maritime and ports', spec: 'turbulent (waves) · uAmp [18,4,8,8]', mask: 'none' },
+  { name: 'sector-oil-gas', label: 'Oil and gas', spec: 'deepDistortion', mask: 'none' },
+  { name: 'sector-logistics', label: 'Logistics and transport', spec: 'LongRaceDistortion', mask: 'none' },
+  { name: 'sector-supply-chain', label: 'Supply chain and procurement', spec: 'xyDistortion · low amplitude', mask: 'none' },
+  { name: 'case', label: 'Case study headers', spec: 'LongRace · uAmp [24,8]', mask: 'none' },
+  { name: 'contact', label: 'Contact header', spec: 'deep · speed 0.45 · 400 ms burst on send', mask: 'none' },
+  { name: 'notfound', label: '404 page', spec: 'deep · calm loop', mask: 'none' },
+  { name: 'deliver', label: 'How we deliver', spec: 'turbulent · uAmp [14,4,6,6] · moves with scroll', mask: 'deliver' },
+  { name: 'strip', label: 'Section strip', spec: 'LongRace · uAmp [20,6] · moves only while scrolling', mask: 'strip', short: true },
+] as const
+
+const contactRoad = ref<{ speedUp: (ms?: number) => void } | null>(null)
+const ctl = useRoadController()
+const tierLabel = computed(() => ({
+  full: 'full: every road animates',
+  mobile: 'phone or tablet: header and closing roads only',
+  still: 'still frames (reduced motion, Save-Data, low power or low frame rate)',
+  none: 'no WebGL: still images',
+})[ctl.tier()])
+
 const crumbs = [
   { label: 'Home', to: '/' },
   { label: 'Services', to: '/services' },
@@ -332,6 +357,42 @@ const crumbs = [
       </div>
     </section>
 
+    <!-- THE ROAD -->
+    <section class="sg-sec" aria-labelledby="sg-road">
+      <div class="c4-section c4-wrap" style="padding-bottom: 0">
+        <SectionHeader eyebrow="07 · The road" title="One road runs through the whole site" lead="The live hero road, exactly, with a fade on the left so it never passes behind the words. Only one road moves at a time; the others hold their last frame. Strips and How we deliver move only while you scroll.">
+          <template #action>
+            <p class="sg-mono">This device: <ClientOnly><strong>{{ tierLabel }}</strong><template #fallback>…</template></ClientOnly></p>
+          </template>
+        </SectionHeader>
+      </div>
+
+      <!-- Home hero, full bleed, as it will sit behind the copy. -->
+      <div class="sg-hero-road">
+        <div class="sg-hero-road__road"><HyperspeedRoad preset="hero" /></div>
+        <div class="c4-wrap sg-hero-road__copy">
+          <Eyebrow>Maritime · Oil and gas · Logistics · Supply chain</Eyebrow>
+          <p class="c4-display">Intelligence for <span class="c4-accent">critical operations.</span></p>
+          <p class="c4-lead">We engineer the software, AI and connected systems that let complex operations sense what is happening, decide what comes next and prove what was done.</p>
+        </div>
+      </div>
+
+      <div class="c4-section c4-wrap">
+        <div class="sg-roads">
+          <div v-for="r in roadDemos" :key="r.name" class="c4-card sg-road" :class="{ 'sg-road--short': r.short }">
+            <div class="sg-road__stage">
+              <HyperspeedRoad :ref="(c) => { if (r.name === 'contact') contactRoad = c as never }" :preset="r.name" :mask="r.mask" />
+            </div>
+            <div class="sg-road__meta">
+              <p class="sg-icon__name">{{ r.label }}</p>
+              <p class="sg-mono">{{ r.spec }}</p>
+              <C4Button v-if="r.name === 'contact'" variant="secondary" size="sm" @click="contactRoad?.speedUp(400)">Simulate “form sent”</C4Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <ClosingBand />
   </div>
 </template>
@@ -535,6 +596,81 @@ const crumbs = [
 .sg-icon--dark {
   align-items: center;
   padding: var(--s-16);
+}
+
+/* Roads */
+.sg-hero-road {
+  position: relative;
+  min-height: 760px;
+  display: flex;
+  align-items: center;
+  margin-top: var(--s-64);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.sg-hero-road__road {
+  position: absolute;
+  inset: 0;
+}
+
+.sg-hero-road__copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-32);
+  padding-block: var(--s-96);
+}
+
+.sg-hero-road__copy > * {
+  max-width: 620px;
+}
+
+.sg-roads {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(380px, 100%), 1fr));
+  gap: var(--s-24);
+}
+
+.sg-road {
+  overflow: hidden;
+}
+
+.sg-road__stage {
+  height: 280px;
+  border-bottom: 1px solid var(--line);
+}
+
+.sg-road--short {
+  grid-column: 1 / -1;
+}
+
+.sg-road--short .sg-road__stage {
+  height: 150px;
+}
+
+.sg-road__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-8);
+  padding: var(--s-24);
+}
+
+@media (max-width: 900px) {
+  .sg-hero-road {
+    min-height: 0;
+    flex-direction: column-reverse;
+  }
+
+  .sg-hero-road__road {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: 330px;
+  }
 }
 
 .sg-frame {

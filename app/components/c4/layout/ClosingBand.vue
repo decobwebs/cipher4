@@ -2,8 +2,8 @@
 /**
  * The closing band (content B4, Home-Desktop board): the one dark moment on
  * every page. The night road runs low in the band, beneath the call to
- * action; it arrives in Phase 2 through the `road` slot. Until then the
- * space it will occupy is already reserved, so nothing shifts later.
+ * action. Pages can swap it through the `road` slot. The space it needs
+ * is reserved in the layout, so nothing shifts when it fades in.
  */
 import { closingBand as copy } from '~/data/site'
 
@@ -17,7 +17,9 @@ withDefaults(defineProps<{
   <section class="c4-close" aria-labelledby="c4-close-title">
     <div class="c4-close__band on-dark">
       <div class="c4-close__road" aria-hidden="true">
-        <slot name="road" />
+        <slot name="road">
+          <HyperspeedRoad preset="closing" />
+        </slot>
       </div>
       <div class="c4-wrap c4-close__inner">
         <h2 id="c4-close-title" class="c4-close__title">{{ title ?? copy.title }}</h2>
@@ -45,6 +47,9 @@ withDefaults(defineProps<{
 }
 
 .c4-close__band {
+  /* Room for the road under the buttons (board: 220 to 300 px). The road's
+     mask reads the same value, so it never rises into the text. */
+  --close-pad: clamp(224px, 20vw, 288px);
   position: relative;
   overflow: hidden;
   border-radius: var(--radius-band);
@@ -54,13 +59,18 @@ withDefaults(defineProps<{
   color: var(--on-dark);
 }
 
-/* The road sits in the lower part of the band, faded in from above, so it
-   never runs behind the words. */
+/* The road fills the band; its own mask (closing) clears the top half, so
+   it never runs behind the words. On phones it is the bottom 300 px only. */
 .c4-close__road {
   position: absolute;
   inset: 0;
-  -webkit-mask-image: linear-gradient(180deg, transparent 0%, transparent 52%, #000 80%);
-  mask-image: linear-gradient(180deg, transparent 0%, transparent 52%, #000 80%);
+}
+
+@media (max-width: 767px) {
+  .c4-close__road {
+    top: auto;
+    height: 300px;
+  }
 }
 
 .c4-close__inner {
@@ -71,8 +81,7 @@ withDefaults(defineProps<{
   align-items: center;
   gap: var(--s-32);
   padding-top: var(--section-y);
-  /* Room for the road under the buttons (board: 220 to 300 px). */
-  padding-bottom: clamp(224px, 20vw, 288px);
+  padding-bottom: var(--close-pad);
   text-align: center;
 }
 

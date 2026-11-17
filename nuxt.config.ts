@@ -176,8 +176,9 @@ export default defineNuxtConfig({
     preset: 'static',
     prerender: {
       crawlLinks: true,
-      // `/_styleguide` is linked from nowhere, so the crawler cannot find it.
-      routes: ['/', '/sitemap.xml', '/robots.txt', '/_styleguide'],
+      // `/_styleguide` and `/_roads` are linked from nowhere, so the crawler
+      // cannot find them.
+      routes: ['/', '/sitemap.xml', '/robots.txt', '/_styleguide', '/_roads'],
       failOnError: false,
     },
   },
