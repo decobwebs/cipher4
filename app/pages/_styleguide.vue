@@ -123,12 +123,8 @@ const roadDemos = [
 
 const contactRoad = ref<{ speedUp: (ms?: number) => void } | null>(null)
 const ctl = useRoadController()
-const tierLabel = computed(() => ({
-  full: 'full: every road animates',
-  mobile: 'phone or tablet: header and closing roads only',
-  still: 'still frames (reduced motion, Save-Data, low power or low frame rate)',
-  none: 'no WebGL: still images',
-})[ctl.tier()])
+// Live: the exact reason when the road is still, and the ?motion=on switch.
+const tierLabel = computed(() => { ctl.tier(); return ctl.describe() })
 
 const crumbs = [
   { label: 'Home', to: '/' },

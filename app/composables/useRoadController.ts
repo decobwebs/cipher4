@@ -10,18 +10,22 @@
  *      mobile  phones and tablets: only the page's header road and the
  *              closing road, pixel ratio capped at 1.5
  *      still   reduced motion, Save-Data, 4 cores or fewer, or a measured
- *              frame rate under 40 fps for 2 seconds: still frames only
+ *              frame rate under 40 fps (see the frame-rate check below)
  *      none    no WebGL: still images only
  *  - The road code loads only after the page has loaded and the browser is
  *    idle, so it never delays the headline.
  *
  * Still frames are images exported from the real road (public/images/road),
  * so a device on the still tier never downloads the 3D code at all.
+ *
+ * Test switch: ?motion=on forces the roads to animate, on /_roads and
+ * /_styleguide pages only (see motionForced).
  */
 import type { RoadHandle } from '~/lib/hyperspeed/index'
 import type { RoadKind } from '~/lib/hyperspeed/roads'
 
 export type RoadTier = 'full' | 'mobile' | 'still' | 'none'
+export type StillReason = 'reduced-motion' | 'save-data' | 'low-cores' | 'frame-rate' | 'no-webgl'
 
 export interface RoadEntry {
   el: HTMLElement
@@ -34,10 +38,32 @@ export interface RoadEntry {
   running: boolean
 }
 
-const LOWFPS_KEY = 'c4-road-lowfps'
+// v2: the first version judged during start-up, so its notes are ignored.
+const LOWFPS_KEY = 'c4-road-lowfps-v2'
+const MOTION_KEY = 'c4-motion-on'
 const PRIORITY: Record<RoadKind, number> = { hero: 5, header: 4, closing: 3, deliver: 2, strip: 1 }
 
-let tier: RoadTier | null = null
+// Frame-rate check settings.
+const FPS_MIN = 40
+const FPS_WINDOW = 2000 // judge the last 2 s of frames
+const WARM_UP = 3000 // never judge in the first 3 s after a road starts or the page loads
+const RETRY_AFTER = 10000 // after a first failure, try again once after 10 s
+const GAP = 250 // a frame gap longer than this means the road was not really on view
+
+/** Live state, for the demos and the style guide. */
+export const roadState = reactive({
+  tier: 'none' as RoadTier,
+  reason: null as StillReason | null,
+  cores: 0,
+  fps: null as number | null,
+  /** Frame-rate failures this page (0, 1 or 2). */
+  failures: 0,
+  retrying: false,
+  forced: false,
+})
+
+let base: { tier: 'full' | 'mobile' | 'none'; reason: StillReason | null } | null = null
+let fpsStill = false
 const entries = new Set<RoadEntry>()
 let visObserver: IntersectionObserver | null = null
 let nearObserver: IntersectionObserver | null = null
@@ -48,6 +74,33 @@ let scrollVelocity = 0 // px per second
 let scheduleQueued = false
 let scrollWired = false
 let lastBest: RoadEntry | null = null
+let retryTimer: ReturnType<typeof setTimeout> | undefined
+
+// --- Test switch: ?motion=on -------------------------------------------------
+
+/**
+ * The address as it was before the app started. During start-up the router
+ * briefly drops the query string, so reading location.search later can miss
+ * it; an inline script in <head> (nuxt.config) keeps a copy.
+ */
+function initialSearch(): string {
+  return (window as unknown as { __c4Search?: string }).__c4Search ?? location.search
+}
+
+/** ?motion=on forces animation, on /_roads and /_styleguide pages only. */
+export function motionForced(): boolean {
+  if (!import.meta.client) return false
+  const internal = /^\/(_roads|_styleguide)(\/|$)/.test(location.pathname)
+  if (!internal) return false
+  const q = new URLSearchParams(initialSearch()).get('motion')
+  try {
+    if (q === 'on') sessionStorage.setItem(MOTION_KEY, '1')
+    if (q === 'off') sessionStorage.removeItem(MOTION_KEY)
+    return sessionStorage.getItem(MOTION_KEY) === '1'
+  } catch {
+    return q === 'on'
+  }
+}
 
 // --- Tier ------------------------------------------------------------------
 
@@ -66,25 +119,67 @@ function readLowFps(): boolean {
   try { return sessionStorage.getItem(LOWFPS_KEY) === '1' } catch { return false }
 }
 
-export function getRoadTier(): RoadTier {
-  if (tier) return tier
-  if (!import.meta.client) return 'none'
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  const conn = (navigator as { connection?: { saveData?: boolean } }).connection
+/** What the device is, and why it would get still frames (worked out once). */
+function deviceBase() {
+  if (base) return base
   const cores = navigator.hardwareConcurrency || 8
-  if (!hasWebGL()) tier = 'none'
-  else if (reduce || conn?.saveData || cores <= 4 || readLowFps()) tier = 'still'
-  else if (window.matchMedia('(max-width: 1024px), (pointer: coarse)').matches) tier = 'mobile'
-  else tier = 'full'
-  return tier
+  roadState.cores = cores
+  const conn = (navigator as { connection?: { saveData?: boolean } }).connection
+  let reason: StillReason | null = null
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) reason = 'reduced-motion'
+  else if (conn?.saveData) reason = 'save-data'
+  else if (cores <= 4) reason = 'low-cores'
+  else if (readLowFps()) { reason = 'frame-rate'; roadState.failures = 2 }
+  const tier = !hasWebGL()
+    ? 'none'
+    : window.matchMedia('(max-width: 1024px), (pointer: coarse)').matches ? 'mobile' : 'full'
+  if (tier === 'none') reason = 'no-webgl'
+  base = { tier, reason }
+  return base
 }
 
-/** May this kind of road animate on this device? */
+export function getRoadTier(): RoadTier {
+  if (!import.meta.client) return 'none'
+  const b = deviceBase()
+  const forced = motionForced()
+  let t: RoadTier
+  let reason: StillReason | null
+  if (b.tier === 'none') { t = 'none'; reason = 'no-webgl' }
+  else if (forced) { t = b.tier; reason = null }
+  else if (b.reason) { t = 'still'; reason = b.reason }
+  else if (fpsStill) { t = 'still'; reason = 'frame-rate' }
+  else { t = b.tier; reason = null }
+  roadState.tier = t
+  roadState.reason = reason
+  roadState.forced = forced
+  return t
+}
+
+/** May this kind of road animate on this device right now? */
 export function roadMayAnimate(kind: RoadKind): boolean {
   const t = getRoadTier()
   if (t === 'full') return true
   if (t === 'mobile') return kind === 'hero' || kind === 'header' || kind === 'closing'
   return false
+}
+
+/** One plain sentence about what this device shows, and why. */
+export function describeRoadState(): string {
+  const s = roadState
+  const cores = s.cores
+  if (s.tier === 'none') return 'Still image: this browser cannot draw WebGL.'
+  if (s.forced) return `Moving road, forced on by the ?motion=on test switch (${s.tier === 'mobile' ? 'phone or tablet' : 'desktop'}).`
+  if (s.tier === 'full') return `Moving road (desktop)${s.fps ? `, ${s.fps} fps` : ''}.`
+  if (s.tier === 'mobile') return 'Moving road (phone or tablet: header and closing roads only).'
+  switch (s.reason) {
+    case 'reduced-motion': return 'Still image: this device asks for reduced motion (on Windows: Settings, Accessibility, Visual effects, Animation effects).'
+    case 'save-data': return 'Still image: the browser has Data Saver (Save-Data) turned on.'
+    case 'low-cores': return `Still image: this device reports ${cores} processor cores, and the rule is 4 or fewer.`
+    case 'frame-rate':
+      if (s.retrying) return `Still image for now: the road measured ${s.fps} fps (under ${FPS_MIN}). Trying again in 10 seconds.`
+      return `Still image: the road measured ${s.fps ?? 'under ' + FPS_MIN} fps twice (under ${FPS_MIN}). It stays still for the rest of this visit.`
+    default: return 'Still image.'
+  }
 }
 
 // --- Loading ---------------------------------------------------------------
@@ -167,7 +262,6 @@ function schedule() {
 }
 
 function run() {
-  const hidden = document.hidden
   // The one road allowed to move: most visible, then by priority.
   let best: RoadEntry | null = null
   for (const e of entries) {
@@ -178,10 +272,10 @@ function run() {
       best = e
     }
   }
-  if (hidden) best = null
+  if (document.hidden) best = null
   // A different road taking over (or a new one being set up) stutters for a
-  // moment while its shaders compile. Start the frame-rate check afresh, so
-  // that stutter is never mistaken for a slow device.
+  // moment while its shaders compile: the frame-rate check starts afresh,
+  // with its full warm-up.
   if (best !== lastBest) {
     lastBest = best
     fpsMonitor(false)
@@ -201,60 +295,86 @@ function run() {
 }
 
 // --- Frame-rate check ----------------------------------------------------------
-// While a road animates, count frames. After a 1 s warm-up, if the average
-// over a 2 s window is under 40 fps, drop to still frames for the session.
+// Counts frames only while a road is moving on screen in a visible tab
+// (the monitor runs only while the scheduler has a road running, and any
+// gap of more than 250 ms between frames, such as a hidden tab or a
+// minimised window, restarts the count).
+//
+// Never judges during the first 3 s after a road starts, nor until 3 s after
+// the page finished loading. Judges the last 2 s of frames: under 40 fps is
+// a failure. A first failure shows the still frame and tries again after
+// 10 s. Only a second failure keeps the still frames, for the rest of the
+// visit. The ?motion=on test switch turns the check off.
 
 let fpsRaf = 0
 let fpsFrames: number[] = []
-let fpsStart = 0
+let fpsReadyAt = 0
+
+function pageLoadedAt(): number | null {
+  if (document.readyState !== 'complete') return null
+  const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
+  return nav && nav.loadEventEnd > 0 ? nav.loadEventEnd : 0
+}
 
 function fpsMonitor(active: boolean) {
-  if (!active || tier === 'still' || tier === 'none') {
+  const off = !active || fpsStill || motionForced() || getRoadTier() === 'still' || getRoadTier() === 'none'
+  if (off) {
     if (fpsRaf) cancelAnimationFrame(fpsRaf)
     fpsRaf = 0
     fpsFrames = []
     return
   }
   if (fpsRaf) return
-  fpsStart = performance.now()
   fpsFrames = []
+  fpsReadyAt = performance.now() + WARM_UP
+  let last = 0
   const tick = (t: number) => {
     fpsRaf = requestAnimationFrame(tick)
-    if (t - fpsStart < 1000) return
+    // A long gap: the road was not really on view. Start the count again.
+    if (last && t - last > GAP) fpsFrames = []
+    last = t
+    const loaded = pageLoadedAt()
+    if (loaded === null || t < loaded + WARM_UP || t < fpsReadyAt) return
     fpsFrames.push(t)
-    while (fpsFrames.length && t - fpsFrames[0]! > 2000) fpsFrames.shift()
-    // Only judge a full window, without gaps (a gap means the tab was hidden).
-    if (t - fpsStart < 3000) return
+    while (fpsFrames.length && t - fpsFrames[0]! > FPS_WINDOW) fpsFrames.shift()
     const span = t - fpsFrames[0]!
-    if (span < 1900) return
+    if (span < FPS_WINDOW - 100) return // only judge a full window
     const fps = ((fpsFrames.length - 1) / span) * 1000
-    debug.fps = Math.round(fps)
-    if (fps < 40) degradeToStill()
+    roadState.fps = Math.round(fps)
+    if (fps < FPS_MIN) frameRateFailed()
   }
   fpsRaf = requestAnimationFrame(tick)
 }
 
-function degradeToStill() {
-  tier = 'still'
-  debug.degraded = true
-  try { sessionStorage.setItem(LOWFPS_KEY, '1') } catch { /* private mode */ }
-  for (const e of entries) {
-    if (e.handle && e.running) { e.handle.pause(); e.running = false }
-  }
+function frameRateFailed() {
+  roadState.failures++
+  fpsStill = true
   fpsMonitor(false)
+  if (roadState.failures === 1) {
+    // First failure: still frame now, one more try after 10 s.
+    roadState.retrying = true
+    clearTimeout(retryTimer)
+    retryTimer = setTimeout(() => {
+      roadState.retrying = false
+      fpsStill = false
+      lastBest = null // the next run counts as a fresh start, with warm-up
+      schedule()
+    }, RETRY_AFTER)
+  } else {
+    // Second failure: still frames for the rest of the visit.
+    roadState.retrying = false
+    try { sessionStorage.setItem(LOWFPS_KEY, '1') } catch { /* private mode */ }
+  }
+  schedule()
 }
 
-/** For checks: window.__c4Road shows the tier, measured fps and which roads run. */
-const debug: {
-  fps: number | null
-  degraded: boolean
-  tier: () => RoadTier
-  running: () => RoadKind[]
-  mounted: () => number
-} = {
-  fps: null,
-  degraded: false,
+/** For checks: window.__c4Road shows the tier, reason, fps and which roads run. */
+const debug = {
+  state: roadState,
   tier: () => getRoadTier(),
+  reason: () => roadState.reason,
+  get fps() { return roadState.fps },
+  get degraded() { return fpsStill },
   running: () => [...entries].filter((e) => e.running).map((e) => e.kind),
   mounted: () => [...entries].filter((e) => e.handle).length,
 }
@@ -262,12 +382,15 @@ const debug: {
 // --- Public ------------------------------------------------------------------
 
 export function useRoadController() {
-  // A small read-only readout for checks (tier, fps, which roads run).
+  // A small read-only readout for checks (tier, reason, fps, which roads run).
   if (import.meta.client) (window as unknown as { __c4Road: typeof debug }).__c4Road = debug
 
   return {
     tier: getRoadTier,
     mayAnimate: roadMayAnimate,
+    forced: motionForced,
+    state: roadState,
+    describe: describeRoadState,
     load: loadRoadLib,
 
     register(entry: RoadEntry) {
@@ -281,7 +404,8 @@ export function useRoadController() {
     /** The road has mounted; let the scheduler decide whether it runs. */
     attach(entry: RoadEntry, handle: RoadHandle) {
       entry.handle = handle
-      fpsMonitor(false) // set-up stutter is not a slow device
+      lastBest = null // set-up stutter is not a slow device: restart the warm-up
+      fpsMonitor(false)
       handle.setSpeed(entry.baseSpeed)
       handle.pause()
       entry.running = false

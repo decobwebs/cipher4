@@ -17,15 +17,15 @@ defineProps<{
 useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
 
 const ctl = useRoadController()
-const tier = ref<string>('…')
+const ready = ref(false)
+const path = ref('')
 onMounted(() => {
-  tier.value = ({
-    full: 'moving road (desktop)',
-    mobile: 'moving road (phone or tablet: header and closing roads only)',
-    still: 'still image (reduced motion, Save-Data, low power or low frame rate)',
-    none: 'still image (no WebGL)',
-  } as const)[ctl.tier()]
+  ctl.tier() // works out the device's state; it then updates live
+  path.value = location.pathname
+  ready.value = true
 })
+// Live: changes if the frame-rate check drops to the still frame or retries.
+const status = computed(() => (ready.value ? ctl.describe() : 'Checking this device…'))
 </script>
 
 <template>
@@ -38,7 +38,11 @@ onMounted(() => {
       <div class="demo__controls">
         <slot name="controls" />
       </div>
-      <p class="demo__meta">This device shows: <strong>{{ tier }}</strong></p>
+      <p class="demo__meta" aria-live="polite">This device: <strong>{{ status }}</strong></p>
+      <p v-if="ready" class="demo__meta">
+        <a v-if="!ctl.state.forced" :href="`${path}?motion=on`" class="demo__switch">Test switch: force the road to move (?motion=on)</a>
+        <a v-else :href="`${path}?motion=off`" class="demo__switch">Turn the test switch off (?motion=off)</a>
+      </p>
       <ul v-if="notes?.length" class="demo__notes">
         <li v-for="x in notes" :key="x">{{ x }}</li>
       </ul>
@@ -81,5 +85,14 @@ onMounted(() => {
 
 .demo__notes {
   padding-left: var(--s-16);
+}
+
+.demo__switch {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--indigo);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 </style>

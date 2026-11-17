@@ -60,6 +60,9 @@ function options(): RoadOptions {
   const mobile = ctl.tier() === 'mobile'
   const o: RoadOptions = { ...r.options, ...(mobile ? (r as { mobileOptions?: RoadOptions }).mobileOptions : {}) }
   if (mobile) o.maxPixelRatio = Math.min(1.5, (o.maxPixelRatio as number | undefined) ?? 1.5)
+  // The ?motion=on test switch (internal pages only) animates even with
+  // reduced motion on, so the demos can be reviewed.
+  if (ctl.forced()) o.reducedMotion = 'animate'
   if (props.theme) o.theme = props.theme
   if (props.seed != null) o.seed = props.seed
   if (props.uniforms) o.distortionUniforms = { ...(o.distortionUniforms ?? {}), ...props.uniforms }

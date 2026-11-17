@@ -54,9 +54,11 @@ export default defineNuxtConfig({
       ],
       // Marks that JavaScript runs, before first paint. Entrance and draw-on
       // states only apply under `.c4-js`, so with JavaScript off every icon,
-      // line and word is simply shown.
+      // line and word is simply shown. It also keeps a copy of the address's
+      // query string: during start-up the router briefly drops it, and the
+      // road's ?motion=on test switch needs to see it.
       script: [
-        { innerHTML: "document.documentElement.classList.add('c4-js')", tagPosition: 'head' },
+        { innerHTML: "document.documentElement.classList.add('c4-js');window.__c4Search=location.search", tagPosition: 'head' },
       ],
     },
     pageTransition: { name: 'page', mode: 'out-in' },

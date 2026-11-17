@@ -38,24 +38,31 @@ export const roads = {
     kind: 'header', mask: 'header',
     options: { seed: 21, distortionUniforms: { uAmp: [20, 20, 14] } },
   },
-  // Sector headers. Maritime from the Page-Sector board; the other three
-  // follow the plan's table (no board values exist for them).
+  // Sector headers. Shapes from the plan's table. Each must stay readable,
+  // with no loops or folds at any moment: scripts/check-road-folds.mjs
+  // traces the road through the camera for five minutes of animation and
+  // all four score under 2 px. In each, the up-and-down part of the wave
+  // (the last uAmp values) is what folds the road, so that is kept small;
+  // the side-to-side sway, which carries each shape's character, stays.
   'sector-maritime': {
     kind: 'header', mask: 'header',
-    options: { seed: 14, distortion: 'turbulentDistortion', distortionUniforms: { uAmp: [18, 4, 8, 8] } },
+    // Waves. The board's [18, 4, 8, 8] looped and folded (up to 43 px).
+    options: { seed: 14, distortion: 'turbulentDistortion', distortionUniforms: { uAmp: [15, 4, 2, 0] } },
   },
   'sector-oil-gas': {
     kind: 'header', mask: 'header',
-    options: { seed: 15, distortion: 'deepDistortion' },
+    // A deep climb. The preset's [10, 20] folded by up to 331 px.
+    options: { seed: 15, distortion: 'deepDistortion', distortionUniforms: { uAmp: [10, 3] } },
   },
   'sector-logistics': {
     kind: 'header', mask: 'header',
-    options: { seed: 16, distortion: 'LongRaceDistortion' },
+    // A long straight route. The preset's [35, 10] folded by up to 50 px.
+    options: { seed: 16, distortion: 'LongRaceDistortion', distortionUniforms: { uAmp: [35, 1.5] } },
   },
   'sector-supply-chain': {
     kind: 'header', mask: 'header',
-    // "xyDistortion with low amplitude": half the preset's [25, 15].
-    options: { seed: 17, distortion: 'xyDistortion', distortionUniforms: { uAmp: [12, 8] } },
+    // A gentle chain of bends, at low amplitude. [12, 8] folded by up to 28 px.
+    options: { seed: 17, distortion: 'xyDistortion', distortionUniforms: { uAmp: [12, 2] } },
   },
   // Case study headers: a long straight road.
   case: {
@@ -104,7 +111,8 @@ export const roads = {
       seed: 14,
       morph: {
         presets: ['turbulentDistortion', 'deepDistortion', 'LongRaceDistortion', 'xyDistortion'],
-        uniforms: [{ uAmp: [18, 4, 8, 8] }, {}, {}, { uAmp: [12, 8] }],
+        // The same fold-free settings as the four sector header roads.
+        uniforms: [{ uAmp: [15, 4, 2, 0] }, { uAmp: [10, 3] }, { uAmp: [35, 1.5] }, { uAmp: [12, 2] }],
         start: 0,
       },
     },
