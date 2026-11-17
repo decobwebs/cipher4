@@ -10,6 +10,7 @@ export default defineEventHandler((event) => {
 
   return `User-agent: *
 Allow: /
+Disallow: /_styleguide
 
 Sitemap: ${siteUrl}/sitemap.xml
 `

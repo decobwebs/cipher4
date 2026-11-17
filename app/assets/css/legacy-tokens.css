@@ -1,0 +1,584 @@
+/* ============================================================================
+   CIPHER4 DESIGN TOKENS — v2, "Signal Glass"
+   ----------------------------------------------------------------------------
+   Every colour, size, radius, shadow and duration in this site resolves to a
+   token declared here. Components must not contain raw hex values, raw pixel
+   font sizes, or one-off durations.
+
+   THE TWO CONTEXTS
+   ----------------
+   The page is light. The hero — and any band that opts in with `.on-dark` —
+   sits on the nebula shader and is dark. Both are first-class, and glass is a
+   different material in each:
+
+     light context   a white frost. Reads as glass because the page behind it
+                     has colour and structure to refract.
+     dark context    a navy tint. Reads as glass because the nebula behind it
+                     is moving and coloured.
+
+   Components never branch on context. They reference the same token names and
+   `.on-dark` re-points what those names resolve to, so `.card` and `.btn` work
+   in both without a single variant class.
+
+   THE CONTRAST RULE (non-negotiable)
+   ----------------------------------
+   --c4-signal-500 on white measures ~2.9:1 and FAILS WCAG AA for text. It is for
+   fills, icons, borders, and text on navy ONLY. Accent text on a light
+   background must use --text-accent, which is INDIGO, not amber — see the
+   note on that token below.
+
+   Glassmorphism's characteristic failure is the same problem one layer up:
+   text on a translucent panel passes contrast over the dark part of whatever
+   is behind it and fails over the bright part. The defence is a hard floor —
+   every glass tint is opaque enough that body text clears 4.5:1 against the
+   worst case behind it. Blur is a finish on top of that floor, never the thing
+   doing the work.
+   ========================================================================= */
+
+:root {
+  /* --------------------------------------------------------------------
+     COLOUR — RAW SCALE
+     Named by role, not by appearance, so a rebrand is a single edit here.
+     -------------------------------------------------------------------- */
+
+  /* Indigo — structure, authority, the brand's ground colour.
+     ------------------------------------------------------------------
+     MEASURED FROM THE MARK, not chosen. Every opaque pixel of the logo was
+     sampled: it is 51% blue at a mean of HSL(228, 78%, 21%), and 49% neutral
+     grey. The 800 step below is that blue.
+
+     The previous value was #14204f, and the comment on it claimed it matched
+     the logo. It did not. Hue was right — 228 in both — but saturation sat at
+     60% against the mark's 78%, which is the same colour with the life taken
+     out of it. dE76 16.7, well past the point where a trained eye reads two
+     colours as different. */
+  --c4-indigo-950: #060a1c;  /* Deepest ground                             */
+  --c4-indigo-900: #0a1030;  /* Abyss: CTA bands, dark sections            */
+  --c4-indigo-800: #102068;  /* THE BRAND COLOUR. Sampled from the mark.   */
+  --c4-indigo-700: #1a3ab5;  /* Raised, and the on-light structural blue   */
+  --c4-indigo-600: #2a4fd0;  /* Borders and dividers on dark surfaces      */
+  --c4-indigo-100: #e6eaf9;  /* Indigo-tinted wash for subtle fills        */
+  --c4-indigo-050: #f1f4fd;
+
+  /* Signal Amber — action, focus, energy. Sparingly.
+     ------------------------------------------------------------------
+     The accent is a brand EXTENSION, not a derivation, and deliberately so.
+     The mark holds two colours and neither can act: indigo is the ground and
+     grey is the default. An interface needs a colour that means "do this".
+
+     Amber is the complement of the mark's hue (229 -> 49) and is what
+     transport, logistics and oil & gas already read as operational — hi-vis,
+     plant signage, hazard marking. It also gets Cipher4 off the navy-and-cyan
+     palette that every B2B tech company defaults to.
+
+     KNOWN RISK: amber is conventionally the *warning* semantic and sits only
+     34 degrees from --c4-danger. What separates them here is lightness, not
+     hue — bright amber against deep red. Watch it anywhere a priority chip
+     lands next to a destructive control. */
+  --c4-signal-300: #fbc96a;  /* Bright edge, specular highlights           */
+  --c4-signal-400: #f8b542;  /* Accent text on indigo                      */
+  --c4-signal-500: #f5a524;  /* The accent: fills, icons, borders          */
+  --c4-signal-600: #d98c0a;
+  --c4-signal-700: #8a5a00;  /* Accent TEXT on light — see the contrast note */
+  --c4-signal-050: #fdf3e3;
+
+  /* Graphite — the mark's "4". Secondary UI, never a brand colour.
+     The old value was #3f4654, a blue-tinted slate at S 14%, with a comment
+     claiming it came from the logo. The logo's grey is genuinely neutral at
+     S ~ 0%. This is the measured value. */
+  --c4-graphite: #484848;
+  --c4-graphite-light: #7a7a7a;
+
+  /* Neutrals */
+  --c4-ink: #101425;       /* Body text                                    */
+  --c4-muted: #5a6377;     /* Secondary text, captions                     */
+  --c4-line: #e4e8f0;      /* Borders, dividers                            */
+  --c4-mist: #f7f8fb;      /* Alternate section surface                    */
+  --c4-white: #ffffff;
+
+  /* Amber — rare emphasis only. Never a section theme, never a card colour. */
+  --c4-amber-500: #f5a524;
+  --c4-amber-050: #fef6e7;
+
+  /* Status */
+  --c4-success: #0f7a5a;
+  --c4-success-bg: #e7f5f0;
+  --c4-danger: #b3261e;
+  --c4-danger-bg: #fdecea;
+
+  /* --------------------------------------------------------------------
+     COLOUR — SEMANTIC ROLES
+     Components reference these, not the raw scale above.
+     -------------------------------------------------------------------- */
+
+  --bg-page: var(--c4-white);
+  --bg-subtle: var(--c4-mist);
+  --bg-inverse: var(--c4-indigo-900);
+  --bg-brand: var(--c4-indigo-800);
+  --bg-raised: var(--c4-white);
+  --bg-raised-inverse: var(--c4-indigo-700);
+  --bg-accent-wash: var(--c4-signal-050);
+
+  --text-primary: var(--c4-ink);
+  --text-secondary: var(--c4-muted);
+  --text-tertiary: var(--c4-graphite-light);
+  /* ACCENT TEXT IS INDIGO, NOT AMBER.
+     ------------------------------------------------------------------
+     Amber is the action colour, and an action colour earns its meaning by
+     being reserved for things you can act on. Spending it on headline
+     emphasis, eyebrows and body callouts dilutes it, and there is a second
+     problem: amber dark enough to pass AA on white (#8a5a00) is no longer
+     read as amber. It reads as brown. It looked muddy on the hero headline
+     and worse on six card callouts at once.
+
+     So the roles split. Amber fills — buttons, chips, markers, focus, the
+     hero effect. Indigo carries accent TEXT at 9.07:1, which is the brand's
+     own blue rather than a third colour. --text-on-wash below is the one
+     exception: amber text on an amber wash, where nothing else works. */
+  --text-accent: var(--c4-indigo-700);          /* accent text on light      */
+  --text-on-wash: var(--c4-signal-700);         /* amber text on amber wash  */
+  /* Text on an amber fill. Dark ink, NOT white: white on signal-500 measures
+     2.0:1 and on the gradient's light end 1.6:1 — both fail AA badly. This is
+     the same contrast rule stated at the top of this file, applied one layer
+     up. Dark ink on the same fill clears 9.3:1. */
+  --text-on-accent: #04121c;
+  --text-on-dark: rgba(255, 255, 255, 0.95);
+  --text-on-dark-muted: rgba(219, 227, 245, 0.78);
+  --text-accent-on-dark: var(--c4-signal-400);
+
+  /* --------------------------------------------------------------------
+     SUNKEN SURFACES
+     Inputs, pills, icon plates, notices, inline code — anything that should
+     read as recessed into the page rather than raised off it.
+
+     These exist because the first pass hardcoded rgba(255,255,255,0.04) for
+     them, which is correct on navy and completely invisible on white. Form
+     fields in particular rendered as bare outlines with no fill. A recessed
+     surface is a different colour in each context, not a fixed one, so it
+     has to be a token like every other role.
+     -------------------------------------------------------------------- */
+
+  --surface-sunken: #f3f5fa;
+  --surface-sunken-strong: var(--c4-white);
+  --surface-hover: rgba(16, 32, 104, 0.055);
+  --surface-inset: rgba(16, 32, 104, 0.08);
+
+  --border-default: var(--c4-line);
+  --border-strong: #ccd4e4;
+  --border-on-dark: rgba(255, 255, 255, 0.14);
+  --border-accent: var(--c4-signal-500);
+
+  --focus-ring: var(--c4-signal-600);
+  --focus-ring-on-dark: var(--c4-signal-400);
+
+  /* --------------------------------------------------------------------
+     GLASS — LIGHT CONTEXT
+     ----------------------------------------------------------------------
+     A white frost. Three elevations. Each is a *tint plus a blur*, and the
+     tint is the load-bearing half — see the contrast rule above.
+
+     Blur is capped at 20px on purpose. Past roughly that radius the visual
+     difference is negligible while the compositing cost on a mid-range phone
+     keeps climbing, and backdrop-filter is already the most expensive thing
+     on the page.
+     -------------------------------------------------------------------- */
+
+  /* A NOTE ON GLASS OVER WHITE.
+     A white translucent panel on a white page is invisible — there is nothing
+     behind it to refract and nothing to distinguish fill from ground. The
+     first pass shipped exactly that, and the contact page's sidebar cards
+     read as bare shadows.
+     The fix is not more blur. On a light ground the edge does the work, so
+     the borders below are stronger than a dark-context equivalent would need,
+     and the shadow carries the lift. Blur stays for the cases that actually
+     sit over something — imagery, the road, a photograph. */
+
+  /* Level 1 — the workhorse. Cards, panels, list surfaces. */
+  --glass-1-tint: rgba(255, 255, 255, 0.78);
+  --glass-1-blur: 16px;
+  --glass-1-border: rgba(16, 32, 104, 0.15);
+
+  /* Level 2 — lifted. Hovered cards, the stuck header, popovers. */
+  --glass-2-tint: rgba(255, 255, 255, 0.86);
+  --glass-2-blur: 20px;
+  --glass-2-border: rgba(16, 32, 104, 0.18);
+
+  /* Level 3 — floating over imagery or the road. Highest tint, because this
+     is the one where what sits behind it is least predictable. */
+  --glass-3-tint: rgba(255, 255, 255, 0.92);
+  --glass-3-blur: 20px;
+  --glass-3-border: rgba(16, 32, 104, 0.2);
+
+  /* Saturation lift. Backdrops read grey and dead under blur alone; a small
+     saturate() puts the colour back so glass looks like glass rather than
+     frosted plastic. */
+  --glass-saturate: 1.4;
+
+  /* THE SPECULAR — the signature interaction.
+     ----------------------------------------------------------------------
+     The first pass was a single soft radial gradient tinted with the accent, which is
+     not what light does on glass: it read as a coloured circle chasing the
+     cursor. Real specular on a pane has three parts, and they are separate
+     tokens because they behave differently:
+
+       core   a small, very bright, HARD-edged hot spot — the light source
+              itself reflected. Sharpness is the whole point; blur it and it
+              stops being a reflection.
+       bar    an angled band running across the pane — the elongated
+              reflection of a window or strip light. This is what makes a
+              surface read as flat and glassy rather than domed.
+       edge   the rim catching light on the side nearest the pointer.
+
+     On a light card the bar is a COOL tint rather than white: a white streak
+     over a white card is invisible, whereas a faint warm refraction band is
+     exactly what a real pane does to light passing through it. */
+  --shine-core: rgba(255, 255, 255, 1);
+  --shine-core-mid: rgba(255, 240, 214, 0.55);
+  --shine-bar: rgba(245, 165, 36, 0.14);
+  --shine-bar-soft: rgba(245, 165, 36, 0.05);
+  --shine-edge: rgba(245, 165, 36, 0.55);
+  --shine-size: 7rem;
+
+  /* Button rim. Its own tokens because a button is small and dark-filled:
+     the card's cool refraction band is invisible at this scale, so the rim
+     carries the whole effect and has to be brighter. */
+  --btn-rim-hot: rgba(255, 255, 255, 0.92);
+  --btn-rim: rgba(255, 255, 255, 0.3);
+
+  /* The lit rim. A real bevel catches light on one edge, not uniformly. */
+  --glass-rim:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(255, 255, 255, 0.35) 26%,
+      rgba(255, 255, 255, 0) 55%
+    );
+
+  /* --------------------------------------------------------------------
+     GRADIENTS & DEPTH
+     -------------------------------------------------------------------- */
+
+  /* Deep indigo field with a warm light source top-left. The static fallback
+     behind the nebula, and the ground for dark bands. */
+  --grad-abyss:
+    radial-gradient(120rem 60rem at 8% -20%, rgba(245, 165, 36, 0.22), transparent 60%),
+    radial-gradient(80rem 50rem at 100% 110%, rgba(29, 44, 107, 0.9), transparent 65%),
+    linear-gradient(165deg, #1a2a63 0%, #101a44 45%, #080e28 100%);
+
+  /* Quieter version for secondary dark bands. */
+  --grad-navy:
+    radial-gradient(90rem 45rem at 85% -10%, rgba(245, 165, 36, 0.14), transparent 62%),
+    linear-gradient(160deg, #16234f 0%, #0c1436 70%, #0a1130 100%);
+
+  /* Light sections get a tinted wash rather than flat white. */
+  --grad-mist:
+    radial-gradient(60rem 40rem at 90% 0%, rgba(245, 165, 36, 0.07), transparent 60%),
+    linear-gradient(180deg, #ffffff 0%, #f4f6fc 100%);
+
+  --grad-surface: linear-gradient(180deg, #ffffff 0%, #fafbfe 100%);
+
+  /* Accent fills */
+  --grad-accent: linear-gradient(135deg, #fbc96a 0%, #f5a524 45%, #d98c0a 100%);
+  --grad-accent-soft: linear-gradient(135deg, rgba(245, 165, 36, 0.16), rgba(245, 165, 36, 0.04));
+  --grad-primary: linear-gradient(135deg, #1d2c6b 0%, #14204f 60%, #0f1940 100%);
+
+  /* Card edge that catches light on one corner, like brushed metal. */
+  --grad-edge: linear-gradient(140deg, rgba(245, 165, 36, 0.55), rgba(16, 32, 104, 0.06) 40%);
+
+  /* Glows */
+  --glow-accent: 0 10px 40px -10px rgba(245, 165, 36, 0.45);
+  --glow-accent-lg: 0 20px 70px -18px rgba(245, 165, 36, 0.5);
+
+  /* --------------------------------------------------------------------
+     PATTERNS
+     A fine engineering grid and a node field, echoing the circuit motif in
+     the mark. Always low-contrast — texture, never decoration.
+     -------------------------------------------------------------------- */
+
+  --pattern-grid:
+    linear-gradient(rgba(16, 32, 104, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16, 32, 104, 0.045) 1px, transparent 1px);
+  --pattern-grid-dark:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  --pattern-grid-size: 64px 64px;
+
+  --pattern-nodes: radial-gradient(rgba(16, 32, 104, 0.12) 1.2px, transparent 1.2px);
+  --pattern-nodes-dark: radial-gradient(rgba(245, 165, 36, 0.18) 1.2px, transparent 1.2px);
+  --pattern-nodes-size: 28px 28px;
+
+  /* --------------------------------------------------------------------
+     TYPOGRAPHY
+     One family in two optical roles. Inter Tight tightens headlines; Inter
+     carries body copy at its intended optical size.
+
+     Self-hosted via @nuxt/fonts. This is a performance decision — it removes
+     a render-blocking third-party request — and it stands.
+
+     NOTE: every weight used below must also be listed in nuxt.config.ts under
+     `fonts.families`. A weight that is not fetched does not fall back
+     gracefully — `font-synthesis-weight: none` in base.css means the browser
+     substitutes the nearest loaded weight instead, silently.
+     -------------------------------------------------------------------- */
+
+  --font-heading: 'Inter Tight', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', monospace;
+
+  /* Fluid scale — no breakpoint jumps, so there is less to break. */
+  /* THE SCALE.
+     Rebuilt because the middle had collapsed: --fs-h4 and --fs-body-lg were
+     both 1.0625rem and --fs-body was 1rem, so three named levels occupied a
+     single pixel of range. A card title dropped straight from h3 to body with
+     nothing between, which is why dense blocks read as flat.
+
+     Steps now shrink monotonically from the top rather than jumping around:
+     1.46, 1.44, 1.38, 1.30, 1.11, 1.13, 1.14, 1.08, 1.08. Every level is
+     perceptibly different from its neighbours, which is the only thing a
+     scale has to do. */
+  --fs-display: clamp(2.5rem, 1.5rem + 4.6vw, 4.75rem);
+  --fs-h1: clamp(2rem, 1.4rem + 3vw, 3.25rem);
+  --fs-h2: clamp(1.625rem, 1.3rem + 1.6vw, 2.25rem);
+  --fs-h3: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);
+  --fs-h4: clamp(1.0625rem, 1.02rem + 0.22vw, 1.25rem);
+  --fs-body-lg: 1.125rem;
+  --fs-body: 1rem;
+  --fs-sm: 0.875rem;
+  --fs-xs: 0.8125rem;
+  --fs-eyebrow: 0.75rem;
+
+  --lh-tight: 1.06;
+  --lh-heading: 1.2;
+  --lh-snug: 1.4;
+  --lh-body: 1.65;
+  /* For copy in a narrow column — cards, list items, captions. At --lh-body a
+     three-line card paragraph reads as three separate statements. */
+  --lh-compact: 1.5;
+
+  /* TRACKING IS OPTICAL, NOT FIXED.
+     Large type needs negative tracking to stop the counters opening up; small
+     type needs none, and UI labels need positive. One --tracking-tight applied
+     to every heading was too loose at display size and too tight at h4. */
+  --tracking-display: -0.035em;   /* display only                           */
+  --tracking-tight: -0.022em;     /* h1, h2                                 */
+  --tracking-snug: -0.012em;      /* h3, h4 — barely, but it stops them
+                                     looking wider than the h2 above them   */
+  --tracking-normal: 0;
+  --tracking-wide: 0.08em;
+  --tracking-widest: 0.16em;      /* eyebrows, nav pill labels             */
+
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* Reading measure. Full-container paragraphs are punishing on desktop. */
+  --measure: 68ch;
+  --measure-narrow: 54ch;
+
+  /* --------------------------------------------------------------------
+     SPACE — 4px base on an 8pt rhythm
+     -------------------------------------------------------------------- */
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  --section-y: clamp(4rem, 3rem + 5vw, 7.5rem);
+  --section-y-sm: clamp(2.5rem, 2rem + 3vw, 4.5rem);
+  --gutter: clamp(1.25rem, 0.75rem + 2.5vw, 2.5rem);
+  --container: 1200px;
+  --container-wide: 1360px;
+  --container-narrow: 780px;
+
+  /* --------------------------------------------------------------------
+     RADIUS
+     Generous — glass panels need a real corner or the blur reads as a
+     rectangle of fog rather than a pane.
+     -------------------------------------------------------------------- */
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-2xl: 36px;
+  --radius-pill: 999px;
+
+  /* --------------------------------------------------------------------
+     ELEVATION
+     Navy-tinted, never black. Black shadows on a navy-and-white palette read
+     as dirt; tinted shadows read as depth.
+     -------------------------------------------------------------------- */
+
+  --shadow-1: 0 1px 2px rgba(11, 18, 51, 0.06), 0 1px 3px rgba(11, 18, 51, 0.05);
+  --shadow-2: 0 4px 12px rgba(11, 18, 51, 0.08), 0 2px 4px rgba(11, 18, 51, 0.04);
+  --shadow-3: 0 12px 32px rgba(11, 18, 51, 0.12), 0 4px 8px rgba(11, 18, 51, 0.06);
+  /* Two-part: a tight contact shadow so the edge separates from the page even
+     at rest, plus a wide soft one for the lift. A single wide shadow alone
+     leaves a white card floating with no visible boundary. */
+  --shadow-glass:
+    0 1px 2px rgba(11, 18, 51, 0.05),
+    0 10px 28px rgba(11, 18, 51, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --shadow-accent: 0 8px 24px rgba(245, 165, 36, 0.22);
+
+  /* --------------------------------------------------------------------
+     MOTION
+     Three durations, one easing curve. Anything else is noise.
+     -------------------------------------------------------------------- */
+
+  --dur-fast: 160ms;
+  --dur-base: 240ms;
+  --dur-slow: 420ms;
+  --dur-reveal: 700ms;
+  --dur-shine: 500ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  /* A longer tail than --ease-out, for entrances. Motion that decelerates
+     into place reads as arriving; motion that stops abruptly reads as a
+     state change. */
+  --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --reveal-stagger: 60ms;
+
+  /* --------------------------------------------------------------------
+     LAYERS
+     -------------------------------------------------------------------- */
+
+  --z-base: 1;
+  --z-sticky: 20;
+  --z-header: 50;
+  --z-overlay: 80;
+  --z-modal: 100;
+}
+
+/* ----------------------------------------------------------------------
+   DARK SURFACE CONTEXT
+   Applied to the hero (which sits on the nebula shader) and to any band on
+   navy. Descendants inherit the inverted semantic roles, so .card, .btn and
+   .glass need no dark variants of their own — they read the same token names
+   and get different values.
+   -------------------------------------------------------------------- */
+
+.on-dark {
+  --bg-page: var(--c4-indigo-900);
+  --bg-subtle: var(--c4-indigo-800);
+  --bg-raised: var(--c4-indigo-700);
+  --bg-accent-wash: rgba(245, 165, 36, 0.1);
+
+  --text-primary: var(--text-on-dark);
+  --text-secondary: var(--text-on-dark-muted);
+  --text-tertiary: rgba(219, 227, 245, 0.6);
+  --text-accent: var(--c4-signal-400);
+  --text-on-accent: #04121c;
+
+  --border-default: var(--border-on-dark);
+  --border-strong: rgba(255, 255, 255, 0.22);
+  --focus-ring: var(--focus-ring-on-dark);
+
+  --surface-sunken: rgba(255, 255, 255, 0.05);
+  --surface-sunken-strong: rgba(255, 255, 255, 0.09);
+  --surface-hover: rgba(255, 255, 255, 0.08);
+  --surface-inset: rgba(255, 255, 255, 0.09);
+
+  /* Glass over the nebula is a navy tint, not a white frost. The nebula is
+     coloured and moving, so these carry a higher floor than the light-context
+     values — the worst case behind them is a bright shader highlight. */
+  --glass-1-tint: rgba(11, 18, 51, 0.62);
+  --glass-2-tint: rgba(18, 28, 62, 0.72);
+  --glass-3-tint: rgba(9, 15, 42, 0.78);
+  --glass-1-border: rgba(255, 255, 255, 0.14);
+  --glass-2-border: rgba(255, 255, 255, 0.2);
+  --glass-3-border: rgba(255, 255, 255, 0.24);
+
+  /* On navy the bar can be white — it lifts off the ground instead of
+     vanishing into it, which is the opposite of the light-context problem. */
+  --shine-core: rgba(255, 255, 255, 0.34);
+  --shine-core-mid: rgba(251, 201, 106, 0.16);
+  --shine-bar: rgba(255, 255, 255, 0.13);
+  --shine-bar-soft: rgba(255, 255, 255, 0.04);
+  --shine-edge: rgba(251, 201, 106, 0.6);
+  --btn-rim-hot: rgba(190, 235, 255, 0.95);
+  --btn-rim: rgba(255, 255, 255, 0.24);
+
+  --glass-rim:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.34) 0%,
+      rgba(255, 255, 255, 0.07) 28%,
+      rgba(255, 255, 255, 0) 55%
+    );
+
+  --pattern-grid: var(--pattern-grid-dark);
+  --pattern-nodes: var(--pattern-nodes-dark);
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-2: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --shadow-3: 0 12px 32px rgba(0, 0, 0, 0.35);
+  --shadow-glass: 0 24px 64px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  color: var(--text-primary);
+}
+
+/* A dark band that is NOT over the nebula needs its own ground. The hero
+   opts out of this because the shader canvas provides it. */
+.on-dark:not(.has-shader) {
+  background-color: var(--bg-page);
+}
+
+/* ----------------------------------------------------------------------
+   REDUCED TRANSPARENCY
+   A real accessibility setting: some users cannot read text over a busy
+   translucent surface. When it is set the glass becomes opaque and the blur
+   is dropped. The layout does not change, so nothing reflows.
+   -------------------------------------------------------------------- */
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass-1-tint: #ffffff;
+    --glass-2-tint: #ffffff;
+    --glass-3-tint: #ffffff;
+    --glass-1-blur: 0px;
+    --glass-2-blur: 0px;
+    --glass-3-blur: 0px;
+    --glass-saturate: 1;
+  }
+
+  .on-dark {
+    --glass-1-tint: #101a3d;
+    --glass-2-tint: #16224e;
+    --glass-3-tint: #0b1233;
+  }
+}
+
+/* ----------------------------------------------------------------------
+   NO BACKDROP-FILTER
+   Roughly the last few percent of traffic, plus anything running with GPU
+   acceleration disabled. Without this the panels render as flat semi-
+   transparent boxes and text contrast becomes whatever happens to be behind
+   them. Push the tint to near-opaque and accept the loss of the effect —
+   legibility is not the part we trade away.
+   -------------------------------------------------------------------- */
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root {
+    --glass-1-tint: rgba(255, 255, 255, 0.96);
+    --glass-2-tint: rgba(255, 255, 255, 0.97);
+    --glass-3-tint: rgba(255, 255, 255, 0.98);
+  }
+
+  .on-dark {
+    --glass-1-tint: rgba(16, 26, 61, 0.95);
+    --glass-2-tint: rgba(22, 34, 78, 0.96);
+    --glass-3-tint: rgba(11, 18, 51, 0.97);
+  }
+}

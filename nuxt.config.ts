@@ -11,11 +11,25 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
   ],
 
+  // The legacy-*.css files style the pages that have not been rebuilt yet.
+  // The new design system (tokens, base, layout) is scoped to `.c4` and loads
+  // last. The legacy files go once the last old page is replaced (Phase 5).
   css: [
+    '~/assets/css/legacy-tokens.css',
+    '~/assets/css/legacy-base.css',
+    '~/assets/css/legacy-components.css',
+    '~/assets/css/legacy-utilities.css',
     '~/assets/css/tokens.css',
     '~/assets/css/base.css',
-    '~/assets/css/components.css',
-    '~/assets/css/utilities.css',
+    '~/assets/css/layout.css',
+  ],
+
+  // New components live in app/components/c4/** and are registered by their
+  // file name alone (C4Logo, SiteHeader...), as the plan names them. The old
+  // components keep their folder prefixes (UiPageHero, LayoutAppHeader...).
+  components: [
+    { path: '~/components/c4', pathPrefix: false },
+    '~/components',
   ],
 
   runtimeConfig: {
@@ -30,12 +44,19 @@ export default defineNuxtConfig({
     head: {
       htmlAttrs: { lang: 'en-NG' },
       link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
         { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
         { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
       ],
       meta: [
         { name: 'theme-color', content: '#14204F' },
         { name: 'format-detection', content: 'telephone=no' },
+      ],
+      // Marks that JavaScript runs, before first paint. Entrance and draw-on
+      // states only apply under `.c4-js`, so with JavaScript off every icon,
+      // line and word is simply shown.
+      script: [
+        { innerHTML: "document.documentElement.classList.add('c4-js')", tagPosition: 'head' },
       ],
     },
     pageTransition: { name: 'page', mode: 'out-in' },
@@ -55,6 +76,9 @@ export default defineNuxtConfig({
     families: [
       { name: 'Inter', provider: 'google', weights: [400, 500, 600] },
       { name: 'Inter Tight', provider: 'google', weights: [300, 600, 700] },
+      // Redesign. Only the weights in use: Geist 400/500/600, Geist Mono 400.
+      { name: 'Geist', provider: 'google', weights: [400, 500, 600] },
+      { name: 'Geist Mono', provider: 'google', weights: [400] },
     ],
     defaults: { subsets: ['latin'] },
   },
@@ -152,7 +176,8 @@ export default defineNuxtConfig({
     preset: 'static',
     prerender: {
       crawlLinks: true,
-      routes: ['/', '/sitemap.xml', '/robots.txt'],
+      // `/_styleguide` is linked from nowhere, so the crawler cannot find it.
+      routes: ['/', '/sitemap.xml', '/robots.txt', '/_styleguide'],
       failOnError: false,
     },
   },

@@ -45,6 +45,7 @@ useSiteSchema()
        gates itself on a fine pointer, reduced motion and Save-Data, so on a
        phone it never initialises at all. -->
   <ClientOnly>
-    <UiSplashCursor />
+    <!-- Old site only. The redesign (layout `c4`) has no pointer trail. -->
+    <UiSplashCursor v-if="route.meta.layout !== 'c4'" />
   </ClientOnly>
 </template>
