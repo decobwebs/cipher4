@@ -3,13 +3,16 @@
 definePageMeta({ layout: 'c4' })
 useHead({ title: 'Road experiments', meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
 
+// Kept by the owner for Phase 3: 1, 3, 4, 5, 6. Dropped: 2 (Day to night).
+// New for review: 7 and 8.
 const demos = [
-  { to: '/_roads/arrival', title: '1. Arrival', line: 'On the first visit, the hero road starts fast with a stretched view and settles over 1.2 seconds.' },
-  { to: '/_roads/day-to-night', title: '2. Day to night', line: 'As the page scrolls, the road blends from the light theme to the night theme, ending at the closing band.' },
-  { to: '/_roads/sectors', title: '3. Sector road', line: 'Four buttons morph the road to each sector’s shape over 800 ms, with no jump.' },
-  { to: '/_roads/steering', title: '4. Steering', line: 'On desktop, the camera leans a few degrees towards the mouse.' },
-  { to: '/_roads/message-sent', title: '5. Message sent', line: 'One bright amber car races into the distance, with the 400 ms burst.' },
-  { to: '/_roads/not-found', title: '6. 404 road', line: 'The road fades out into empty space ahead.' },
+  { to: '/_roads/arrival', title: '1. Arrival · kept', line: 'On the first visit, the hero road starts fast with a stretched view and settles over 1.2 seconds.' },
+  { to: '/_roads/sectors', title: '3. Sector road · kept', line: 'Four buttons morph the road to each sector’s shape over 800 ms, with no jump.' },
+  { to: '/_roads/steering', title: '4. Steering · kept', line: 'On desktop, the camera leans a few degrees towards the mouse.' },
+  { to: '/_roads/message-sent', title: '5. Message sent · kept', line: 'One bright amber car races into the distance, with the 400 ms burst.' },
+  { to: '/_roads/not-found', title: '6. 404 road · kept', line: 'The road fades out into empty space ahead.' },
+  { to: '/_roads/spine', title: '7. Spine · new', line: 'Seen from above: a narrow band down How we deliver, its trails moving with the scroll in both directions.' },
+  { to: '/_roads/launch', title: '8. Launch · new', line: 'Seen from behind, pointing up the screen: trails rise and build up speed as the Youth header comes into view.' },
 ]
 </script>
 

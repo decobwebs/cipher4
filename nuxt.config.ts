@@ -183,8 +183,8 @@ export default defineNuxtConfig({
       routes: [
         '/', '/sitemap.xml', '/robots.txt', '/_styleguide', '/_roads',
         // Phase 2b road experiments (internal, removed at launch).
-        '/_roads/demos', '/_roads/arrival', '/_roads/day-to-night', '/_roads/sectors',
-        '/_roads/steering', '/_roads/message-sent', '/_roads/not-found',
+        '/_roads/demos', '/_roads/arrival', '/_roads/sectors', '/_roads/steering',
+        '/_roads/message-sent', '/_roads/not-found', '/_roads/spine', '/_roads/launch',
       ],
       failOnError: false,
     },

@@ -9,9 +9,11 @@
  *   - an ES module export instead of the window.C4Hyperspeed global;
  *   - handle.setTime(t), to draw a still frame at an exact effect time.
  *   - Phase 2b experiments, each off unless asked for: arrive() (fast start
- *     that settles), themeMix (light to night colour blend), morph (several
- *     road shapes blended live), setSteer() (camera leans to the pointer),
- *     launchCar (one bright car that races away).
+ *     that settles, optionally after a run-up), morph (several road shapes
+ *     blended live), setSteer() (camera leans to the pointer), launchCar
+ *     (one bright car that races away), fixedCamera (a set viewpoint, such
+ *     as looking straight down), oneWay (both lanes travel the same way)
+ *     and setVelocity() (speed that may run backwards).
  * Licence: for use on Cipher4's own site. Never publish or sell this code as
  * a separate package (plan, section 8).
  */
@@ -442,6 +444,16 @@ function mount(canvas, userOptions) {
     camera.fov = o.fov
     camera.position.set(o.cameraPosition[0], o.cameraPosition[1], o.cameraPosition[2])
     camera.rotation.set(0, 0, 0)
+    camera.up.set(0, 1, 0)
+    // C4 site: fixedCamera, a set viewpoint instead of the road-following
+    // camera: { position, target, up, fitWidth }. With fitWidth the camera
+    // height is set on every resize so that many road units span the canvas
+    // width (used looking straight down).
+    if (o.fixedCamera) {
+      const fc = o.fixedCamera
+      camera.position.set(fc.position[0], fc.position[1], fc.position[2])
+      if (fc.up) camera.up.set(fc.up[0], fc.up[1], fc.up[2])
+    }
 
     // car lights
     function makeCarLights(colors, spd, fade, xPos, side) {
@@ -451,7 +463,7 @@ function mount(canvas, userOptions) {
       inst.instanceCount = o.lightPairsPerRoadWay * 2
       const laneWidth = o.roadWidth / o.lanesPerRoad
       const aOffset = [], aMetrics = [], aColor = []
-      const idxs = [] // C4 site: palette index per car, for themeMix
+      const idxs = [] // C4 site: palette index per car
       const cols = (Array.isArray(colors) ? colors : [colors]).map((x) => new Color(x))
       for (let i = 0; i < o.lightPairsPerRoadWay; i++) {
         const radius = random(o.carLightsRadius)
@@ -489,15 +501,21 @@ function mount(canvas, userOptions) {
       return material
     }
     const left = makeCarLights(c.leftCars, o.movingAwaySpeed, new Vector2(0, 1 - o.carLightsFade), -o.roadWidth / 2 - o.islandWidth / 2, 'leftCars')
-    const right = makeCarLights(c.rightCars, o.movingCloserSpeed, new Vector2(1, o.carLightsFade), o.roadWidth / 2 + o.islandWidth / 2, 'rightCars')
+    // C4 site: oneWay sends the right-hand lane the same way as the left.
+    const right = o.oneWay
+      ? makeCarLights(c.rightCars, o.movingAwaySpeed, new Vector2(0, 1 - o.carLightsFade), o.roadWidth / 2 + o.islandWidth / 2, 'rightCars')
+      : makeCarLights(c.rightCars, o.movingCloserSpeed, new Vector2(1, o.carLightsFade), o.roadWidth / 2 + o.islandWidth / 2, 'rightCars')
 
     // C4 site: one-off car (launchCar option), hidden until launched.
     let launch = null
     if (o.launchCar) {
       const lc = o.launchCar === true ? {} : o.launchCar
-      const radius = lc.radius ?? 0.3
-      const length = lc.length ?? 64
-      const sp = lc.speed ?? 170
+      // Owner's review: brighter and slightly longer, to read on the light
+      // road. Thicker than the trails and a little slower, so the eye can
+      // follow it from the camera into the distance (about 2.8 s).
+      const radius = lc.radius ?? 0.5
+      const length = lc.length ?? 96
+      const sp = lc.speed ?? 140
       const startZ = lc.startZ ?? -14 // just ahead of the camera, so it is seen at once
       const curve = new LineCurve3(new Vector3(0, 0, 0), new Vector3(0, 0, -1))
       const geometry = new TubeGeometry(curve, 40, 1, 8, false)
@@ -506,7 +524,7 @@ function mount(canvas, userOptions) {
       const laneWidth = o.roadWidth / o.lanesPerRoad
       const carWidth = 0.42 * laneWidth
       const y = 0.35 + radius * 1.3
-      const col = new Color(lc.color || '#f5a524')
+      const col = new Color(lc.color || '#ff8a00') // a deeper amber than the trails
       inst.setAttribute('aOffset', new InstancedBufferAttribute(new Float32Array([-carWidth / 2, y, startZ, carWidth / 2, y, startZ]), 3, false))
       inst.setAttribute('aMetrics', new InstancedBufferAttribute(new Float32Array([radius, length, sp, radius, length, sp]), 3, false))
       inst.setAttribute('aColor', new InstancedBufferAttribute(new Float32Array([col.r, col.g, col.b, col.r, col.g, col.b]), 3, false))
@@ -514,7 +532,8 @@ function mount(canvas, userOptions) {
         fragmentShader: carLightsFragment,
         vertexShader: launchVertex(preset.glsl),
         transparent: true,
-        uniforms: Object.assign({ uTime: { value: 0 }, uRun: { value: 0 }, uTravelLength: { value: o.length }, uFade: { value: new Vector2(0, 1 - o.carLightsFade) } }, fogUniforms, dUniforms),
+        // Solid for most of its length; only the last quarter fades.
+        uniforms: Object.assign({ uTime: { value: 0 }, uRun: { value: 0 }, uTravelLength: { value: o.length }, uFade: { value: new Vector2(0, 0.25) } }, fogUniforms, dUniforms),
       })
       const mesh = new Mesh(inst, material)
       mesh.frustumCulled = false
@@ -549,7 +568,6 @@ function mount(canvas, userOptions) {
       side: DoubleSide,
       uniforms: Object.assign({ uTravelLength: { value: o.length }, uTime: { value: 0 } }, fogUniforms, dUniforms),
     })
-    stickMat.userData.c4 = { inst: stickInst } // C4 site: for themeMix
     const stickMesh = new Mesh(stickInst, stickMat)
     stickMesh.frustumCulled = false
     stickMesh.position.setX(-(o.roadWidth + o.islandWidth / 2))
@@ -558,8 +576,6 @@ function mount(canvas, userOptions) {
 
     // road + island
     const roadTime = { value: 0 }
-    const roadMats = [] // C4 site: for themeMix
-    let islandMat = null
     const roadFrag = roadBase(roadMarkingsVars, roadMarkingsFragment)
     const islandFrag = roadBase('', '')
     function plane(side, isRoad) {
@@ -585,7 +601,6 @@ function mount(canvas, userOptions) {
         side: DoubleSide,
         uniforms: Object.assign(uniforms, fogUniforms, dUniforms),
       })
-      if (isRoad) roadMats.push(material); else islandMat = material
       const mesh = new Mesh(geometry, material)
       mesh.rotation.x = -Math.PI / 2
       mesh.position.z = -o.length / 2
@@ -600,18 +615,11 @@ function mount(canvas, userOptions) {
     // post-processing: same pass order as live
     composer = new EffectComposer(renderer)
     composer.addPass(new RenderPass(scene, camera))
-    // C4 site: with themeMix the bloom pass is always there and its strength
-    // follows the mix (0 on the light theme, full on the night theme).
-    let bloom = null
-    if (o.bloom || o.themeMix != null) {
-      bloom = new BloomEffect(o.bloomOptions)
-      composer.addPass(new EffectPass(camera, bloom))
-    }
+    if (o.bloom) composer.addPass(new EffectPass(camera, new BloomEffect(o.bloomOptions)))
     if (o.smaa) composer.addPass(new EffectPass(camera, new SMAAEffect({ preset: SMAAPreset.MEDIUM })))
 
     applyClear()
-    built = { left, right, stickMat, roadTime, distortion, disposables, launch, roadMats, islandMat, fog, bloom }
-    if (o.themeMix != null) applyThemeMix(o.themeMix)
+    built = { left, right, stickMat, roadTime, distortion, disposables, launch }
     resize()
   }
 
@@ -623,38 +631,6 @@ function mount(canvas, userOptions) {
     built = null
   }
 
-  // C4 site: blend every colour between the light and night themes.
-  function applyThemeMix(t) {
-    if (!built) return
-    t = Math.min(1, Math.max(0, t))
-    const L = THEMES.light.colors, D = THEMES.dark.colors
-    const mixc = (a, b) => new Color(a).lerp(new Color(b), t)
-    built.fog.color.copy(mixc(L.background, D.background))
-    for (const m of built.roadMats) {
-      m.uniforms.uColor.value.copy(mixc(L.roadColor, D.roadColor))
-      m.uniforms.uBrokenLinesColor.value.copy(mixc(L.brokenLines, D.brokenLines))
-      m.uniforms.uShoulderLinesColor.value.copy(mixc(L.shoulderLines, D.shoulderLines))
-    }
-    if (built.islandMat) built.islandMat.uniforms.uColor.value.copy(mixc(L.islandColor, D.islandColor))
-    for (const mat of [built.left, built.right]) {
-      const { inst, idxs, side } = mat.userData.c4
-      const attr = inst.getAttribute('aColor')
-      idxs.forEach((ix, i) => {
-        const col = mixc(L[side][ix % L[side].length], D[side][ix % D[side].length])
-        attr.setXYZ(2 * i, col.r, col.g, col.b)
-        attr.setXYZ(2 * i + 1, col.r, col.g, col.b)
-      })
-      attr.needsUpdate = true
-    }
-    {
-      const attr = built.stickMat.userData.c4.inst.getAttribute('aColor')
-      const col = mixc(L.sticks, D.sticks)
-      for (let i = 0; i < attr.count; i++) attr.setXYZ(i, col.r, col.g, col.b)
-      attr.needsUpdate = true
-    }
-    if (built.bloom) built.bloom.intensity = o.themeMix != null ? t : 1
-  }
-
   function setTime(t) {
     if (built.launch) built.launch.material.uniforms.uTime.value = t
     built.left.uniforms.uTime.value = t
@@ -662,7 +638,10 @@ function mount(canvas, userOptions) {
     built.stickMat.uniforms.uTime.value = t
     built.roadTime.value = t
     const p = built.distortion.preset
-    if (p.js) {
+    if (o.fixedCamera) {
+      const tg = o.fixedCamera.target
+      camera.lookAt(tg[0], tg[1], tg[2])
+    } else if (p.js) {
       const d = p.js(0.025, t, built.distortion.uvals)
       const amp = p.lookAtAmp, off = p.lookAtOffset
       camera.lookAt(
@@ -689,11 +668,17 @@ function mount(canvas, userOptions) {
       // C4 site: arrival. Start fast with a stretched view, settle to the
       // cruising speed and the normal view, easing out over arrival.dur.
       arrival.t += delta
-      const pr = Math.min(1, arrival.t / arrival.dur)
-      const e = 1 - Math.pow(1 - pr, 3)
-      speedUpCur = arrival.boost * (1 - e)
-      camera.fov = o.fovSpeedUp + (o.fov - o.fovSpeedUp) * e
-      if (pr >= 1) { arrival = null; speedUpCur = 0; camera.fov = o.fov }
+      let k // 0 = cruising, 1 = full boost
+      if (arrival.t < arrival.ramp) {
+        const r = arrival.t / arrival.ramp
+        k = r * r // ease in: speeding up
+      } else {
+        const pr = Math.min(1, (arrival.t - arrival.ramp) / arrival.dur)
+        k = Math.pow(1 - pr, 3) // ease out: settling
+      }
+      speedUpCur = arrival.boost * k
+      if (arrival.stretch) camera.fov = o.fov + (o.fovSpeedUp - o.fov) * k
+      if (arrival.t >= arrival.ramp + arrival.dur) { arrival = null; speedUpCur = 0; camera.fov = o.fov }
     } else {
       speedUpCur += lerp(speedUpCur, speedUpTarget, lp, 0.00001)
     }
@@ -751,6 +736,12 @@ function mount(canvas, userOptions) {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, o.maxPixelRatio))
     renderer.setSize(cw, ch, false)
     camera.aspect = cw / ch
+    // C4 site: fixedCamera.fitWidth, the camera height that fits that many
+    // road units across the canvas (straight-down view).
+    if (o.fixedCamera && o.fixedCamera.fitWidth) {
+      const half = Math.tan((camera.fov * Math.PI) / 360)
+      camera.position.y = o.fixedCamera.fitWidth / (2 * half * camera.aspect)
+    }
     camera.updateProjectionMatrix()
     if (composer) composer.setSize(cw, ch)
     if (!running) renderStill()
@@ -818,20 +809,19 @@ function mount(canvas, userOptions) {
     setSpeed(n) {
       speed = Math.max(0, Number(n) || 0)
     },
-    // C4 site: arrival. Starts fast with a stretched view and settles over ms.
-    arrive(ms = 1200, boost = 4) {
-      if (destroyed || !built) return
-      arrival = { t: 0, dur: Math.max(0.1, ms / 1000), boost }
-      speedUpCur = boost
-      camera.fov = o.fovSpeedUp
+    // C4 site: like setSpeed, but negative runs the road backwards (trails
+    // flow the other way). For roads that follow the scroll in both directions.
+    setVelocity(n) {
+      speed = Number(n) || 0
     },
-    // C4 site: 0 = light theme, 1 = night theme, anything between blends.
-    setThemeMix(t) {
+    // C4 site: arrival. Starts fast with a stretched view and settles over ms.
+    // rampMs: build up to the boost first (a launch), then settle.
+    // stretch: widen the view at the fast part (the home arrival does).
+    arrive(ms = 1200, boost = 4, rampMs = 0, stretch = true) {
       if (destroyed || !built) return
-      o.themeMix = t
-      user.themeMix = t
-      applyThemeMix(t)
-      if (!running) renderStill()
+      arrival = { t: 0, dur: Math.max(0.1, ms / 1000), boost, ramp: Math.max(0, rampMs / 1000), stretch }
+      speedUpCur = rampMs > 0 ? 0 : boost
+      if (stretch && !rampMs) camera.fov = o.fovSpeedUp
     },
     // C4 site: morph to one of the shapes in the morph option, over ms.
     morphTo(name, ms = 800) {

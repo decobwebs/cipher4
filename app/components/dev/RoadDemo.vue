@@ -32,7 +32,7 @@ const status = computed(() => (ready.value ? ctl.describe() : 'Checking this dev
   <div class="demo">
     <div class="c4-wrap demo__head">
       <NuxtLink to="/_roads/demos" class="demo__back">All road experiments</NuxtLink>
-      <Eyebrow>Road experiment {{ n }} of 6 · internal</Eyebrow>
+      <Eyebrow>Road experiment {{ n }} · internal</Eyebrow>
       <h1 class="c4-h1">{{ title }}</h1>
       <p class="c4-lead">{{ idea }}</p>
       <div class="demo__controls">

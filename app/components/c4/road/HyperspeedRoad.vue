@@ -34,6 +34,9 @@ const props = defineProps<{
   /** Phase 2b: the camera leans towards the mouse. Mouse and trackpad only;
       never on touch devices or with reduced motion. */
   steering?: boolean
+  /** Phase 2b: build up speed the first time the road comes into view,
+      then settle (the Launch experiment). */
+  surge?: boolean
 }>()
 
 const ARRIVED_KEY = 'c4-road-arrived'
@@ -51,9 +54,12 @@ let handle: RoadHandle | null = null
 let entry: RoadEntry | null = null
 let unmounted = false
 
-const stillSet = computed(() =>
-  `${stillSrc(props.preset, 'mobile')} 780w, ${stillSrc(props.preset, 'desktop')} 1440w`,
-)
+const stillMeta = computed(() => (road.value as { still?: { desktop: [number, number]; mobile: [number, number]; sizes: string } }).still)
+const stillSet = computed(() => {
+  const m = stillMeta.value
+  return `${stillSrc(props.preset, 'mobile')} ${m ? m.mobile[0] : 780}w, ${stillSrc(props.preset, 'desktop')} ${m ? m.desktop[0] : 1440}w`
+})
+const stillSizes = computed(() => stillMeta.value?.sizes ?? '100vw')
 
 function options(): RoadOptions {
   const r = road.value
@@ -72,7 +78,10 @@ function options(): RoadOptions {
 async function start() {
   const tier = ctl.tier()
   if (tier === 'still' || tier === 'none') { mode.value = 'still'; return }
-  if (!ctl.mayAnimate(road.value.kind)) { mode.value = 'off'; return }
+  // Not allowed to move on this device (phones: only header and closing
+  // roads move). Strips simply disappear; a spine is part of the layout, so
+  // it shows its still image instead.
+  if (!ctl.mayAnimate(road.value.kind)) { mode.value = road.value.kind === 'spine' ? 'still' : 'off'; return }
 
   const lib = await ctl.load()
   if (unmounted) return
@@ -91,6 +100,7 @@ async function start() {
     }
   }
   if (props.steering) wireSteering()
+  if (props.surge) wireSurge()
   // Fade in once the first frame is on the canvas.
   requestAnimationFrame(() => requestAnimationFrame(() => { ready.value = true }))
 }
@@ -105,9 +115,34 @@ onMounted(() => {
     baseSpeed: props.speed ?? (road.value as { speed?: number }).speed ?? 1,
     ratio: 0,
     running: false,
+    // Spine: the trails move as far on screen as the page does. Road units
+    // per pixel = fitWidth / canvas width; the trails travel about 60 road
+    // units a second at speed 1.
+    scrollSpeed: (v: number) => {
+      const fit = (road.value.options as { fixedCamera?: { fitWidth?: number } }).fixedCamera?.fitWidth ?? 18
+      const w = root.value?.clientWidth || 200
+      return (v * fit) / (w * 60)
+    },
   }
   ctl.register(entry)
 })
+
+// --- Surge (Launch) -------------------------------------------------------------
+// The first time 35% of the road is on screen: build up over 0.9 s, then
+// settle over 1.8 s to the base speed (a gentle climb).
+let unSurge: (() => void) | null = null
+function playSurge() { handle?.arrive(1800, 3.5, 900, false) }
+function wireSurge() {
+  if (!root.value || unSurge) return
+  const io = new IntersectionObserver((list) => {
+    if (list.some((e) => e.intersectionRatio >= 0.35)) {
+      playSurge()
+      io.disconnect()
+    }
+  }, { threshold: [0, 0.35, 1] })
+  io.observe(root.value)
+  unSurge = () => io.disconnect()
+}
 
 // --- Steering ----------------------------------------------------------------
 let unSteer: (() => void) | null = null
@@ -131,6 +166,7 @@ function wireSteering() {
 onBeforeUnmount(() => {
   unmounted = true
   unSteer?.()
+  unSurge?.()
   if (entry) ctl.unregister(entry)
   handle?.destroy()
   handle = null
@@ -158,8 +194,8 @@ defineExpose({
   // --- Phase 2b ---------------------------------------------------------------
   /** Play the arrival again (demo replay). */
   replayArrival() { handle?.arrive(ARRIVAL_MS) },
-  /** 0 = light theme, 1 = night theme. */
-  themeMix(t: number) { handle?.setThemeMix(t) },
+  /** Play the Launch surge again (demo replay). */
+  replaySurge() { playSurge() },
   morphTo(name: Distortion, ms = 800) { handle?.morphTo(name, ms) },
   /** The amber car races away, with the 400 ms burst. */
   launch() {
@@ -179,7 +215,7 @@ defineExpose({
       class="c4-road__still"
       :src="stillSrc(preset, 'desktop')"
       :srcset="stillSet"
-      sizes="100vw"
+      :sizes="stillSizes"
       alt=""
       decoding="async"
       @load="ready = true"
@@ -292,6 +328,12 @@ defineExpose({
 .c4-road--deliver {
   -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 75%, transparent 100%);
   mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 75%, transparent 100%);
+}
+
+/* Spine: a soft fade at the top and bottom of the band. */
+.c4-road--spine {
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
 }
 
 /* Closing band: only the lower part, under the call to action. The board

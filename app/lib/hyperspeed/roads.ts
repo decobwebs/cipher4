@@ -10,11 +10,16 @@
  *          strip         thin band between sections; moves only while you scroll
  *          deliver       "How we deliver"; speed follows the scroll
  * mask     the fade that keeps the road away from the words (HyperspeedRoad.vue)
+ *
+ * No loops or folds: every road except the home hero must stay readable at
+ * every moment. scripts/check-road-folds.mjs traces each road through the
+ * camera for 5 minutes of animation; all must score under 2 px. The hero is
+ * kept exactly as the live site's road, loop included (owner's decision).
  */
 import type { RoadOptions } from './index'
 
-export type RoadKind = 'hero' | 'header' | 'closing' | 'strip' | 'deliver'
-export type RoadMask = 'hero' | 'header' | 'band' | 'strip' | 'deliver' | 'closing' | 'none'
+export type RoadKind = 'hero' | 'header' | 'closing' | 'strip' | 'deliver' | 'spine'
+export type RoadMask = 'hero' | 'header' | 'band' | 'strip' | 'deliver' | 'closing' | 'spine' | 'none'
 
 export interface RoadPreset {
   kind: RoadKind
@@ -24,6 +29,8 @@ export interface RoadPreset {
   mobileOptions?: RoadOptions
   /** Base speed. 1 = the live hero. */
   speed?: number
+  /** Still-image sizes, when the road is not the usual wide shape. */
+  still?: { desktop: [number, number]; mobile: [number, number]; sizes: string }
 }
 
 export const roads = {
@@ -33,10 +40,11 @@ export const roads = {
     options: { seed: 3 },
     mobileOptions: { seed: 4 },
   },
-  // Service page headers: mountain, calmer.
+  // Service page headers: mountain, calmer. No loops or folds (board's
+  // [20, 20, 14] folded by up to 159 px; the up-and-down part is reduced).
   service: {
     kind: 'header', mask: 'header',
-    options: { seed: 21, distortionUniforms: { uAmp: [20, 20, 14] } },
+    options: { seed: 21, distortionUniforms: { uAmp: [20, 2, 8] } },
   },
   // Sector headers. Shapes from the plan's table. Each must stay readable,
   // with no loops or folds at any moment: scripts/check-road-folds.mjs
@@ -64,45 +72,45 @@ export const roads = {
     // A gentle chain of bends, at low amplitude. [12, 8] folded by up to 28 px.
     options: { seed: 17, distortion: 'xyDistortion', distortionUniforms: { uAmp: [12, 2] } },
   },
-  // Case study headers: a long straight road.
+  // Case study headers: a long straight road. ([24, 8] folded by up to 37 px.)
   case: {
     kind: 'header', mask: 'header',
-    options: { seed: 31, distortion: 'LongRaceDistortion', distortionUniforms: { uAmp: [24, 8] } },
+    options: { seed: 31, distortion: 'LongRaceDistortion', distortionUniforms: { uAmp: [24, 1.5] } },
   },
   // Contact header: deep, slow. Speeds up for 400 ms when the form is sent.
+  // ([8, 14] folded by up to 258 px.)
   contact: {
     kind: 'header', mask: 'header',
-    options: { seed: 8, distortion: 'deepDistortion', distortionUniforms: { uAmp: [8, 14] } },
+    options: { seed: 8, distortion: 'deepDistortion', distortionUniforms: { uAmp: [8, 3] } },
     speed: 0.45,
   },
   // Thin strip between sections. Moves only while scrolling.
+  // ([20, 6] folded by up to 23 px.)
   strip: {
     kind: 'strip', mask: 'strip',
-    options: { seed: 5, distortion: 'LongRaceDistortion', distortionUniforms: { uAmp: [20, 6] }, maxPixelRatio: 1.5 },
+    options: { seed: 5, distortion: 'LongRaceDistortion', distortionUniforms: { uAmp: [20, 1.5] }, maxPixelRatio: 1.5 },
   },
   // How we deliver: speed driven by scroll.
+  // ([14, 4, 6, 6] folded by up to 22 px.)
   deliver: {
     kind: 'deliver', mask: 'deliver',
-    options: { seed: 9, distortion: 'turbulentDistortion', distortionUniforms: { uAmp: [14, 4, 6, 6] } },
+    options: { seed: 9, distortion: 'turbulentDistortion', distortionUniforms: { uAmp: [14, 3, 2, 0] } },
   },
   // Closing band: the night road.
+  // ([22, 22, 14] folded by up to 195 px.)
   closing: {
     kind: 'closing', mask: 'closing',
-    options: { seed: 7, theme: 'dark', distortionUniforms: { uAmp: [22, 22, 14] } },
+    options: { seed: 7, theme: 'dark', distortionUniforms: { uAmp: [22, 2, 8] } },
   },
   // 404: deep, in a calm loop. The only road that never stops on its own.
+  // (The preset's [10, 20] folded by up to 331 px.)
   notfound: {
     kind: 'header', mask: 'header',
-    options: { seed: 40, distortion: 'deepDistortion' },
+    options: { seed: 40, distortion: 'deepDistortion', distortionUniforms: { uAmp: [10, 3] } },
     speed: 0.6,
   },
 
   // --- Phase 2b experiments (only on /_roads demo pages) -------------------
-  // Day to night: the hero road with the colour blend switched on.
-  'demo-daynight': {
-    kind: 'hero', mask: 'header',
-    options: { seed: 3, themeMix: 0 },
-  },
   // Sector road: the four sector shapes in one road, morphing live. Same
   // shapes and settings as the four sector header roads.
   'demo-sectors': {
@@ -120,7 +128,7 @@ export const roads = {
   // Message sent: the contact road with the one-off amber car.
   'demo-launch': {
     kind: 'header', mask: 'none',
-    options: { seed: 8, distortion: 'deepDistortion', distortionUniforms: { uAmp: [8, 14] }, launchCar: true },
+    options: { seed: 8, distortion: 'deepDistortion', distortionUniforms: { uAmp: [8, 3] }, launchCar: true },
     speed: 0.45,
   },
   // 404: the road fades into empty space ahead. Fog closes in at 12 to 48
@@ -128,8 +136,41 @@ export const roads = {
   // in its own band under the text, so it needs no side fade.
   'demo-void': {
     kind: 'header', mask: 'none',
-    options: { seed: 40, distortion: 'deepDistortion', fogNear: 0.03, fogFar: 0.12 },
+    options: { seed: 40, distortion: 'deepDistortion', distortionUniforms: { uAmp: [10, 3] }, fogNear: 0.03, fogFar: 0.12 },
     speed: 0.6,
+  },
+  // Spine: looking straight down, so the road runs down the screen as a
+  // narrow band. Straight (no bends, so it cannot fold). Both lanes travel
+  // the same way. Trails follow the scroll in both directions, at the
+  // scroll's speed, and stop when scrolling stops (useRoadController).
+  'demo-spine': {
+    kind: 'spine', mask: 'spine',
+    options: {
+      seed: 12,
+      distortion: 'LongRaceDistortion',
+      distortionUniforms: { uAmp: [0, 0] },
+      oneWay: true,
+      fixedCamera: { position: [0, 40, -200], target: [0, 0, -200], up: [0, 0, 1], fitWidth: 18 },
+      maxPixelRatio: 1.5,
+    },
+    still: { desktop: [240, 1000], mobile: [96, 800], sizes: '(max-width: 900px) 80px, 220px' },
+  },
+  // Launch: the road from behind, pointing straight up the screen. Trails
+  // rise, build up speed as the section comes into view, then settle to a
+  // gentle climb. A slight sway only; checked for folds from this camera.
+  'demo-rise': {
+    kind: 'header', mask: 'strip',
+    options: {
+      seed: 23,
+      distortion: 'LongRaceDistortion',
+      distortionUniforms: { uAmp: [3, 0] },
+      oneWay: true,
+      // Over the road and low, so the road starts below the frame and runs
+      // up to a vanishing point about a third from the top.
+      fixedCamera: { position: [0, 16, -8], target: [0, 0, -46] },
+    },
+    speed: 0.5,
+    still: { desktop: [760, 640], mobile: [780, 420], sizes: '(max-width: 900px) 100vw, 50vw' },
   },
 } satisfies Record<string, RoadPreset>
 

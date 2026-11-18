@@ -19,13 +19,17 @@ const ROADS = {
   'sector-oil-gas': { distortion: 'deepDistortion', uniforms: { uAmp: [10, 3] } },
   'sector-logistics': { distortion: 'LongRaceDistortion', uniforms: { uAmp: [35, 1.5] } },
   'sector-supply-chain': { distortion: 'xyDistortion', uniforms: { uAmp: [12, 2] } },
-  hero: { distortion: 'mountainDistortion' },
-  service: { distortion: 'mountainDistortion', uniforms: { uAmp: [20, 20, 14] } },
-  case: { distortion: 'LongRaceDistortion', uniforms: { uAmp: [24, 8] } },
-  contact: { distortion: 'deepDistortion', uniforms: { uAmp: [8, 14] } },
-  strip: { distortion: 'LongRaceDistortion', uniforms: { uAmp: [20, 6] } },
-  deliver: { distortion: 'turbulentDistortion', uniforms: { uAmp: [14, 4, 6, 6] } },
-  closing: { distortion: 'mountainDistortion', uniforms: { uAmp: [22, 22, 14] } },
+  service: { distortion: 'mountainDistortion', uniforms: { uAmp: [20, 2, 8] } },
+  case: { distortion: 'LongRaceDistortion', uniforms: { uAmp: [24, 1.5] } },
+  contact: { distortion: 'deepDistortion', uniforms: { uAmp: [8, 3] } },
+  strip: { distortion: 'LongRaceDistortion', uniforms: { uAmp: [20, 1.5] } },
+  deliver: { distortion: 'turbulentDistortion', uniforms: { uAmp: [14, 3, 2, 0] } },
+  closing: { distortion: 'mountainDistortion', uniforms: { uAmp: [22, 2, 8] } },
+  notfound: { distortion: 'deepDistortion', uniforms: { uAmp: [10, 3] } },
+  // Launch experiment: fixed camera behind the road, pointing up the screen.
+  'demo-rise': { distortion: 'LongRaceDistortion', uniforms: { uAmp: [3, 0] }, fixedCamera: { position: [0, 16, -8], target: [0, 0, -46] }, size: [760, 640] },
+  // Spine (straight, seen from above) cannot fold: no bends at all.
+  // The home hero is exempt (kept exactly as the live road), so not listed.
 }
 // Allow a candidate as JSON: node check-road-folds.mjs '{"distortion":"turbulentDistortion","uniforms":{"uAmp":[10,2,3,3]}}'
 
@@ -73,13 +77,16 @@ const SHADER = {
 }
 
 const L = 400 // road length
-const W = 1440, H = 700
+let W = 1440, H = 700
 
 export function worstFold(def, { tMax = 120, dt = 0.05, times = null } = {}) {
   const preset = presets[def.distortion]
   const u = { ...JSON.parse(JSON.stringify(preset.uniforms)), ...(def.uniforms || {}) }
+  if (def.size) { W = def.size[0]; H = def.size[1] }
   const cam = new PerspectiveCamera(90, W / H, 0.1, 10000)
-  const pos = new Vector3(0, 8, -5)
+  // A road with a fixed camera (fixedCamera in roads.ts) is checked from it.
+  const fc = def.fixedCamera
+  const pos = fc ? new Vector3(...fc.position) : new Vector3(0, 8, -5)
   const v = new Vector3()
   let worst = { px: 0, t: 0 }
   const ts = times || Array.from({ length: Math.floor(tMax / dt) + 1 }, (_, i) => i * dt)
@@ -87,12 +94,16 @@ export function worstFold(def, { tMax = 120, dt = 0.05, times = null } = {}) {
     // Aim the camera exactly as the road does.
     cam.position.copy(pos)
     cam.rotation.set(0, 0, 0)
-    const d = preset.js(0.025, t, u)
-    cam.lookAt(
-      pos.x + d[0] * preset.lookAtAmp[0] + preset.lookAtOffset[0],
-      pos.y + d[1] * preset.lookAtAmp[1] + preset.lookAtOffset[1],
-      pos.z + d[2] * preset.lookAtAmp[2] + preset.lookAtOffset[2],
-    )
+    if (fc) {
+      cam.lookAt(...fc.target)
+    } else {
+      const d = preset.js(0.025, t, u)
+      cam.lookAt(
+        pos.x + d[0] * preset.lookAtAmp[0] + preset.lookAtOffset[0],
+        pos.y + d[1] * preset.lookAtAmp[1] + preset.lookAtOffset[1],
+        pos.z + d[2] * preset.lookAtAmp[2] + preset.lookAtOffset[2],
+      )
+    }
     cam.updateMatrixWorld()
     cam.updateProjectionMatrix()
     // Walk the centreline away from the camera; track how far it ever drops

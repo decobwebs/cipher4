@@ -26,12 +26,17 @@ const ROADS = [
   'hero', 'service', 'sector-maritime', 'sector-oil-gas', 'sector-logistics',
   'sector-supply-chain', 'case', 'contact', 'strip', 'deliver', 'closing', 'notfound',
   // Phase 2b experiments
-  'demo-daynight', 'demo-sectors', 'demo-launch', 'demo-void',
+  'demo-sectors', 'demo-launch', 'demo-void', 'demo-spine', 'demo-rise',
 ]
 const SIZES = [
   { key: 'desktop', w: 1440, h: 700 },
   { key: 'mobile', w: 780, h: 600 },
 ]
+// Roads that are not the usual wide shape (keep in step with `still` in roads.ts).
+const OWN_SIZES = {
+  'demo-spine': [{ key: 'desktop', w: 240, h: 1000 }, { key: 'mobile', w: 96, h: 800 }],
+  'demo-rise': [{ key: 'desktop', w: 760, h: 640 }, { key: 'mobile', w: 780, h: 420 }],
+}
 
 async function launch() {
   try { return await chromium.launch() } catch { return chromium.launch({ channel: 'msedge' }) }
@@ -41,8 +46,9 @@ await mkdir(OUT, { recursive: true })
 const browser = await launch()
 const page = await browser.newPage({ viewport: { width: 1600, height: 1000 }, deviceScaleFactor: 1 })
 
-for (const road of ROADS) {
-  for (const s of SIZES) {
+const only = process.argv.slice(2)
+for (const road of only.length ? only : ROADS) {
+  for (const s of OWN_SIZES[road] || SIZES) {
     const url = `${BASE}/_roads?road=${road}&w=${s.w}&h=${s.h}&t=${T}&size=${s.key}`
     await page.goto(url, { waitUntil: 'networkidle' })
     await page.waitForFunction(() => window.__roadReady === true, null, { timeout: 30000 })

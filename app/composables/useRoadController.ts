@@ -36,12 +36,14 @@ export interface RoadEntry {
   baseSpeed: number
   ratio: number
   running: boolean
+  /** Spine roads: road speed for a scroll speed in px/s (signed). */
+  scrollSpeed?: (pxPerSecond: number) => number
 }
 
 // v2: the first version judged during start-up, so its notes are ignored.
 const LOWFPS_KEY = 'c4-road-lowfps-v2'
 const MOTION_KEY = 'c4-motion-on'
-const PRIORITY: Record<RoadKind, number> = { hero: 5, header: 4, closing: 3, deliver: 2, strip: 1 }
+const PRIORITY: Record<RoadKind, number> = { hero: 5, header: 4, closing: 3, deliver: 2, spine: 2, strip: 1 }
 
 // Frame-rate check settings.
 const FPS_MIN = 40
@@ -71,6 +73,7 @@ let libPromise: Promise<typeof import('~/lib/hyperspeed/index')> | null = null
 let lastScrollAt = 0
 let lastScrollY = 0
 let scrollVelocity = 0 // px per second
+let scrollSigned = 0 // px per second, + down, - up
 let scheduleQueued = false
 let scrollWired = false
 let lastBest: RoadEntry | null = null
@@ -236,9 +239,11 @@ function wireScroll() {
   let lastT = performance.now()
   window.addEventListener('scroll', () => {
     const now = performance.now()
-    const dy = Math.abs(window.scrollY - lastScrollY)
+    const dyS = window.scrollY - lastScrollY
+    const dy = Math.abs(dyS)
     const dt = Math.max(16, now - lastT)
     scrollVelocity = (dy / dt) * 1000
+    scrollSigned = (dyS / dt) * 1000
     lastScrollY = window.scrollY
     lastT = now
     lastScrollAt = now
@@ -267,7 +272,7 @@ function run() {
   for (const e of entries) {
     if (!e.handle || e.ratio <= 0 || !roadMayAnimate(e.kind)) continue
     // Scroll-driven roads are only candidates while the page is scrolling.
-    if ((e.kind === 'strip' || e.kind === 'deliver') && !scrolling()) continue
+    if ((e.kind === 'strip' || e.kind === 'deliver' || e.kind === 'spine') && !scrolling()) continue
     if (!best || e.ratio > best.ratio + 0.05 || (Math.abs(e.ratio - best.ratio) <= 0.05 && PRIORITY[e.kind] > PRIORITY[best.kind])) {
       best = e
     }
@@ -287,6 +292,11 @@ function run() {
     if (go && (e.kind === 'strip' || e.kind === 'deliver')) {
       // Faster scrolling, faster road: 0.4x to 2.5x.
       e.handle.setSpeed(Math.min(2.5, Math.max(0.4, scrollVelocity / 900)))
+    }
+    if (go && e.kind === 'spine') {
+      // The trails move with the page: down while scrolling down, up while
+      // scrolling up, at the scroll's own speed.
+      e.handle.setVelocity(e.scrollSpeed ? e.scrollSpeed(scrollSigned) : scrollSigned / 900)
     }
     if (go && !e.running) { e.handle.resume(); e.running = true }
     if (!go && e.running) { e.handle.pause(); e.running = false }
