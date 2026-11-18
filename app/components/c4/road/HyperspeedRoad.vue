@@ -301,7 +301,10 @@ defineExpose({
   mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 70%, transparent 100%);
 }
 
-@media (max-width: 900px) {
+/* Hero and page-header roads move into their own band under the text at
+   1100 px and below (owner's review: between 900 and 1100 px the text
+   column left only a thin strip for the road). */
+@media (max-width: 1100px) {
   .c4-road--hero,
   .c4-road--header {
     opacity: 1;
@@ -311,6 +314,7 @@ defineExpose({
     mask-composite: add;
   }
 }
+
 
 /* Strip between sections: faded at all four edges. */
 .c4-road--strip {

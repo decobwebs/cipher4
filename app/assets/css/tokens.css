@@ -29,6 +29,10 @@
   --on-dark-2: rgba(244, 246, 255, 0.78);
   --on-dark-3: rgba(244, 246, 255, 0.66);
   --on-dark-line: rgba(244, 246, 255, 0.34);
+  --amber-deep: #E39614;        /* the "required" star on form labels (board) */
+  --danger: #9A2B1F;            /* form error text: 8.4:1 on --danger-bg */
+  --danger-bg: #FDF3F2;
+  --danger-line: #F1C8C3;
 
   /* --- Shape and depth --------------------------------------------------- */
   --radius-card: 20px;

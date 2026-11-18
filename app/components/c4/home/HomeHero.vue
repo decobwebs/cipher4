@@ -2,8 +2,10 @@
 /**
  * Home hero (content C1, Home-Desktop and Home-Mobile boards).
  *
- * Desktop: the live road behind the hero, faded so it never crosses the
- * text column. Phones: the road sits in its own band under the buttons.
+ * Above 1100 px: the live road behind the hero, faded so it never crosses
+ * the text column. 1100 px and below (phones, tablets, small laptops): the
+ * road sits in its own band under the buttons. Between 900 and 1100 px the
+ * text column left only a thin strip for the road (owner's review).
  * The headline is plain HTML on screen from the first paint; the road
  * arrives later (after load and idle) and never delays it.
  *
@@ -90,8 +92,8 @@ import { hero } from '~/data/home'
   gap: var(--s-12);
 }
 
-/* Phones and small tablets: words first, the road in its own band below. */
-@media (max-width: 900px) {
+/* 1100 px and below: words first, the road in its own band below. */
+@media (max-width: 1100px) {
   .hh {
     display: flex;
     flex-direction: column;

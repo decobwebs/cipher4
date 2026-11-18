@@ -132,7 +132,8 @@ export default defineNuxtConfig({
         'lucide:plug',
         'lucide:cloud-off',
         'lucide:flag',
-        // ProofStrip.vue — referenced from a computed, not written literally
+        // Formerly ProofStrip.vue (removed in the redesign); kept until the
+        // old pages that use @nuxt/icon are rebuilt. Referenced from a computed, not written literally
         // in the template, so `scan` cannot find them.
         'lucide:layers',
         'lucide:calendar',

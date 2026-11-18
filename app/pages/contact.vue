@@ -1,312 +1,282 @@
 <script setup lang="ts">
-import { company, telHref } from '~/data/company'
+/**
+ * Contact (content J2; Page-Contact board; Phone-Screens 07 and 08).
+ * The form on the left; how to reach us and the offices on the right.
+ * No closing band on this page (board): the form is the call to action.
+ *
+ * When a message is sent, the header road plays Message sent: the 400 ms
+ * burst and one amber car racing away (kept from the Phase 2b demos).
+ */
+import { contactPage as page, reach, officesBlock } from '~/data/contact'
 
-useSeoMeta({
-  title: 'Contact | Cipher4 AI & Robotics',
-  description:
-    'Talk to Cipher4 about transport, logistics, oil and gas or supply chain operations. Offices in Abuja, Lagos and Kaduna.',
-})
+definePageMeta({ layout: 'c4' })
+useSeoMeta({ title: page.seo.title, description: page.seo.description, ogTitle: page.seo.title, ogDescription: page.seo.description })
 
-// Two different conversations, so two different forms.
-const tab = ref<'enquiry' | 'quote'>('enquiry')
-const tabRefs = ref<HTMLButtonElement[]>([])
-const tabs = [
-  { id: 'enquiry' as const, label: 'General enquiry' },
-  { id: 'quote' as const, label: 'Request a quote' },
-]
-
-function onTabKeydown(e: KeyboardEvent, index: number) {
-  const last = tabs.length - 1
-  let next: number | null = null
-  if (e.key === 'ArrowRight') next = index === last ? 0 : index + 1
-  else if (e.key === 'ArrowLeft') next = index === 0 ? last : index - 1
-  if (next !== null) {
-    e.preventDefault()
-    tab.value = tabs[next]!.id
-    tabRefs.value[next]?.focus()
-  }
-}
-
-const whatsappUrl = computed(
-  () =>
-    `https://wa.me/${company.whatsapp}?text=${encodeURIComponent(
-      'Hello Cipher4, I would like to discuss a project.',
-    )}`,
-)
+const crumbs = [{ label: 'Home', to: '/' }, { label: 'Contact' }]
+const hero = ref<{ launch: () => void } | null>(null)
 </script>
 
 <template>
   <div>
-    <UiPageHero
-      eyebrow="Contact"
-      title="Start with the problem"
-      lead="Tell us what is not working in your operation. If we are not the right people for it, we will say so and point you at who is."
+    <PageHero
+      ref="hero"
+      :crumbs="crumbs"
+      :eyebrow="page.eyebrow"
+      :title="page.title"
+      :lead="page.lead"
+      road="contact"
+      :min-height="520"
     />
 
-    <section class="section">
-      <div class="container">
-        <div class="contact">
-          <!-- Forms -->
-          <div>
-            <div class="tabs__list" role="tablist" aria-label="Enquiry type">
-              <button
-                v-for="(t, i) in tabs"
-                :key="t.id"
-                :ref="(el) => { if (el) tabRefs[i] = el as HTMLButtonElement }"
-                type="button"
-                role="tab"
-                :id="`ct-${t.id}`"
-                :aria-selected="tab === t.id"
-                :aria-controls="`ctp-${t.id}`"
-                :tabindex="tab === t.id ? 0 : -1"
-                class="tab"
-                :class="{ 'tab--active': tab === t.id }"
-                @click="tab = t.id"
-                @keydown="onTabKeydown($event, i)"
-              >
-                {{ t.label }}
-              </button>
-            </div>
-
-            <div
-              v-show="tab === 'enquiry'"
-              id="ctp-enquiry"
-              role="tabpanel"
-              aria-labelledby="ct-enquiry"
-            >
-              <p class="tab-intro">
-                For a conversation about an operational problem, a possible
-                project, or whether what you want is even a good idea.
-              </p>
-              <SectionsContactForm variant="enquiry" />
-            </div>
-
-            <div
-              v-show="tab === 'quote'"
-              id="ctp-quote"
-              role="tabpanel"
-              aria-labelledby="ct-quote"
-            >
-              <p class="tab-intro">
-                For a defined scope, an RFQ, or a formal tender response. Tell
-                us the submission format and the deadline and we will work to
-                them.
-              </p>
-              <SectionsContactForm variant="quote" />
-            </div>
-          </div>
-
-          <!-- Direct channels -->
-          <aside class="contact__side">
-            <div class="card">
-              <h2 class="card__title">Reach us directly</h2>
-              <p class="text-secondary">
-                A form is not always the fastest route. These all reach the
-                same team.
-              </p>
-
-              <div class="direct">
-                <a :href="whatsappUrl" class="direct__item" target="_blank" rel="noopener">
-                  <div class="icon-plate"><Icon name="lucide:message-circle" size="20" /></div>
-                  <div>
-                    <span class="direct__label">WhatsApp</span>
-                    <span class="direct__value">Chat with the team</span>
-                  </div>
-                </a>
-
-                <a :href="`mailto:${company.email}`" class="direct__item">
-                  <div class="icon-plate"><Icon name="lucide:mail" size="20" /></div>
-                  <div>
-                    <span class="direct__label">Email</span>
-                    <span class="direct__value">{{ company.email }}</span>
-                  </div>
-                </a>
-
-                <a
-                  :href="telHref(company.offices[0]!.phone)"
-                  class="direct__item"
-                >
-                  <div class="icon-plate"><Icon name="lucide:phone" size="20" /></div>
-                  <div>
-                    <span class="direct__label">Phone</span>
-                    <span class="direct__value">{{ company.offices[0]!.phone }}</span>
-                  </div>
-                </a>
-              </div>
-
-              <p class="hours">
-                <Icon name="lucide:clock" size="16" />
-                {{ company.hours }}
-              </p>
-            </div>
-
-            <div class="card mt-6">
-              <h2 class="card__title">Procurement</h2>
-              <p class="text-secondary">
-                Registration details, certifications, insurance and policy
-                statements are collected on one page for prequalification.
-              </p>
-              <NuxtLink to="/credentials" class="btn btn--secondary mt-4">
-                Credentials &amp; compliance
-              </NuxtLink>
-            </div>
-          </aside>
+    <section class="ct c4-section c4-section--paper" aria-label="Send us a message">
+      <div class="c4-wrap ct__grid">
+        <div class="c4-card ct__form">
+          <ContactForm @sent="hero?.launch()" />
         </div>
-      </div>
-    </section>
 
-    <!-- Offices -->
-    <section class="section section--subtle">
-      <div class="container">
-        <UiSectionHeader
-          eyebrow="Offices"
-          title="Where we are"
-          lead="Our engineers travel to site from all three. Visits are by appointment."
-        />
+        <aside class="ct__aside">
+          <section class="c4-card ct__card" aria-labelledby="ct-reach">
+            <h2 id="ct-reach" class="ct__title">{{ reach.title }}</h2>
+            <ul class="ct__reach">
+              <li v-for="(r, i) in reach.items" :key="r.kind">
+                <a :href="r.href" class="ct__row" :target="r.external ? '_blank' : undefined" :rel="r.external ? 'noopener' : undefined">
+                  <C4Icon :name="r.icon as 'whatsapp' | 'mail' | 'phone'" :size="32" :delay="i * 0.25" />
+                  <span class="ct__row-text">
+                    <span class="ct__kind">{{ r.kind }}</span>
+                    <span class="ct__value">{{ r.text }}</span>
+                  </span>
+                  <C4Glyph name="arrow" class="ct__arrow" />
+                  <span v-if="r.external" class="c4-sr-only"> (opens in a new tab)</span>
+                </a>
+              </li>
+            </ul>
+            <p class="ct__hours">{{ reach.hours }}</p>
+          </section>
 
-        <div v-reveal.stagger class="grid grid--3">
-          <div v-for="office in company.offices" :key="office.city" class="card">
-            <div class="cluster">
-              <h3 class="card__title">{{ office.city }}</h3>
-              <span v-if="office.isHeadquarters" class="pill pill--accent">
-                Head office
-              </span>
+          <section class="c4-card ct__card" aria-labelledby="ct-offices">
+            <div class="ct__offices-head">
+              <h2 id="ct-offices" class="ct__title">{{ officesBlock.title }}</h2>
+              <p class="ct__note">{{ officesBlock.note }}</p>
             </div>
-            <address class="office__address">
-              {{ office.street }}<br>
-              {{ office.area }}, {{ office.state }}<br>
-              {{ office.country }}
-            </address>
-            <a :href="telHref(office.phone)" class="office__phone">
-              <Icon name="lucide:phone" size="16" />
-              {{ office.phone }}
-            </a>
-          </div>
-        </div>
+            <ol class="ct__offices">
+              <li v-for="o in officesBlock.items" :key="o.label" class="ct__office" :class="{ 'is-head': o.head }">
+                <span class="ct__pin" aria-hidden="true" />
+                <span class="ct__office-text">
+                  <span class="ct__label">{{ o.label }}</span>
+                  <span class="ct__address">{{ o.address }}</span>
+                  <a :href="`tel:${o.phone.replace(/[^\d+]/g, '')}`" class="ct__phone">{{ o.phone }}</a>
+                </span>
+              </li>
+            </ol>
+          </section>
+        </aside>
       </div>
     </section>
   </div>
 </template>
 
 <style scoped>
-.contact {
-  display: grid;
-  gap: var(--space-12);
+.ct {
+  padding-top: var(--s-96);
 }
 
-@media (min-width: 64rem) {
-  .contact {
-    grid-template-columns: 1.6fr 1fr;
-    gap: var(--space-16);
-    align-items: start;
+.ct__grid {
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  gap: var(--s-48);
+  align-items: start;
+}
+
+.ct__form {
+  padding: var(--s-48);
+  box-shadow: 0 30px 80px rgba(16, 32, 104, 0.08);
+}
+
+.ct__aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-24);
+}
+
+.ct__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-16);
+  padding: var(--s-32);
+}
+
+.ct__title {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.ct__reach {
+  list-style: none;
+}
+
+.ct__row {
+  display: grid;
+  grid-template-columns: 40px 1fr 16px;
+  gap: var(--s-16);
+  align-items: center;
+  min-height: 76px;
+  padding: var(--s-16) 0;
+  border-top: 1px solid var(--line);
+}
+
+.ct__row-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.ct__kind {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+
+.ct__value {
+  font-size: 17px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.ct__arrow {
+  color: var(--amber);
+  transition: transform var(--dur-ui) var(--ease-out);
+}
+
+.ct__row:hover .ct__arrow {
+  transform: translateX(4px);
+}
+
+.ct__hours {
+  padding-top: var(--s-16);
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--slate);
+}
+
+.ct__offices-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--s-8);
+}
+
+.ct__note {
+  font-size: 14px;
+  color: var(--slate);
+}
+
+/* Three offices on one line from Abuja (Contact choreography 22). */
+.ct__offices {
+  position: relative;
+  list-style: none;
+}
+
+.ct__offices::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 10px;
+  bottom: 64px;
+  width: 1px;
+  background: linear-gradient(180deg, var(--amber), var(--indigo));
+}
+
+.ct__office {
+  position: relative;
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: var(--s-16);
+}
+
+.ct__pin {
+  position: relative;
+  z-index: 1;
+  width: 13px;
+  height: 13px;
+  margin-top: 3px;
+  border-radius: 50%;
+  border: 2px solid var(--indigo);
+  background: var(--white);
+}
+
+.ct__office.is-head .ct__pin {
+  border-color: var(--amber);
+  background: var(--amber);
+}
+
+.ct__office-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  padding-bottom: var(--s-24);
+}
+
+.ct__label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--indigo);
+}
+
+.ct__address {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.ct__phone {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  min-height: 44px;
+  margin-block: -8px;
+  font-size: 15px;
+  color: var(--slate);
+}
+
+.ct__phone:hover {
+  color: var(--indigo);
+}
+
+@media (max-width: 1100px) {
+  .ct__grid {
+    grid-template-columns: 1fr;
   }
 }
 
-.tabs__list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-block-end: var(--space-6);
-}
+@media (max-width: 767px) {
+  .ct {
+    padding-top: var(--s-48);
+  }
 
-.tab {
-  min-height: 2.75rem;
-  padding: var(--space-2) var(--space-5);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-pill);
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-medium);
-  color: var(--text-secondary);
-  transition: background-color var(--dur-fast) var(--ease-out),
-    border-color var(--dur-fast) var(--ease-out),
-    color var(--dur-fast) var(--ease-out);
-}
+  .ct__form {
+    padding: var(--s-24);
+  }
 
-.tab:hover {
-  border-color: var(--c4-indigo-800);
-  color: var(--text-primary);
-}
+  .ct__card {
+    padding: var(--s-24);
+  }
 
-.tab--active {
-  background-color: var(--c4-indigo-800);
-  border-color: var(--c4-indigo-800);
-  color: var(--c4-white);
-}
-
-.tab-intro {
-  margin-block-end: var(--space-6);
-  color: var(--text-secondary);
-  max-width: var(--measure);
-}
-
-/* --- Direct channels ----------------------------------------------------- */
-
-.direct {
-  display: grid;
-  gap: var(--space-2);
-  margin-block-start: var(--space-5);
-}
-
-.direct__item {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-4);
-  align-items: center;
-  padding: var(--space-3);
-  margin-inline: calc(var(--space-3) * -1);
-  border-radius: var(--radius-md);
-  transition: background-color var(--dur-fast) var(--ease-out);
-}
-
-.direct__item:hover {
-  background-color: var(--bg-subtle);
-  color: inherit;
-}
-
-.direct__label {
-  display: block;
-  font-size: var(--fs-xs);
-  font-weight: var(--fw-semibold);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  color: var(--text-secondary);
-}
-
-.direct__value {
-  display: block;
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-medium);
-  color: var(--text-primary);
-}
-
-.hours {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin-block-start: var(--space-5);
-  padding-block-start: var(--space-4);
-  border-block-start: 1px solid var(--border-default);
-  font-size: var(--fs-sm);
-  color: var(--text-secondary);
-}
-
-/* --- Offices ------------------------------------------------------------- */
-
-.office__address {
-  margin-block-start: var(--space-3);
-  font-style: normal;
-  font-size: var(--fs-sm);
-  line-height: 1.7;
-  color: var(--text-secondary);
-}
-
-.office__phone {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin-block-start: var(--space-4);
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-medium);
-  color: var(--text-accent);
+  /* Phone-Screens 08: large one-tap rows. */
+  .ct__row {
+    grid-template-columns: 44px 1fr 16px;
+    padding: 0 var(--s-16);
+    margin-bottom: var(--s-12);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--white);
+  }
 }
 </style>

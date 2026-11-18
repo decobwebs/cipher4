@@ -97,10 +97,11 @@ const groups = [
   { key: 'delivery', label: 'How we deliver' },
   { key: 'why', label: 'Why Cipher4' },
   { key: 'contact', label: 'Contact (from Phone-Screens, not part of the 20)' },
+  { key: 'parts', label: 'Service parts and lists (Page-Service and Page-Case, not part of the 20)' },
 ] as const
 const iconNames = Object.keys(icons) as C4IconName[]
 const byGroup = (g: string) => iconNames.filter((n) => icons[n].group === g)
-const coreCount = iconNames.filter((n) => icons[n].group !== 'contact').length
+const coreCount = iconNames.filter((n) => icons[n].group !== 'contact' && icons[n].group !== 'parts').length
 
 // Remounting replays the draw-on.
 const replay = ref(0)

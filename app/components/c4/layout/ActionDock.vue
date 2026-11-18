@@ -21,7 +21,8 @@ onMounted(() => {
   onBeforeUnmount(() => window.removeEventListener('resize', set))
 })
 
-const suppressed = computed(() => route.path === '/contact' || menuOpen.value)
+// Tolerant of a trailing slash (a static host may serve /contact/).
+const suppressed = computed(() => route.path.replace(/\/$/, '') === '/contact' || menuOpen.value)
 const shown = computed(() =>
   !suppressed.value && y.value > vh.value * 0.8 && direction.value === 'up',
 )

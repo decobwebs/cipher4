@@ -77,11 +77,12 @@ export const roads = {
     kind: 'header', mask: 'header',
     options: { seed: 31, distortion: 'LongRaceDistortion', distortionUniforms: { uAmp: [24, 1.5] } },
   },
-  // Contact header: deep, slow. Speeds up for 400 ms when the form is sent.
+  // Contact header: deep, slow. When the form is sent: the 400 ms burst and
+  // one amber car racing away (Message sent, kept from Phase 2b).
   // ([8, 14] folded by up to 258 px.)
   contact: {
     kind: 'header', mask: 'header',
-    options: { seed: 8, distortion: 'deepDistortion', distortionUniforms: { uAmp: [8, 3] } },
+    options: { seed: 8, distortion: 'deepDistortion', distortionUniforms: { uAmp: [8, 3] }, launchCar: true },
     speed: 0.45,
   },
   // Thin strip between sections. Moves only while scrolling.

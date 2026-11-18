@@ -15,7 +15,7 @@ type Line =
 
 export interface IconDef {
   label: string
-  group: 'services' | 'sectors' | 'delivery' | 'why' | 'contact'
+  group: 'services' | 'sectors' | 'delivery' | 'why' | 'contact' | 'parts'
   lines: Line[]
   node: [cx: number, cy: number, r: number]
 }
@@ -157,6 +157,28 @@ export const icons = {
     label: 'Works with what you have', group: 'why',
     lines: [{ d: 'M12 4 V10 M20 4 V10 M9 10 H23 V15 A7 7 0 0 1 9 15 Z M16 22 V26' }],
     node: [16, 28, 2],
+  },
+
+  // --- Service parts (Page-Service board) and lists ------------------------
+  'job-control': {
+    label: 'Operations and job control', group: 'parts',
+    lines: [{ rect: [4, 5, 9, 7, 1.5] }, { rect: [19, 20, 9, 7, 1.5] }, { d: 'M13 8.5 H17 A3 3 0 0 1 20 11.5 V16 M8.5 12 V20.5 A3 3 0 0 0 11.5 23.5 H19' }],
+    node: [20, 16.5, 1.8],
+  },
+  document: {
+    label: 'Documents', group: 'parts',
+    lines: [{ d: 'M8 4 H19 L25 10 V28 H8 Z M19 4 V10 H25' }, { d: 'M12 16 H21 M12 20.5 H21 M12 25 H17' }],
+    node: [12, 11, 1.8],
+  },
+  chart: {
+    label: 'Reporting', group: 'parts',
+    lines: [{ d: 'M5 5 V27 H27' }, { d: 'M9 21 L14 15 L18 18 L25 9' }],
+    node: [25, 9, 2],
+  },
+  check: {
+    label: 'Done', group: 'parts',
+    lines: [{ circle: [16, 16, 11] }, { d: 'M11 16.5 L14.5 20 L21 12.5' }],
+    node: [25, 8, 1.8],
   },
 
   // --- Contact (Phone-Screens board, not part of the 20) ------------------
