@@ -7,10 +7,22 @@
  */
 import { closingBand as copy } from '~/data/site'
 
-withDefaults(defineProps<{
+interface BandLink { label: string; to?: string; href?: string }
+
+const props = withDefaults(defineProps<{
   title?: string
   lead?: string
+  /** A page's own closing words (Insights, Credentials) bring their own buttons. */
+  primary?: BandLink
+  /** `null` drops the second button. */
+  secondary?: BandLink | null
+  /** `null` drops the reply promise (it belongs to the B4 band). */
+  promise?: string | null
 }>(), {})
+
+const first = computed(() => props.primary ?? copy.primary)
+const second = computed(() => (props.secondary === null ? null : props.secondary ?? copy.secondary))
+const note = computed(() => (props.promise === null ? null : props.promise ?? copy.promise))
 </script>
 
 <template>
@@ -25,10 +37,10 @@ withDefaults(defineProps<{
         <h2 id="c4-close-title" class="c4-close__title">{{ title ?? copy.title }}</h2>
         <p class="c4-close__lead">{{ lead ?? copy.lead }}</p>
         <div class="c4-close__actions">
-          <C4Button :to="copy.primary.to" size="lg" arrow>{{ copy.primary.label }}</C4Button>
-          <C4Button :to="copy.secondary.to" size="lg" variant="secondary" on-dark>{{ copy.secondary.label }}</C4Button>
+          <C4Button :to="first.to" :href="first.href" size="lg" arrow>{{ first.label }}</C4Button>
+          <C4Button v-if="second" :to="second.to" :href="second.href" size="lg" variant="secondary" on-dark>{{ second.label }}</C4Button>
         </div>
-        <p class="c4-close__promise">{{ copy.promise }}</p>
+        <p v-if="note" class="c4-close__promise">{{ note }}</p>
       </div>
     </div>
   </section>

@@ -104,10 +104,13 @@ export const roads = {
     options: { seed: 7, theme: 'dark', distortionUniforms: { uAmp: [22, 2, 8] } },
   },
   // 404: deep, in a calm loop. The only road that never stops on its own.
-  // (The preset's [10, 20] folded by up to 331 px.)
+  // (The preset's [10, 20] folded by up to 331 px.) Kept from Phase 2b
+  // ("404 road", owner's choice): fog closes in at 12 to 48 units, so the
+  // road fades out into empty space ahead. It sits in its own band under
+  // the text, so it needs no side fade. Same settings as 'demo-void'.
   notfound: {
-    kind: 'header', mask: 'header',
-    options: { seed: 40, distortion: 'deepDistortion', distortionUniforms: { uAmp: [10, 3] } },
+    kind: 'header', mask: 'none',
+    options: { seed: 40, distortion: 'deepDistortion', distortionUniforms: { uAmp: [10, 3] }, fogNear: 0.03, fogFar: 0.12 },
     speed: 0.6,
   },
 

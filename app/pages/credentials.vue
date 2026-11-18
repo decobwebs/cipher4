@@ -1,286 +1,125 @@
 <script setup lang="ts">
-import {
-  credentialGroups,
-  publishableCredentials,
-  hasPublishableCredentials,
-  publishablePartners,
-  policies,
-} from '~/data/credentials'
-import { company } from '~/data/company'
+/**
+ * Credentials and compliance (content G2). No board of its own: the case
+ * header, then registration as a table, the four policy groups as cards,
+ * references, and "Preparing a submission?" as the closing band (it is the
+ * page's last word and carries its own button).
+ *
+ * Only what Cipher4 holds is shown. The RC number row stays hidden until
+ * the number is supplied (data/site.ts, company.rcNumber).
+ */
+import { credentialsPage as page } from '~/data/compliance'
 
-useSeoMeta({
-  title: 'Credentials & Compliance | Cipher4 AI & Robotics',
-  description:
-    'Corporate registration, sector registrations, management system certifications, insurance and policy positions for Cipher4 AI & Robotics Ltd.',
-})
+definePageMeta({ layout: 'c4' })
+useSeoMeta({ title: page.seo.title, description: page.seo.description, ogTitle: page.seo.title, ogDescription: page.seo.description })
 
-const anyCredentials = hasPublishableCredentials()
-const partners = publishablePartners()
-
-/** True only in `nuxt dev`. Compiled out of the production build entirely. */
-const isDev = import.meta.dev
+const crumbs = [{ label: 'Home', to: '/' }, { label: 'Credentials' }]
 </script>
 
 <template>
   <div>
-    <UiPageHero
-      eyebrow="Credentials &amp; compliance"
-      title="Everything a procurement team asks for, in one place"
-      lead="Registration details, certifications, insurance and the policy positions we work to. If you need documentation for a prequalification pack, ask and we will send it the same day."
-    >
+    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" road="case" :text-width="680">
       <template #actions>
-        <NuxtLink to="/contact" class="btn btn--accent">
-          Request documentation
-        </NuxtLink>
+        <C4Button :to="page.cta.to" arrow>{{ page.cta.label }}</C4Button>
       </template>
-    </UiPageHero>
+    </PageHero>
 
-    <!-- Registrations -->
-    <section class="section">
-      <div class="container">
-        <div v-if="anyCredentials" class="stack stack--gap-lg">
-          <div
-            v-for="group in credentialGroups"
-            :key="group.title"
-            v-reveal
-          >
-            <template v-if="publishableCredentials(group).length">
-              <div class="cluster">
-                <div class="icon-plate">
-                  <Icon :name="group.icon" size="20" />
-                </div>
-                <h2>{{ group.title }}</h2>
-              </div>
-              <p class="lead mt-3">{{ group.intro }}</p>
-
-              <div class="grid grid--2 mt-6">
-                <div
-                  v-for="item in publishableCredentials(group)"
-                  :key="item.name"
-                  class="card cred"
-                >
-                  <div class="cred__head">
-                    <h3 class="card__title">{{ item.name }}</h3>
-                    <span
-                      class="pill"
-                      :class="item.status === 'held' ? 'pill--accent' : ''"
-                    >
-                      {{ item.status === 'held' ? 'Held' : 'In progress' }}
-                    </span>
-                  </div>
-
-                  <p class="text-secondary">{{ item.description }}</p>
-
-                  <dl v-if="item.status === 'held'" class="cred__meta">
-                    <div v-if="item.reference">
-                      <dt>Reference</dt>
-                      <dd>{{ item.reference }}</dd>
-                    </div>
-                    <div v-if="item.issuer">
-                      <dt>Issued by</dt>
-                      <dd>{{ item.issuer }}</dd>
-                    </div>
-                  </dl>
-
-                  <p class="cred__relevance">{{ item.relevance }}</p>
-                </div>
-              </div>
-            </template>
-          </div>
+    <!-- Registration -->
+    <section class="c4-section c4-section--paper" aria-labelledby="cr-reg">
+      <div class="c4-wrap c4p-split">
+        <div class="c4p-split__head">
+          <h2 id="cr-reg" class="c4-h2">{{ page.registration.title }}</h2>
         </div>
-
-        <!-- Honest empty state. Better than inventing certifications. -->
-        <div v-else v-reveal class="card empty">
-          <div class="icon-plate icon-plate--lg">
-            <Icon name="lucide:file-text" size="26" />
-          </div>
-          <h2 class="mt-4">Documentation on request</h2>
-          <p class="lead mt-3">
-            Our corporate registration, tax documentation, insurance
-            certificates and sector registrations are provided directly for
-            prequalification and tender submissions.
-          </p>
-          <p class="mt-4 text-secondary measure">
-            Email
-            <a :href="`mailto:${company.email}`">{{ company.email }}</a>
-            with the documents your process requires and we will return them
-            the same working day.
-          </p>
-          <NuxtLink to="/contact" class="btn btn--primary mt-6">
-            Request documentation
-          </NuxtLink>
-
-          <!-- Development-only note.
-               This claimed to be invisible in production but had no guard, so
-               it shipped: a message addressed to Cipher4, naming a source file
-               path, rendering on the public page procurement teams read first.
-               `import.meta.dev` is compiled out of the production bundle. -->
-          <p v-if="isDev" class="empty__note">
-            <Icon name="lucide:wrench" size="15" />
-            <span>
-              <strong>Cipher4:</strong> this section fills itself in as soon as
-              you set each item's status in
-              <code>app/data/credentials.ts</code>. Nothing publishes until you
-              confirm it. Deliberately.
-            </span>
-          </p>
-        </div>
+        <dl class="c4p-facts">
+          <template v-for="r in page.registration.rows" :key="r.label">
+            <dt>{{ r.label }}</dt>
+            <dd>{{ r.value }}</dd>
+          </template>
+        </dl>
       </div>
     </section>
 
-    <!-- Partners -->
-    <section v-if="partners.length" class="section section--subtle">
-      <div class="container">
-        <UiSectionHeader
-          eyebrow="Vendor authorisations"
-          title="Who we are authorised to supply"
-          lead="Relevant to hardware procurement, warranty terms and licensing."
-        />
-        <div v-reveal.stagger class="grid grid--4">
-          <div v-for="partner in partners" :key="partner.name" class="card">
-            <h3 class="card__title">{{ partner.name }}</h3>
-            <p v-if="partner.tier" class="text-accent">{{ partner.tier }}</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Policies -->
-    <section id="policies" class="section section--inverse on-dark">
-      <div class="container">
-        <UiSectionHeader
-          eyebrow="Policy positions"
-          title="How we operate on your sites and in your systems"
-          lead="These apply regardless of certification status, and we will accept them as contract terms."
-        />
-
-        <div v-reveal.stagger class="grid grid--2">
-          <div v-for="policy in policies" :key="policy.title" class="card">
-            <div class="icon-plate">
-              <Icon :name="policy.icon" size="20" />
-            </div>
-            <div class="card__body mt-4">
-              <h3 class="card__title">{{ policy.title }}</h3>
-              <p v-for="para in policy.body" :key="para" class="text-secondary">
-                {{ para }}
-              </p>
-            </div>
-          </div>
-        </div>
+    <!-- Policy positions -->
+    <section class="c4-section c4-section--white" aria-labelledby="cr-policy">
+      <div class="c4-wrap">
+        <SectionHeader title-id="cr-policy" :eyebrow="page.policies.label" :title="page.policies.title" :lead="page.policies.lead" />
+        <ul class="c4p-grid-2">
+          <li v-for="(g, i) in page.policies.groups" :key="g.title" class="c4-card cr-policy">
+            <C4Icon :name="g.icon" :size="44" :delay="i * 0.2" />
+            <h3 class="c4p-link-card__title">{{ g.title }}</h3>
+            <ul class="c4p-dots">
+              <li v-for="x in g.items" :key="x">{{ x }}</li>
+            </ul>
+          </li>
+        </ul>
       </div>
     </section>
 
     <!-- References -->
-    <section class="section">
-      <div class="container">
-        <div v-reveal class="card refs">
-          <div class="icon-plate icon-plate--solid">
-            <Icon name="lucide:users" size="20" />
-          </div>
-          <h2 class="mt-4">References</h2>
-          <p class="lead mt-3">
-            Client references are available on request, subject to that
-            client's consent. Tell us the sector and scope you are evaluating
-            and we will put you in touch with the closest comparable
-            engagement.
-          </p>
-          <NuxtLink to="/contact" class="btn btn--primary mt-6">
-            Request references
-          </NuxtLink>
+    <section class="c4-section c4-section--paper cr-refs" aria-labelledby="cr-refs">
+      <div class="c4-wrap c4p-split">
+        <div class="c4p-split__head">
+          <h2 id="cr-refs" class="c4-h2">{{ page.references.title }}</h2>
+        </div>
+        <div class="cr-refs__body">
+          <p class="cr-refs__text">{{ page.references.text }}</p>
+          <C4Button :to="page.references.cta.to" variant="secondary" arrow>{{ page.references.cta.label }}</C4Button>
         </div>
       </div>
     </section>
 
-    <SectionsCtaBand
-      title="Need something specific for a submission?"
-      lead="Send us the prequalification checklist and we will tell you honestly which items we can satisfy today and which we cannot."
-      primary-label="Send us your checklist"
-      secondary-label="About Cipher4"
-      secondary-to="/about"
+    <ClosingBand
+      :title="page.submission.title"
+      :lead="page.submission.text"
+      :primary="page.submission.cta"
+      :secondary="null"
+      :promise="null"
     />
   </div>
 </template>
 
 <style scoped>
-.cred__head {
+.cr-policy {
   display: flex;
-  flex-wrap: wrap;
-  align-items: start;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-block-end: var(--space-3);
+  flex-direction: column;
+  gap: var(--s-24);
+  height: 100%;
+  padding: var(--s-48);
 }
 
-.cred__meta {
-  display: grid;
-  gap: var(--space-2);
-  margin-block-start: var(--space-4);
-  padding-block-start: var(--space-4);
-  border-block-start: 1px solid var(--border-default);
-  font-size: var(--fs-sm);
+.cr-policy .c4p-dots {
+  padding-top: var(--s-24);
+  border-top: 1px solid var(--line);
 }
 
-.cred__meta > div {
+.cr-refs {
+  padding-bottom: var(--s-128);
+}
+
+.cr-refs__body {
   display: flex;
-  justify-content: space-between;
-  gap: var(--space-4);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-32);
 }
 
-.cred__meta dt {
-  color: var(--text-secondary);
+.cr-refs__text {
+  font-size: 21px;
+  line-height: 1.6;
+  color: var(--ink-2);
 }
 
-.cred__meta dd {
-  font-weight: var(--fw-semibold);
-  text-align: right;
-}
+@media (max-width: 767px) {
+  .cr-policy {
+    padding: var(--s-24);
+  }
 
-.cred__relevance {
-  margin-block-start: var(--space-4);
-  font-size: var(--fs-xs);
-  line-height: var(--lh-snug);
-  color: var(--text-secondary);
-  font-style: italic;
-}
+  .cr-refs {
+    padding-bottom: var(--s-96);
+  }
 
-/* --- Empty state --------------------------------------------------------- */
-
-.empty {
-  align-items: start;
-  padding: var(--space-10);
-  max-width: 44rem;
-}
-
-/* Scoped to plain inline links only — .btn already sets its own text
-   colour, and this rule was previously overriding it (the "Request
-   documentation" button was rendering in accent-on-accent, near-invisible). */
-.empty p a {
-  color: var(--text-accent);
-  text-decoration: underline;
-}
-
-.empty__note {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-3);
-  align-items: start;
-  margin-block-start: var(--space-8);
-  padding: var(--space-4);
-  border-radius: var(--radius-md);
-  background-color: var(--c4-amber-050);
-  font-size: var(--fs-xs);
-  line-height: var(--lh-snug);
-  color: var(--c4-graphite);
-}
-
-.empty__note code {
-  font-family: var(--font-mono);
-  font-size: 0.95em;
-}
-
-.refs {
-  align-items: start;
-  padding: var(--space-10);
-  max-width: 44rem;
+  .cr-refs__text {
+    font-size: 18px;
+  }
 }
 </style>

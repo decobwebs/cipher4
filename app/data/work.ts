@@ -140,3 +140,126 @@ export const cases: Case[] = [
 ]
 
 export const caseBySlug = (slug: string) => cases.find((c) => c.slug === slug)
+
+// --- Our work (content F1) ----------------------------------------------------
+
+export type WorkFilter = 'all' | 'platforms' | 'websites'
+
+export const workIndex = {
+  seo: {
+    title: 'Our work | Cipher4 AI & Robotics',
+    description: 'Platforms and digital products Cipher4 has engineered for organisations in maritime, energy, logistics and beyond.',
+  },
+  eyebrow: 'Our work',
+  title: 'Trusted with the systems that matter',
+  lead: 'Selected platforms and digital products we have engineered for organisations in maritime, energy, logistics and beyond.',
+  filters: [
+    { key: 'all', label: 'All' },
+    { key: 'platforms', label: 'Platforms' },
+    { key: 'websites', label: 'Websites' },
+  ] satisfies { key: WorkFilter; label: string }[],
+  platformsTitle: 'Platforms',
+  websitesTitle: 'Websites and digital products',
+  visit: 'Visit site',
+}
+
+export interface PlatformCard {
+  name: string
+  field: string
+  line: string
+  link: { label: string; to: string }
+  image: { src: string; w: number; h: number; alt: string }
+}
+
+export const platformCards: PlatformCard[] = [
+  {
+    name: 'Reliant Anchor',
+    field: 'Marine fuel logistics',
+    line: 'Complete operational command for marine fuel delivery.',
+    link: { label: 'Read the case study', to: '/work/reliant-anchor' },
+    image: { src: '/images/work/reliant-anchor.jpg', w: 1400, h: 875, alt: 'The sign-in screen of the operations platform built for Reliant Anchor' },
+  },
+  {
+    name: 'Harbours360',
+    field: 'Maritime and industrial asset marketplace',
+    line: 'A trusted marketplace for high-value maritime assets.',
+    link: { label: 'Read the case study', to: '/work/harbours360' },
+    image: { src: '/images/work/harbours360.jpg', w: 1400, h: 875, alt: 'A Harbours360 market page' },
+  },
+  {
+    name: 'LucidHR',
+    field: 'A Cipher4 product',
+    line: 'Intelligent crew matching for the maritime industry. Coming soon.',
+    link: { label: 'Learn more', to: '/products/lucidhr' },
+    image: { src: '/images/work/lucidhr.jpg', w: 1400, h: 613, alt: 'The LucidHR dashboard' },
+  },
+]
+
+export interface WebsiteCard {
+  name: string
+  field: string
+  headline: string
+  line: string
+  /** Only the approved images (public/images/work); otherwise the logo. */
+  image?: { src: string; w: number; h: number; alt: string }
+  logo?: { src: string; w: number; h: number }
+  /**
+   * "Visit site" link. The content file gives no addresses, so none are set
+   * yet (owner question, Phase 5). F1: fix the live Lighthouse and Zeal
+   * placeholders before linking to those sites.
+   */
+  url?: string
+}
+
+export const websiteCards: WebsiteCard[] = [
+  {
+    name: 'Lighthouse Maritime Agency',
+    field: 'Ship agency',
+    headline: 'A website built to win port-call business.',
+    line: 'A focused digital presence that guides shipowners and operators straight to a cost estimate request, with service, port and port-call information to support the decision.',
+    image: { src: '/images/work/lighthouse.jpg', w: 1400, h: 875, alt: 'The Lighthouse Maritime Agency website' },
+    logo: { src: '/images/logos/lighthouse.png', w: 100, h: 122 },
+  },
+  {
+    name: 'Zeal Global Resources',
+    field: 'Petroleum haulage',
+    headline: 'A haulage brand built for trust and compliance.',
+    line: "A complete website that presents Zeal's fleet, safety standards and services with precision, and turns visitors into quote requests.",
+    logo: { src: '/images/logos/zeal.png', w: 273, h: 160 },
+  },
+  {
+    name: 'Quick Trips',
+    field: 'Travel',
+    headline: 'A travel website that starts the journey.',
+    line: 'An interactive travel experience, with a guided trip planner and a destination globe, that turns browsing into enquiries.',
+    logo: { src: '/images/logos/quick-trips.png', w: 382, h: 124 },
+  },
+  {
+    name: 'Lustre by Kal',
+    field: 'Corporate gifting',
+    headline: 'Premium gifting, ordered with ease.',
+    line: 'An elegant online catalogue and ordering experience for a premium corporate gifting brand, supported by launch videos we produced.',
+    logo: { src: '/images/logos/lustre.png', w: 188, h: 160 },
+  },
+  {
+    name: 'Reliant Anchor Foundation',
+    field: 'Non-profit, education',
+    headline: 'A digital home for a foundation investing in young people.',
+    line: "A dignified website that presents the foundation's programmes and partners, and makes it simple to support its work.",
+    logo: { src: '/images/logos/foundation.png', w: 391, h: 157 },
+  },
+  {
+    // Name only: no logo in the pack, and never his photo (F1 note).
+    name: 'Kasim Auwal Lawal',
+    field: 'Executive profile',
+    headline: 'A career in maritime logistics, told with distinction.',
+    line: 'A personal executive website presenting a career, companies and credentials in a single immersive story.',
+  },
+  {
+    name: 'AA Heritage Navigation',
+    field: 'Maritime and energy logistics',
+    headline: 'A clear introduction for a maritime and energy consultancy.',
+    line: "A focused website presenting the company's story, services and vision.",
+    logo: { src: '/images/logos/aa-heritage.png', w: 252, h: 160 },
+  },
+]

@@ -1,9 +1,9 @@
 ---
 title: Design field systems for the connection you actually have
-description: Offshore and remote-site software fails for a predictable reason. It assumes a network. Here is how we build systems that keep working when the link drops, and what that changes about the architecture.
+description: Offshore and remote-site software fails for a predictable reason. It assumes a network. Here is how to build systems that keep working when the link drops, and what that changes about the architecture.
 date: 2026-07-14
 author: Cipher4 Engineering
-sector: Oil & Gas
+sector: Oil and gas
 readingTime: 6 min read
 ---
 
@@ -23,7 +23,7 @@ The system did not crash. No alert fired. But the record is now fiction, and the
 
 The second failure is worse because it is silent. An app queues a submission in memory, the tablet is put on charge, the OS reclaims the process, and the queue goes with it. Nobody was told. The data simply never existed.
 
-## The rule we build to
+## The rule that holds
 
 **Capture is local and synchronous. Transmission is remote and eventual. The two are never the same operation.**
 
@@ -49,7 +49,7 @@ Once capture and transmission are separate, several other decisions stop being o
 
 Field systems are also judged on whether the person using them can tell what is happening. If a technician cannot see the difference between "saved here" and "sent to shore", they will invent a mental model, and it will be wrong in whichever direction is most convenient at the end of a twelve-hour shift.
 
-We show two states explicitly, in plain language, on every record. Saved on this device. Sent to shore. A count of what is still waiting, visible without navigating anywhere. It is unglamorous, and it is the difference between a system people trust and one they work around.
+A good field system shows two states explicitly, in plain language, on every record. Saved on this device. Sent to shore. A count of what is still waiting, visible without navigating anywhere. It is unglamorous, and it is the difference between a system people trust and one they work around.
 
 ## Testing it properly
 

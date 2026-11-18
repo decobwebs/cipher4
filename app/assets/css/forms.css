@@ -1,0 +1,180 @@
+/* ============================================================================
+   Form fields for the Launchpad and Scholarships forms (redesign, Phase 5).
+   The same look as the contact form (Page-Contact board): 54 px fields,
+   12 px radius, indigo focus ring, amber "required" star.
+   ========================================================================= */
+
+.c4 .c4f {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-32);
+}
+
+.c4 .c4f-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-24);
+}
+
+.c4 .c4f-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-8);
+  min-width: 0;
+}
+
+.c4 .c4f-field--wide {
+  grid-column: 1 / -1;
+}
+
+.c4 .c4f-field > label,
+.c4 .c4f-legend {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.c4 .c4f-hint {
+  font-weight: 400;
+  color: var(--slate);
+}
+
+.c4 .c4f-req {
+  color: var(--amber-deep);
+}
+
+.c4 .c4f-field input,
+.c4 .c4f-field select,
+.c4 .c4f-field textarea {
+  width: 100%;
+  min-height: 54px;
+  padding: 0 var(--s-16);
+  border-radius: var(--radius-field);
+  border: 1px solid var(--line-2);
+  background: var(--white);
+  font: inherit;
+  font-size: 16px;
+  color: var(--ink);
+  transition: border-color var(--dur-ui) var(--ease-out), box-shadow var(--dur-ui) var(--ease-out);
+}
+
+.c4 .c4f-field textarea {
+  min-height: 128px;
+  padding: var(--s-16);
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.c4 .c4f-field input:focus,
+.c4 .c4f-field select:focus,
+.c4 .c4f-field textarea:focus {
+  outline: none;
+  border-color: var(--indigo);
+  box-shadow: 0 0 0 4px rgba(26, 58, 181, 0.16);
+}
+
+.c4 .c4f-select {
+  position: relative;
+}
+
+.c4 .c4f-select select {
+  appearance: none;
+  padding-right: var(--s-48);
+  cursor: pointer;
+}
+
+.c4 .c4f-select .c4-glyph {
+  position: absolute;
+  right: var(--s-16);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--slate);
+  pointer-events: none;
+}
+
+/* Checkbox with its label: the whole row is the tap target. */
+.c4 .c4f-check {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: var(--s-12);
+  align-items: start;
+  min-height: 44px;
+  padding: var(--s-12) 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.c4 .c4f-check input {
+  width: 22px;
+  height: 22px;
+  margin: 1px 0 0;
+  accent-color: var(--indigo);
+}
+
+.c4 .c4f-honey {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.c4 .c4f-small {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--slate);
+}
+
+.c4 .c4f-small a {
+  display: inline-block;
+  padding-block: 13px;
+  margin-block: -13px;
+  color: var(--indigo);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.c4 .c4f-error {
+  padding: var(--s-16) var(--s-24);
+  border-radius: var(--radius-field);
+  border: 1px solid var(--danger-line);
+  background: var(--danger-bg);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.c4 .c4f-error__title {
+  font-weight: 600;
+  color: var(--danger);
+}
+
+.c4 .c4f-done {
+  display: flex;
+  align-items: center;
+  gap: var(--s-16);
+  padding: var(--s-24);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.c4 .c4f-done:focus {
+  outline: none;
+}
+
+@media (max-width: 767px) {
+  .c4 .c4f-grid {
+    grid-template-columns: 1fr;
+    gap: var(--s-16);
+  }
+
+  .c4 .c4f .c4-btn--primary {
+    width: 100%;
+  }
+}

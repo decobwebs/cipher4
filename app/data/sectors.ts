@@ -219,3 +219,20 @@ export const relatedReading = {
 }
 
 export const sectorBySlug = (slug: string) => sectors.find((s) => s.slug === slug)
+
+// --- Sectors overview (content E1) ------------------------------------------
+// The four panels use the home page lines (C5), from data/home.ts.
+export const sectorsOverview = {
+  seo: {
+    title: 'Sectors | Cipher4 AI & Robotics',
+    description: 'Cipher4 builds systems for maritime and ports, oil and gas, logistics and transport, and supply chain and procurement: industries where assets are valuable, regulation is strict and records must hold.',
+  },
+  eyebrow: 'Sectors',
+  title: 'Built for industries where failure is expensive',
+  lead: 'Our work is concentrated in four sectors that share the same demands: high-value assets in difficult places, regulation that punishes poor records, and decisions that cannot wait. Knowing these industries well is worth more to our clients than knowing many industries a little.',
+  beyond: {
+    title: 'Beyond our four sectors',
+    text: 'Our websites and digital products serve businesses of every kind, from travel and corporate gifting to non-profit organisations. Our platforms, AI and connected systems are built for the four industries above.',
+    link: { label: 'See our work', to: '/work' },
+  },
+}

@@ -22,6 +22,8 @@ export default defineNuxtConfig({
     '~/assets/css/tokens.css',
     '~/assets/css/base.css',
     '~/assets/css/layout.css',
+    '~/assets/css/pages.css',
+    '~/assets/css/forms.css',
   ],
 
   // New components live in app/components/c4/** and are registered by their
@@ -186,9 +188,29 @@ export default defineNuxtConfig({
         // Phase 2b road experiments (internal, removed at launch).
         '/_roads/demos', '/_roads/arrival', '/_roads/sectors', '/_roads/steering',
         '/_roads/message-sent', '/_roads/not-found', '/_roads/spine', '/_roads/launch',
+        // The 404 page, written as 404.html for the host to serve with status 404.
+        '/404.html',
       ],
       failOnError: false,
     },
+  },
+
+  // Old addresses move permanently (301) to their new pages, so links and
+  // search rankings carry over (content B1). Phase 7 adds a test for each.
+  // These give a true 301 in the dev server. The static build can only
+  // write "refresh" pages for them, so vercel.json repeats the same list as
+  // real 301s for the live host. Keep the two lists the same.
+  routeRules: {
+    '/solutions': { redirect: { to: '/services', statusCode: 301 } },
+    '/solutions/software-platforms': { redirect: { to: '/services/operational-platforms', statusCode: 301 } },
+    '/solutions/robotics': { redirect: { to: '/services/iot-robotics', statusCode: 301 } },
+    '/solutions/technology-supply': { redirect: { to: '/services/it-infrastructure', statusCode: 301 } },
+    '/industries': { redirect: { to: '/sectors', statusCode: 301 } },
+    '/industries/transport': { redirect: { to: '/sectors/logistics-and-transport', statusCode: 301 } },
+    '/industries/logistics': { redirect: { to: '/sectors/logistics-and-transport', statusCode: 301 } },
+    '/industries/oil-and-gas': { redirect: { to: '/sectors/oil-and-gas', statusCode: 301 } },
+    '/industries/supply-chain': { redirect: { to: '/sectors/supply-chain-and-procurement', statusCode: 301 } },
+    '/projects': { redirect: { to: '/work', statusCode: 301 } },
   },
 
   // Dev server only: prepare the road's 3D libraries up front. Otherwise the

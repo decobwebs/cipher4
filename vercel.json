@@ -1,0 +1,14 @@
+{
+  "redirects": [
+    { "source": "/solutions", "destination": "/services", "statusCode": 301 },
+    { "source": "/solutions/software-platforms", "destination": "/services/operational-platforms", "statusCode": 301 },
+    { "source": "/solutions/robotics", "destination": "/services/iot-robotics", "statusCode": 301 },
+    { "source": "/solutions/technology-supply", "destination": "/services/it-infrastructure", "statusCode": 301 },
+    { "source": "/industries", "destination": "/sectors", "statusCode": 301 },
+    { "source": "/industries/transport", "destination": "/sectors/logistics-and-transport", "statusCode": 301 },
+    { "source": "/industries/logistics", "destination": "/sectors/logistics-and-transport", "statusCode": 301 },
+    { "source": "/industries/oil-and-gas", "destination": "/sectors/oil-and-gas", "statusCode": 301 },
+    { "source": "/industries/supply-chain", "destination": "/sectors/supply-chain-and-procurement", "statusCode": 301 },
+    { "source": "/projects", "destination": "/work", "statusCode": 301 }
+  ]
+}

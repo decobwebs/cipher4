@@ -1,112 +1,126 @@
 <script setup lang="ts">
+/**
+ * The 404 page (content J5), and the fallback for any other error.
+ *
+ * Unknown addresses return status 404: Nuxt sets it on the server, and the
+ * static build writes 404.html, which the host serves with a 404 status.
+ * Never indexed.
+ *
+ * The road runs in its own band under the words, in a calm loop, and fades
+ * out into empty space ahead (Phase 2b "404 road", owner's choice). It is
+ * the one road that never stops on its own: there is nothing to read here
+ * but the heading (J5 note).
+ */
 import type { NuxtError } from '#app'
+import { notFoundPage as page } from '~/data/legal'
 
 const props = defineProps<{ error: NuxtError }>()
-
-const is404 = computed(() => props.error?.statusCode === 404)
+const is404 = computed(() => (props.error?.statusCode ?? 404) === 404)
 
 useSeoMeta({
-  title: () => (is404.value ? 'Page not found — Cipher4' : 'Something went wrong — Cipher4'),
+  title: () => (is404.value ? page.title : 'Cipher4 AI & Robotics'),
   robots: 'noindex',
 })
 </script>
 
 <template>
-  <div>
-    <NuxtLayout>
-      <section class="section err">
-        <div class="container">
-          <div class="err__body">
-            <p class="eyebrow">{{ error?.statusCode || 'Error' }}</p>
-            <h1 class="mt-4">
-              {{ is404 ? 'That page is not here' : 'Something went wrong' }}
-            </h1>
-            <p class="lead mt-4">
-              <template v-if="is404">
-                The link may be out of date, or the page may have moved when we
-                rebuilt this site. The sections below cover everything.
-              </template>
-              <template v-else>
-                An unexpected error occurred. Try again, and if it persists
-                please tell us what you were doing when it happened.
-              </template>
-            </p>
-
-            <div class="cluster mt-8">
-              <NuxtLink to="/" class="btn btn--primary">Back to home</NuxtLink>
-              <NuxtLink to="/contact" class="btn btn--secondary">Contact us</NuxtLink>
-            </div>
-
-            <nav class="err__nav" aria-label="Site sections">
-              <NuxtLink to="/solutions" class="err__link">
-                <Icon name="lucide:layers" size="18" />
-                <span><strong>Solutions</strong>What we build</span>
-              </NuxtLink>
-              <NuxtLink to="/industries" class="err__link">
-                <Icon name="lucide:factory" size="18" />
-                <span><strong>Industries</strong>Sectors we work in</span>
-              </NuxtLink>
-              <NuxtLink to="/credentials" class="err__link">
-                <Icon name="lucide:badge-check" size="18" />
-                <span><strong>Credentials</strong>For procurement</span>
-              </NuxtLink>
-              <NuxtLink to="/about" class="err__link">
-                <Icon name="lucide:building-2" size="18" />
-                <span><strong>About</strong>Who we are</span>
-              </NuxtLink>
-            </nav>
-          </div>
+  <NuxtLayout name="c4">
+    <section class="nf" aria-labelledby="nf-title">
+      <div class="c4-wrap nf__copy">
+        <Eyebrow>{{ is404 ? page.eyebrow : error?.statusCode }}</Eyebrow>
+        <h1 id="nf-title" class="nf__title">{{ page.heading }}</h1>
+        <p v-if="is404" class="c4-lead">{{ page.lead }}</p>
+        <div class="nf__actions">
+          <C4Button :to="page.primary.to" arrow>{{ page.primary.label }}</C4Button>
+          <C4Button :to="page.secondary.to" variant="secondary">{{ page.secondary.label }}</C4Button>
         </div>
-      </section>
-    </NuxtLayout>
-  </div>
+        <nav class="nf__links" aria-label="Site sections">
+          <NuxtLink v-for="l in page.links" :key="l.to" :to="l.to" class="nf__link">
+            {{ l.label }}<C4Glyph name="arrow" />
+          </NuxtLink>
+        </nav>
+      </div>
+      <div class="nf__road">
+        <HyperspeedRoad preset="notfound" />
+      </div>
+    </section>
+  </NuxtLayout>
 </template>
 
 <style scoped>
-.err {
-  padding-block: var(--space-24);
+.nf {
+  background: var(--white);
 }
 
-.err__body {
-  max-width: 44rem;
+.nf__copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-24);
+  padding-top: calc(68px + var(--s-16) + var(--s-64));
+  padding-bottom: var(--s-48);
 }
 
-.err__nav {
-  display: grid;
-  gap: var(--space-2);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
-  margin-block-start: var(--space-12);
-  padding-block-start: var(--space-8);
-  border-block-start: 1px solid var(--border-default);
+.nf__copy > * {
+  max-width: 680px;
 }
 
-.err__link {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-3);
+.nf__title {
+  font-size: clamp(46px, 5.6vw, 80px);
+  line-height: 1;
+  letter-spacing: -0.045em;
+  font-weight: 400;
+}
+
+.nf__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-12);
+}
+
+.nf__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--s-32);
+  padding-top: var(--s-8);
+}
+
+.nf__link {
+  display: inline-flex;
   align-items: center;
-  padding: var(--space-4);
-  border-radius: var(--radius-md);
-  color: var(--text-secondary);
-  transition: background-color var(--dur-fast) var(--ease-out);
+  gap: var(--s-8);
+  min-height: 44px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--indigo);
 }
 
-.err__link:hover {
-  background-color: var(--bg-subtle);
-  color: var(--text-secondary);
+.nf__link .c4-glyph {
+  color: var(--amber);
+  transition: transform var(--dur-ui) var(--ease-out);
 }
 
-.err__link :deep(svg) {
-  color: var(--text-accent);
+.nf__link:hover .c4-glyph {
+  transform: translateX(4px);
 }
 
-.err__link strong {
-  display: block;
-  font-size: var(--fs-sm);
-  color: var(--text-primary);
+.nf__road {
+  height: 460px;
+  border-top: 1px solid var(--line);
 }
 
-.err__link span {
-  font-size: var(--fs-xs);
+@media (max-width: 900px) {
+  .nf__road {
+    height: 330px;
+  }
+}
+
+@media (max-width: 767px) {
+  .nf__copy {
+    padding-top: calc(52px + var(--s-12) + var(--s-48));
+  }
+
+  .nf__actions :deep(.c4-btn--primary) {
+    width: 100%;
+  }
 }
 </style>

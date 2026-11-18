@@ -1,267 +1,226 @@
 <script setup lang="ts">
-import { company } from '~/data/company'
-import { policies } from '~/data/credentials'
-
-useSeoMeta({
-  title: 'About | Cipher4 AI & Robotics',
-  description:
-    'Cipher4 AI & Robotics Ltd is a Nigerian technology company building software platforms and robotic systems for transport, logistics, oil and gas, and supply chain operations.',
-})
-
 /**
- * TODO(cipher4): Leadership.
- * Send names, roles, one line of relevant background, and a photograph for
- * each. B2B buyers buy a team — the old site had not one human on it. This
- * section does not render until the array is filled.
+ * About (content G1). No board of its own: the service header, then the
+ * mission and vision as large statements (the home mission's style), the
+ * values as a card grid, the three commitments as numbered rows, and the
+ * company facts as a table.
  */
-const leadership: {
-  name: string
-  role: string
-  bio: string
-  image?: string
-}[] = []
+import { aboutPage as page } from '~/data/about'
 
-const disciplines = [
-  'Robotics and mechatronics',
-  'Embedded and firmware',
-  'Backend and platform engineering',
-  'Data engineering and analytics',
-  'Field and commissioning engineering',
-  'Network and infrastructure',
-]
+definePageMeta({ layout: 'c4' })
+useSeoMeta({ title: page.seo.title, description: page.seo.description, ogTitle: page.seo.title, ogDescription: page.seo.description })
+
+const crumbs = [{ label: 'Home', to: '/' }, { label: 'About' }]
 </script>
 
 <template>
   <div>
-    <UiPageHero
-      eyebrow="About"
-      title="A Nigerian engineering company, working where the conditions are hard"
-      lead="Cipher4 AI & Robotics Ltd builds software platforms and robotic systems for operations that cannot afford to stop. We are based in Abuja, with offices in Lagos and Kaduna, and our engineers go to site."
-    />
+    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" road="service" :text-width="720" />
 
-    <!-- What we do and don't -->
-    <section class="section">
-      <div class="container">
-        <div class="split">
-          <div v-reveal="'left'">
-            <p class="eyebrow">Focus</p>
-            <h2 class="mt-4">Four sectors, and we say no to the rest</h2>
-            <p class="lead mt-4">
-              Transport, logistics, oil and gas, and supply chain. That is the
-              whole list. They share the same hard problems: high-value assets
-              in difficult places, restricted access, and compliance regimes
-              that punish poor records. Depth in them is worth more to a client
-              than a longer list of industries.
-            </p>
-            <p class="mt-4 text-secondary measure">
-              We turn down work outside those four. Not out of principle, but
-              because the value we bring comes from having seen the same
-              problem before, and outside these sectors we have not.
-            </p>
-          </div>
-
-          <div v-reveal="'right'" class="about-media">
-            <NuxtImg
-              src="/images/about-team.jpg"
-              alt="Cipher4 engineers reviewing system deployment on site"
-              width="1600"
-              height="1200"
-              sizes="100vw md:50vw"
-              format="webp"
-              loading="lazy"
-            />
-          </div>
+    <!-- Mission and vision -->
+    <section class="c4-section c4-section--paper" aria-labelledby="ab-mission">
+      <div class="c4-wrap ab-mv">
+        <div class="ab-mv__block">
+          <Eyebrow>{{ page.mission.label }}</Eyebrow>
+          <h2 id="ab-mission" class="c4p-statement">{{ page.mission.statement }}</h2>
+          <p class="c4-lead">{{ page.mission.text }}</p>
         </div>
+        <div class="ab-mv__block ab-mv__block--vision">
+          <Eyebrow>{{ page.vision.label }}</Eyebrow>
+          <p class="ab-vision">{{ page.vision.statement }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Values -->
+    <section class="c4-section c4-section--white" aria-labelledby="ab-values">
+      <div class="c4-wrap">
+        <SectionHeader title-id="ab-values" :eyebrow="page.values.label" :title="page.values.title" />
+        <ul class="c4p-grid-3">
+          <li v-for="(v, i) in page.values.items" :key="v.title" class="c4-card ab-value">
+            <span class="c4p-n">{{ String(i + 1).padStart(2, '0') }}</span>
+            <h3 class="c4p-link-card__title">{{ v.title }}</h3>
+            <p class="c4p-link-card__text">{{ v.text }}</p>
+          </li>
+        </ul>
       </div>
     </section>
 
     <!-- How we work -->
-    <section class="section section--subtle">
-      <div class="container">
-        <UiSectionHeader
-          eyebrow="How we work"
-          title="Three commitments we will be held to"
-        />
+    <section class="c4-section c4-section--paper" aria-labelledby="ab-how">
+      <div class="c4-wrap c4p-split">
+        <div class="c4p-split__head">
+          <Eyebrow>{{ page.how.label }}</Eyebrow>
+          <h2 id="ab-how" class="c4-h2">{{ page.how.title }}</h2>
+        </div>
+        <ol class="c4p-rows">
+          <li v-for="(h, i) in page.how.items" :key="h.title" class="ab-commit">
+            <span class="c4p-n">{{ String(i + 1).padStart(2, '0') }}</span>
+            <div class="ab-commit__body">
+              <h3 class="c4p-row-title">{{ h.title }}</h3>
+              <p class="c4p-row-text">{{ h.text }}</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
 
-        <div v-reveal.stagger class="grid grid--3">
-          <div class="card">
-            <div class="icon-plate icon-plate--solid">
-              <Icon name="lucide:eye" size="20" />
-            </div>
-            <div class="card__body mt-4">
-              <h3 class="card__title">We look before we quote</h3>
-              <p class="text-secondary">
-                Every engagement starts with our engineers walking the
-                operation. A scope written from a meeting room is a scope that
-                gets revised twice at your cost.
-              </p>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="icon-plate icon-plate--solid">
-              <Icon name="lucide:message-square-warning" size="20" />
-            </div>
-            <div class="card__body mt-4">
-              <h3 class="card__title">We tell you when you are wrong</h3>
-              <p class="text-secondary">
-                If a client asks for something we think will not work, we put
-                the objection in writing. Occasionally that costs us the job.
-                It has never cost us a client.
-              </p>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="icon-plate icon-plate--solid">
-              <Icon name="lucide:hand-heart" size="20" />
-            </div>
-            <div class="card__body mt-4">
-              <h3 class="card__title">We stay after handover</h3>
-              <p class="text-secondary">
-                Systems that get abandoned were usually handed over badly. We
-                train the people who will live with it and document it for the
-                engineer who inherits it.
-              </p>
-            </div>
-          </div>
+    <!-- In-house and facts -->
+    <section class="c4-section c4-section--white" aria-labelledby="ab-inhouse">
+      <div class="c4-wrap ab-two">
+        <div class="ab-two__col">
+          <h2 id="ab-inhouse" class="c4-h3 ab-two__title">{{ page.inHouse.title }}</h2>
+          <ul class="c4p-pills">
+            <li v-for="x in page.inHouse.items" :key="x">{{ x }}</li>
+          </ul>
+        </div>
+        <div class="ab-two__col">
+          <h2 class="c4-h3 ab-two__title">{{ page.facts.title }}</h2>
+          <dl class="c4p-facts">
+            <template v-for="r in page.facts.rows" :key="r.label">
+              <dt>{{ r.label }}</dt>
+              <dd>{{ r.value }}</dd>
+            </template>
+          </dl>
         </div>
       </div>
     </section>
 
-    <!-- Capability -->
-    <section class="section">
-      <div class="container">
-        <div class="split split--media-first">
-          <div v-reveal="'left'" class="about-media">
-            <NuxtImg
-              src="/images/about-field.jpg"
-              alt="Cipher4 field engineer working on an offshore installation"
-              width="1600"
-              height="1200"
-              sizes="100vw md:50vw"
-              format="webp"
-              loading="lazy"
-            />
+    <!-- Community -->
+    <section class="c4-section c4-section--paper ab-community" aria-labelledby="ab-community">
+      <div class="c4-wrap">
+        <div class="c4-card ab-community__card">
+          <div class="ab-community__copy">
+            <Eyebrow>{{ page.community.title }}</Eyebrow>
+            <p id="ab-community" class="ab-community__text">{{ page.community.text }}</p>
           </div>
-
-          <div v-reveal="'right'">
-            <p class="eyebrow">The team</p>
-            <h2 class="mt-4">Engineers who mobilise</h2>
-            <p class="lead mt-4">
-              The difference between a good demonstration and a system that
-              survives a year offshore is almost always whether anyone on the
-              build team has worked in those conditions. Ours have.
-            </p>
-
-            <h3 class="mt-8">Disciplines in-house</h3>
-            <UiCheckList class="mt-4" :items="disciplines" />
-
-            <p class="mt-6 text-secondary measure">
-              Personnel deployed offshore hold current BOSIET or equivalent
-              certification and valid offshore medicals. We do not mobilise
-              anyone who does not.
-            </p>
-          </div>
+          <C4Button :to="page.community.link.to" variant="secondary" arrow>{{ page.community.link.label }}</C4Button>
         </div>
       </div>
     </section>
 
-    <!-- Leadership: renders only when real people are added -->
-    <section v-if="leadership.length" class="section section--subtle">
-      <div class="container">
-        <UiSectionHeader eyebrow="Leadership" title="Who you will be working with" />
-        <div v-reveal.stagger class="grid grid--3">
-          <div v-for="person in leadership" :key="person.name" class="card card--flush">
-            <div v-if="person.image" class="card__media">
-              <NuxtImg :src="person.image" :alt="person.name" width="800" height="800" />
-            </div>
-            <div class="card__body">
-              <h3 class="card__title">{{ person.name }}</h3>
-              <p class="text-accent">{{ person.role }}</p>
-              <p class="text-secondary">{{ person.bio }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Policies -->
-    <section id="policies" class="section section--inverse on-dark">
-      <div class="container">
-        <UiSectionHeader
-          eyebrow="How we conduct ourselves"
-          title="Policy positions, stated plainly"
-          lead="These hold whether or not a certificate is on the wall. Formal certification status is on the credentials page."
-        />
-
-        <div v-reveal.stagger class="grid grid--2">
-          <div v-for="policy in policies" :key="policy.title" class="card">
-            <div class="icon-plate">
-              <Icon :name="policy.icon" size="20" />
-            </div>
-            <div class="card__body mt-4">
-              <h3 class="card__title">{{ policy.title }}</h3>
-              <p v-for="para in policy.body" :key="para" class="text-secondary">
-                {{ para }}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div v-reveal class="mt-12">
-          <NuxtLink to="/credentials" class="btn btn--accent">
-            Registrations, certifications and insurance
-          </NuxtLink>
-        </div>
-      </div>
-    </section>
-
-    <!-- Offices -->
-    <section class="section">
-      <div class="container">
-        <UiSectionHeader eyebrow="Presence" title="Three offices, one team" />
-        <div v-reveal.stagger class="grid grid--3">
-          <div v-for="office in company.offices" :key="office.city" class="card">
-            <div class="cluster">
-              <h3 class="card__title">{{ office.city }}</h3>
-              <span v-if="office.isHeadquarters" class="pill pill--accent">
-                Head office
-              </span>
-            </div>
-            <address class="office__address">
-              {{ office.street }}<br>{{ office.area }}, {{ office.state }}
-            </address>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <SectionsCtaBand
-      title="Come and see whether we fit"
-      lead="The first conversation costs nothing and usually clarifies the problem even when it does not lead to a project."
-    />
+    <ClosingBand />
   </div>
 </template>
 
 <style scoped>
-.about-media {
-  overflow: hidden;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-default);
+.ab-mv {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-96);
 }
 
-.about-media :deep(img) {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
+.ab-mv__block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-24);
 }
 
-.office__address {
-  margin-block-start: var(--space-3);
-  font-style: normal;
-  font-size: var(--fs-sm);
-  line-height: 1.7;
-  color: var(--text-secondary);
+.ab-mv__block--vision {
+  padding-top: var(--s-64);
+  border-top: 1px solid var(--line-2);
+}
+
+.ab-vision {
+  max-width: 920px;
+  font-size: clamp(26px, 2.8vw, 40px);
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  color: var(--indigo);
+  text-wrap: balance;
+}
+
+.ab-value {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-16);
+  height: 100%;
+  padding: var(--s-32);
+}
+
+.ab-commit {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: var(--s-24);
+  align-items: baseline;
+}
+
+.ab-commit__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-12);
+}
+
+.ab-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-96);
+  align-items: start;
+}
+
+.ab-two__title {
+  margin-bottom: var(--s-32);
+}
+
+.ab-community {
+  padding-bottom: var(--s-96);
+}
+
+.ab-community__card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-48);
+  padding: var(--s-48);
+}
+
+.ab-community__copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-16);
+  max-width: 760px;
+}
+
+.ab-community__text {
+  font-size: 23px;
+  line-height: 1.45;
+  letter-spacing: -0.015em;
+}
+
+@media (max-width: 1100px) {
+  .ab-two {
+    grid-template-columns: 1fr;
+    gap: var(--s-64);
+  }
+}
+
+@media (max-width: 767px) {
+  .ab-mv {
+    gap: var(--s-64);
+  }
+
+  .ab-mv__block--vision {
+    padding-top: var(--s-48);
+  }
+
+  .ab-value {
+    padding: var(--s-24);
+  }
+
+  .ab-commit {
+    grid-template-columns: 40px 1fr;
+    gap: var(--s-12);
+  }
+
+  .ab-community__card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s-24);
+    padding: var(--s-24);
+  }
+
+  .ab-community__text {
+    font-size: 19px;
+  }
 }
 </style>

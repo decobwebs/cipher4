@@ -3,7 +3,7 @@ title: What makes a procurement record survive an audit
 description: Most digital procurement systems record the decision but not the reasoning. Two years later that distinction is the whole ballgame. What an auditable sourcing trail actually needs to hold.
 date: 2026-06-02
 author: Cipher4 Engineering
-sector: Supply Chain
+sector: Supply chain
 readingTime: 5 min read
 ---
 
@@ -15,7 +15,7 @@ Most procurement systems answer the first question well and the rest badly, beca
 
 ## The overwrite problem
 
-Here is the pattern we find most often when we assess an existing sourcing process.
+Here is a pattern that appears again and again in sourcing processes.
 
 A tender is published with a set of evaluation criteria. During the process someone realises the technical criteria are too narrow, genuinely and for a good reason. They edit the criteria in the system. The record now shows the revised criteria as if they had always been the criteria.
 
@@ -55,7 +55,7 @@ The organisations that get the most out of this are the ones that treat an awkwa
 
 ## Where it pays off
 
-Three places, in our experience.
+It pays off in three places.
 
 **Time to respond to a query.** Assembling a defence from email takes days of a senior person's time. Producing it from a system takes minutes, and it is complete.
 

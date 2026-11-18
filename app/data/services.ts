@@ -303,3 +303,86 @@ export const services: Service[] = [
 ]
 
 export const serviceBySlug = (slug: string) => services.find((s) => s.slug === slug)
+
+// --- Services overview (content D1) -----------------------------------------
+
+export const servicesOverview = {
+  seo: {
+    title: 'Services | Cipher4 AI & Robotics',
+    description: 'Operational platforms, AI and automation, IoT and robotics, digital platforms, IT infrastructure and education technology for maritime, oil and gas, logistics and supply chain organisations.',
+  },
+  eyebrow: 'Services',
+  title: 'Technology for the industries that keep the world moving',
+  lead: 'Ships, fuel, fleets and supply chains run on decisions made under pressure. We build the systems behind those decisions, from the platform an operation runs on to the devices in the field.',
+  primary: { label: 'Talk to us', to: '/contact' },
+  secondary: { label: 'How we deliver', to: '#delivery' },
+  selector: {
+    label: 'Show examples for',
+    all: 'All',
+  },
+}
+
+/**
+ * Card names on the overview. The short line, general line and sector lines
+ * come from each service's own page data (D1: "the text lives in one place").
+ */
+export const serviceNames: Record<string, string> = {
+  'operational-platforms': 'Operational platforms',
+  'ai-automation': 'AI and automation',
+  'iot-robotics': 'IoT and robotics',
+  'digital-platforms': 'Digital platforms and websites',
+  'it-infrastructure': 'IT infrastructure and support',
+  'education-technology': 'Education technology',
+}
+
+export const delivery = {
+  eyebrow: 'How we deliver',
+  title: 'Six stages, and you know what each one gives you',
+  lead: 'We would rather set expectations precisely and be held to them than describe our process in adjectives.',
+  columns: { duration: 'Typical duration', happens: 'What happens', receive: 'What you receive' },
+  stages: [
+    { n: '01', title: 'Discovery', duration: '1 to 2 weeks', happens: 'We sit with the people doing the work and learn what actually happens, not what the process document says.', receive: 'Findings and a written scope, including anything we advise against', icon: 'discovery' },
+    { n: '02', title: 'Design', duration: '2 to 4 weeks', happens: 'Architecture, integration points, equipment and a delivery plan, reviewed with your technical team before anything is built.', receive: 'Design document, integration plan and fixed price', icon: 'design' },
+    { n: '03', title: 'Pilot', duration: '6 to 12 weeks', happens: 'One site, one team or one process. Small enough to be honest about, large enough to prove the system works in your conditions.', receive: 'A working system on a limited scope', icon: 'pilot' },
+    { n: '04', title: 'Deployment', duration: 'Depends on scope', happens: 'Rollout across the operation, integrated with the systems you already run.', receive: 'A commissioned, tested and accepted system', icon: 'deployment' },
+    { n: '05', title: 'Training and handover', duration: '1 to 2 weeks', happens: 'Users and administrators trained separately, because they need different things.', receive: 'Trained teams, administrator documentation and a handover pack', icon: 'training' },
+    { n: '06', title: 'Support', duration: 'Ongoing', happens: 'Defined response times, named contacts and scheduled maintenance.', receive: 'A signed support agreement', icon: 'support' },
+  ] satisfies { n: string; title: string; duration: string; happens: string; receive: string; icon: C4IconName }[],
+}
+
+export const waysToWork = {
+  title: 'Four ways to work together',
+  bestFor: 'Best for:',
+  items: [
+    { title: 'Fixed-scope project', text: 'Defined deliverables, a fixed price and agreed acceptance criteria. Most engagements start here.', best: 'a specific system you need designed, built and commissioned.' },
+    { title: 'Supply and deploy', text: 'Equipment and software sourced, configured, installed and handed over working, under one contract.', best: 'equipping a new office, site or team.' },
+    { title: 'Retained support', text: 'Maintenance, monitoring and improvement of systems already in use.', best: 'keeping technology healthy and moving forward.' },
+    { title: 'Managed service', text: 'We run and maintain the platform for you against agreed service levels.', best: 'organisations without an internal technical team.' },
+  ],
+}
+
+/**
+ * Support tiers. The third tier, "Critical operations" (1 hour, 24/7), is an
+ * open owner decision (content Part K, item 2). Plan default: left out.
+ */
+export const support = {
+  title: 'Response times, written down',
+  lead: 'Support is a contract with numbers in it. These are the tiers, and these are the numbers we hold ourselves to.',
+  labels: { response: 'Response', cover: 'Cover', onSite: 'On site' },
+  tiers: [
+    {
+      name: 'Standard',
+      response: 'next business day',
+      cover: 'Monday to Friday, 8:00am to 5:00pm WAT',
+      onSite: 'scheduled visits',
+      items: ['Remote diagnosis and support', 'Software updates', 'Quarterly preventive maintenance', 'Named support contact'],
+    },
+    {
+      name: 'Priority',
+      response: '4 business hours',
+      cover: 'Monday to Saturday, 7:00am to 7:00pm WAT',
+      onSite: 'within 2 business days',
+      items: ['Everything in Standard', 'Priority queue and escalation', 'Monthly preventive maintenance'],
+    },
+  ],
+}
