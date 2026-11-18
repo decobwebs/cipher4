@@ -125,6 +125,20 @@ export const roads = {
       },
     },
   },
+  // Home Sectors section (owner's choice from the Phase 2b demos): a slim
+  // band above the four sector cards that morphs to the shape of the card
+  // you point at or focus. Desktop only (hidden below 1025 px).
+  'home-sectors': {
+    kind: 'header', mask: 'strip',
+    options: {
+      seed: 14,
+      morph: {
+        presets: ['turbulentDistortion', 'deepDistortion', 'LongRaceDistortion', 'xyDistortion'],
+        uniforms: [{ uAmp: [15, 4, 2, 0] }, { uAmp: [10, 3] }, { uAmp: [35, 1.5] }, { uAmp: [12, 2] }],
+        start: 0,
+      },
+    },
+  },
   // Message sent: the contact road with the one-off amber car.
   'demo-launch': {
     kind: 'header', mask: 'none',

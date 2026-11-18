@@ -18,6 +18,8 @@ withDefaults(defineProps<{
   tag?: 'h1' | 'h2' | 'h3'
   /** Drop the bottom gap when the parent sets its own. */
   flush?: boolean
+  /** id on the heading, for aria-labelledby on the section. */
+  titleId?: string
 }>(), { layout: 'stack', tag: 'h2', flush: false })
 </script>
 
@@ -28,7 +30,7 @@ withDefaults(defineProps<{
   >
     <div class="c4-sh__main">
       <Eyebrow v-if="eyebrow">{{ eyebrow }}</Eyebrow>
-      <component :is="tag" class="c4-sh__title">
+      <component :is="tag" :id="titleId" class="c4-sh__title">
         <slot name="title">{{ title }}</slot>
       </component>
       <p v-if="lead && layout !== 'split'" class="c4-sh__lead">{{ lead }}</p>

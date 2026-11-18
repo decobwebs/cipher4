@@ -26,6 +26,7 @@ const ROADS = [
   'hero', 'service', 'sector-maritime', 'sector-oil-gas', 'sector-logistics',
   'sector-supply-chain', 'case', 'contact', 'strip', 'deliver', 'closing', 'notfound',
   // Phase 2b experiments
+  'home-sectors',
   'demo-sectors', 'demo-launch', 'demo-void', 'demo-spine', 'demo-rise',
 ]
 const SIZES = [
