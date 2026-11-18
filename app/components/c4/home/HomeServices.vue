@@ -5,6 +5,10 @@
  * markup, restyled, so nothing is duplicated for screen readers.
  */
 import { services } from '~/data/home'
+
+// Choreography 04: one stack deals out six (six capabilities, one partner).
+const grid = useTemplateRef<HTMLElement>('grid')
+useDeal(grid)
 </script>
 
 <template>
@@ -18,8 +22,8 @@ import { services } from '~/data/home'
         :lead="services.lead"
       />
 
-      <ul class="hs__grid">
-        <li v-for="(s, i) in services.items" :key="s.to">
+      <ul ref="grid" v-m="'deal'" class="hs__grid">
+        <li v-for="(s, i) in services.items" :key="s.to" class="m-card" :style="{ '--i': i }">
           <NuxtLink :to="s.to" class="hs__card">
             <C4Icon :name="s.icon" :size="52" :delay="i * 0.2" class="hs__icon" />
             <span class="hs__n" aria-hidden="true">{{ String(i + 1).padStart(2, '0') }}</span>

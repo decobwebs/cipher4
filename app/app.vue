@@ -38,14 +38,4 @@ useSiteSchema()
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
-
-  <!-- Pointer trail. `ClientOnly` because it is a WebGL canvas with no
-       server-rendered equivalent, and there is nothing meaningful to put in
-       the fallback slot — the page is complete without it. The component
-       gates itself on a fine pointer, reduced motion and Save-Data, so on a
-       phone it never initialises at all. -->
-  <ClientOnly>
-    <!-- Old site only. The redesign (layout `c4`) has no pointer trail. -->
-    <UiSplashCursor v-if="route.meta.layout !== 'c4' && !route.path.startsWith('/_')" />
-  </ClientOnly>
 </template>

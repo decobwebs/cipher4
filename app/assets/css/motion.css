@@ -1,0 +1,767 @@
+/* ============================================================================
+   Cipher4 motion (Phase 6): the section entrances from the Choreography
+   board, and the page transition.
+
+   Rules (plan, Phase 6, and the board):
+   - each section moves once, the first time it is 25% visible (v-m adds
+     .m-in), and never replays
+   - text is never hidden for more than 0.6 s, and nothing moves under
+     words while they are read
+   - entrances 600 to 900 ms, expo out; lines draw with --ease-line
+   - only transform and opacity move, plus stroke-dashoffset for lines
+   - every starting state sits under html.c4-motion, which the head script
+     sets only when JavaScript runs and reduced motion is off. Otherwise
+     every section is simply shown finished.
+
+   Children set their order with style="--i: n".
+   ========================================================================= */
+
+:root {
+  --m-dur: 700ms;
+  --m-draw: 900ms;
+  --m-step: 80ms; /* stagger between siblings */
+}
+
+/* --- Generic: rise and fade in (Motion board 08: 24 px, 700 ms, expo out) --
+   Used for section headings and plain blocks. The direct children rise one
+   after another (at most 0.4 s apart, so no text waits longer than that). */
+.c4-motion [data-m='rise']:not(.m-in) > * {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.c4-motion [data-m='rise'] > * {
+  transition: opacity var(--m-dur) var(--ease-out), transform var(--m-dur) var(--ease-out);
+  transition-delay: calc(min(var(--i, 0), 5) * var(--m-step));
+}
+
+.c4-motion [data-m='rise'] > :nth-child(2) { --i: 1; }
+.c4-motion [data-m='rise'] > :nth-child(3) { --i: 2; }
+.c4-motion [data-m='rise'] > :nth-child(4) { --i: 3; }
+.c4-motion [data-m='rise'] > :nth-child(5) { --i: 4; }
+.c4-motion [data-m='rise'] > :nth-child(n + 6) { --i: 5; }
+
+/* --- 01 Hero, 13 every page header: lines rise from behind a clean edge -----
+   .m-mask clips; .m-line rises inside it. Plays on arrival (v-m:now), with
+   no observer, so the headline is never held back by scrolling. */
+.m-mask {
+  display: block;
+  overflow: hidden;
+  /* Room for descenders inside the clip. */
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.m-line {
+  display: block;
+}
+
+.c4-motion [data-m='lines']:not(.m-in) .m-line,
+.c4-motion [data-m='path']:not(.m-in) .m-line {
+  transform: translateY(110%);
+}
+
+.c4-motion [data-m='lines'] .m-line,
+.c4-motion [data-m='path'] .m-line {
+  transition: transform 900ms var(--ease-out);
+  transition-delay: calc(var(--d, 0ms) + var(--i, 0) * 110ms);
+}
+
+.c4-motion [data-m='lines']:not(.m-in) .m-after,
+.c4-motion [data-m='path']:not(.m-in) .m-after {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.c4-motion [data-m='lines'] .m-after,
+.c4-motion [data-m='path'] .m-after {
+  transition: opacity var(--m-dur) var(--ease-out), transform var(--m-dur) var(--ease-out);
+  transition-delay: calc(var(--d, 0ms) + 240ms + var(--i, 0) * 70ms);
+}
+
+/* 13: the breadcrumb types first (Breadcrumb.vue), then the headline rises. */
+.c4-motion [data-m='path'] {
+  --d: 220ms;
+}
+
+/* --- 02 Clients: logos come into focus ---------------------------------------
+   A blurred copy sits on each logo and fades away as the sharp one fades
+   in (only opacity moves; the blur itself never animates). */
+.m-focus {
+  position: relative;
+  display: block;
+}
+
+.m-focus__blur {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.c4-motion [data-m='focus']:not(.m-in) .m-focus__sharp {
+  opacity: 0;
+}
+
+.c4-motion [data-m='focus']:not(.m-in) .m-focus__blur {
+  opacity: 1;
+}
+
+.c4-motion [data-m='focus'] .m-focus__sharp,
+.c4-motion [data-m='focus'] .m-focus__blur {
+  transition: opacity 800ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 110ms);
+}
+
+/* --- 04 Services: one stack deals out six -----------------------------------
+   JavaScript measures how far each card is from the middle of the grid
+   (--dx, --dy); the cards start stacked there and deal out to their places. */
+.c4-motion [data-m='deal']:not(.m-in) .m-card {
+  transform: translate(var(--dx, 0), var(--dy, 0)) rotate(var(--r, 0deg)) scale(0.96);
+}
+
+.c4-motion [data-m='deal'] .m-card {
+  transition: transform 850ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 55ms);
+}
+
+/* --- 05 Sectors: one route joins four industries ---------------------------- */
+.m-route {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  /* Base styles cap svg at 100%; a route reaches across the gap. */
+  max-width: none;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* viewBox 0 0 100 2 on a 2 px tall svg: the stroke is 2 px tall. (No
+   non-scaling-stroke: with a draw length it breaks the line into dashes.) */
+.m-route path {
+  fill: none;
+  stroke: var(--amber);
+  stroke-width: 2;
+}
+
+.c4-motion [data-m='route']:not(.m-in) .m-route path {
+  stroke-dashoffset: 1;
+}
+
+/* One line across a row, or one segment per card (--route-step), timed so
+   the segments read as one line travelling. */
+.c4-motion [data-m='route'] .m-route path {
+  stroke-dasharray: 1;
+  transition: stroke-dashoffset var(--route-dur, 1400ms) var(--route-ease, var(--ease-line));
+  transition-delay: calc(var(--i, 0) * var(--route-step, 0ms));
+}
+
+[data-m='route'][data-seg] {
+  --route-step: 360ms;
+  --route-dur: 360ms;
+  --route-ease: linear;
+}
+
+.m-stop {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 5px rgba(245, 165, 36, 0.22);
+}
+
+.c4-motion [data-m='route']:not(.m-in) .m-stop {
+  transform: scale(0);
+}
+
+.c4-motion [data-m='route'] .m-stop {
+  transition: transform 500ms var(--ease-pop);
+  /* Each stop lights as the line reaches it. */
+  transition-delay: calc(var(--i, 0) * var(--route-step, 330ms));
+}
+
+.c4-motion [data-m='route']:not(.m-in) .m-card {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.c4-motion [data-m='route'] .m-card {
+  transition: opacity var(--m-dur) var(--ease-out), transform var(--m-dur) var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 120ms);
+}
+
+/* --- 06 Our work: zoom-through from depth (cards: WorkCarousel.vue) ------- */
+.c4-motion [data-m='zoom']:not(.m-in) .wc__foot {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.c4-motion [data-m='zoom'] .wc__foot {
+  transition: opacity var(--m-dur) var(--ease-out) 250ms, transform var(--m-dur) var(--ease-out) 250ms;
+}
+
+/* --- 07 Why Cipher4, and lists of commitments: each one gets signed off ------
+   A tick draws beside each item in turn; the words are there from the start
+   (they only rise a little). */
+.m-tick {
+  display: block;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  overflow: visible;
+}
+
+.m-tick circle {
+  fill: none;
+  stroke: var(--line-2);
+  stroke-width: 1.5;
+}
+
+.m-tick path {
+  fill: none;
+  stroke: var(--amber);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.c4-motion [data-m='sign']:not(.m-in) .m-tick path {
+  stroke-dashoffset: 1;
+}
+
+.c4-motion [data-m='sign'] .m-tick path {
+  stroke-dasharray: 1;
+  transition: stroke-dashoffset 500ms var(--ease-line);
+  transition-delay: calc(200ms + var(--i, 0) * 300ms);
+}
+
+.c4-motion [data-m='sign']:not(.m-in) .m-item {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.c4-motion [data-m='sign'] .m-item {
+  transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out);
+  transition-delay: calc(min(var(--i, 0), 5) * 70ms);
+}
+
+/* --- 08 How we deliver: lit stages (the pin is in HomeDeliver.vue) ------------ */
+.c4-motion .m-journey .hd__dot {
+  transition: transform 400ms var(--ease-pop), background-color 300ms var(--ease-out), box-shadow 300ms var(--ease-out);
+}
+
+.c4-motion .m-journey .hd__stage:not(.is-lit) .hd__dot {
+  background: var(--line-2);
+  box-shadow: 0 0 0 5px rgba(213, 219, 232, 0.4);
+  transform: scale(0.8);
+}
+
+.c4-motion .m-journey .hd__line {
+  transform-origin: left;
+  transition: transform 500ms var(--ease-line);
+}
+
+.c4-motion .m-journey .hd__stage:not(.is-passed) .hd__line {
+  transform: scaleX(0);
+}
+
+@media (max-width: 767px) {
+  .c4-motion .m-journey .hd__line {
+    transform-origin: top;
+  }
+
+  .c4-motion .m-journey .hd__stage:not(.is-passed) .hd__line {
+    transform: scaleY(0);
+  }
+}
+
+.c4-motion .m-journey .hd__stage:not(.is-lit) .hd__body {
+  opacity: 0.45;
+}
+
+.c4-motion .m-journey .hd__body {
+  transition: opacity 400ms var(--ease-out);
+}
+
+/* --- 09 Technologies: a scattered stack snaps together ------------------------ */
+.c4-motion [data-m='snap']:not(.m-in) .m-chip {
+  opacity: 0.4;
+  transform: translate(var(--x, 0), var(--y, 0)) rotate(var(--r, 0deg));
+}
+
+.c4-motion [data-m='snap'] .m-chip {
+  transition: opacity 700ms var(--ease-out), transform 850ms var(--ease-out);
+  transition-delay: calc(min(var(--i, 0), 12) * 30ms);
+}
+
+/* --- 10 Insights: articles turn down like pages ------------------------------- */
+.c4-motion [data-m='turn'] {
+  perspective: 1400px;
+}
+
+.c4-motion [data-m='turn']:not(.m-in) .m-card {
+  opacity: 0;
+  transform: rotateX(75deg);
+}
+
+.c4-motion [data-m='turn'] .m-card {
+  transform-origin: top center;
+  transition: opacity 500ms var(--ease-out), transform 900ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 150ms);
+}
+
+/* --- 11 Youth band: lines grow up into a light ---------------------------------- */
+.m-grow {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--s-16);
+  height: 96px;
+}
+
+.m-grow > span {
+  position: relative;
+  display: block;
+  width: 2px;
+  height: var(--h, 64px);
+  background: linear-gradient(180deg, var(--amber), rgba(245, 165, 36, 0.1));
+  transform-origin: bottom;
+}
+
+.m-grow > span::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -5px;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 4px rgba(245, 165, 36, 0.22);
+}
+
+.c4-motion [data-m='grow']:not(.m-in) .m-grow > span {
+  transform: scaleY(0);
+}
+
+.c4-motion [data-m='grow'] .m-grow > span {
+  transition: transform 700ms var(--ease-line);
+  transition-delay: calc(var(--i, 0) * 120ms);
+}
+
+.c4-motion [data-m='grow']:not(.m-in) .m-grow > span::after {
+  transform: scale(0);
+}
+
+.c4-motion [data-m='grow'] .m-grow > span::after {
+  transition: transform 450ms var(--ease-pop);
+  transition-delay: calc(550ms + var(--i, 0) * 120ms);
+}
+
+.c4-motion [data-m='grow']:not(.m-in) .m-item {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.c4-motion [data-m='grow'] .m-item {
+  transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out);
+  transition-delay: calc(min(var(--i, 0), 5) * 80ms);
+}
+
+/* --- 12 Closing band: the night road arrives below -------------------------------
+   The band darkens in, the road fades up beneath (its own fade, once drawn),
+   and the call to action rises. */
+.c4-motion [data-m='night']:not(.m-in) .c4-close__band {
+  opacity: 0;
+  transform: scale(0.98);
+}
+
+.c4-motion [data-m='night'] .c4-close__band {
+  transition: opacity 800ms var(--ease-out), transform 1000ms var(--ease-out);
+}
+
+.c4-motion [data-m='night']:not(.m-in) .c4-close__road {
+  opacity: 0;
+}
+
+.c4-motion [data-m='night'] .c4-close__road {
+  transition: opacity 1200ms var(--ease-out) 450ms;
+}
+
+.c4-motion [data-m='night']:not(.m-in) .c4-close__inner > * {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.c4-motion [data-m='night'] .c4-close__inner > * {
+  transition: opacity var(--m-dur) var(--ease-out), transform var(--m-dur) var(--ease-out);
+}
+
+.c4-motion [data-m='night'] .c4-close__inner > :nth-child(1) { transition-delay: 200ms; }
+.c4-motion [data-m='night'] .c4-close__inner > :nth-child(2) { transition-delay: 290ms; }
+.c4-motion [data-m='night'] .c4-close__inner > :nth-child(3) { transition-delay: 380ms; }
+.c4-motion [data-m='night'] .c4-close__inner > :nth-child(4) { transition-delay: 470ms; }
+
+/* --- 14 Service problems: problems fall into line ----------------------------- */
+.c4-motion [data-m='straighten']:not(.m-in) .m-card {
+  transform: translateX(var(--x, 0)) rotate(var(--r, 0deg));
+}
+
+.c4-motion [data-m='straighten'] .m-card {
+  transition: transform 900ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 90ms);
+}
+
+.c4-motion [data-m='straighten'] .m-card:nth-child(1) { --x: -28px; --r: -2.5deg; }
+.c4-motion [data-m='straighten'] .m-card:nth-child(2) { --x: 34px; --r: 2deg; }
+.c4-motion [data-m='straighten'] .m-card:nth-child(3) { --x: -18px; --r: -1.5deg; }
+.c4-motion [data-m='straighten'] .m-card:nth-child(4) { --x: 22px; --r: 1.5deg; }
+
+/* --- 15 Service build: four parts join one record ------------------------------ */
+.c4-motion [data-m='join']:not(.m-in) .m-card {
+  opacity: 0;
+  transform: translateY(24px) scale(0.98);
+}
+
+.c4-motion [data-m='join'] .m-card {
+  transition: opacity 600ms var(--ease-out), transform 800ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 90ms);
+}
+
+/* Four amber lines in the gutters, each reaching from a card to the
+   centre (they grow with a transform from the outer end inwards). */
+.m-join {
+  position: absolute;
+  background: var(--amber);
+  pointer-events: none;
+}
+
+.m-join--t,
+.m-join--b {
+  left: 50%;
+  width: 2px;
+  height: 50%;
+  margin-left: -1px;
+}
+
+.m-join--l,
+.m-join--r {
+  top: 50%;
+  height: 2px;
+  width: 50%;
+  margin-top: -1px;
+}
+
+.m-join--t { top: 0; transform-origin: top; }
+.m-join--b { bottom: 0; transform-origin: bottom; }
+.m-join--l { left: 0; transform-origin: left; }
+.m-join--r { right: 0; transform-origin: right; }
+
+.c4-motion [data-m='join']:not(.m-in) .m-join--t,
+.c4-motion [data-m='join']:not(.m-in) .m-join--b {
+  transform: scaleY(0);
+}
+
+.c4-motion [data-m='join']:not(.m-in) .m-join--l,
+.c4-motion [data-m='join']:not(.m-in) .m-join--r {
+  transform: scaleX(0);
+}
+
+.c4-motion [data-m='join'] .m-join {
+  transition: transform 600ms var(--ease-line);
+  transition-delay: calc(450ms + var(--i, 0) * 90ms);
+}
+
+.c4-motion [data-m='join']:not(.m-in) .m-seal {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.4);
+}
+
+.c4-motion [data-m='join'] .m-seal {
+  transition: opacity 400ms var(--ease-out) 1000ms, transform 600ms var(--ease-pop) 1000ms;
+}
+
+/* --- 16 Service fits: your systems plug in ---------------------------------------- */
+.c4-motion [data-m='plug']:not(.m-in) .m-wire {
+  stroke-dashoffset: 1;
+}
+
+.c4-motion [data-m='plug'] .m-wire {
+  stroke-dasharray: 1;
+  transition: stroke-dashoffset 600ms var(--ease-line);
+  transition-delay: calc(300ms + var(--i, 0) * 160ms);
+}
+
+.c4-motion [data-m='plug']:not(.m-in) .m-item {
+  opacity: 0;
+  transform: translateX(-16px);
+}
+
+.c4-motion [data-m='plug'] .m-item {
+  transition: opacity 500ms var(--ease-out), transform 600ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 160ms);
+}
+
+.c4-motion [data-m='plug']:not(.m-in) .m-target {
+  opacity: 0.4;
+  transform: scale(0.94);
+}
+
+.c4-motion [data-m='plug'] .m-target {
+  transition: opacity 500ms var(--ease-out) 1200ms, transform 600ms var(--ease-pop) 1200ms;
+}
+
+/* --- 17 Sector problems: a tide line runs across -------------------------------- */
+.c4-motion [data-m='tide']:not(.m-in) .m-line-draw {
+  stroke-dashoffset: 1;
+}
+
+.c4-motion [data-m='tide'] .m-line-draw {
+  stroke-dasharray: 1;
+  transition: stroke-dashoffset 1100ms var(--ease-line);
+  transition-delay: calc(200ms + var(--i, 0) * 220ms);
+}
+
+.c4-motion [data-m='tide']:not(.m-in) .m-card {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.c4-motion [data-m='tide'] .m-card {
+  transition: opacity var(--m-dur) var(--ease-out), transform var(--m-dur) var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 110ms);
+}
+
+/* --- 18 Sector build, and lists to account for: checked off like a manifest ------
+   An amber line sweeps along each row in turn. */
+.m-row {
+  position: relative;
+}
+
+.m-row::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--amber);
+  transform-origin: left;
+  transform: scaleX(0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.c4-motion [data-m='manifest'].m-in .m-row::after {
+  animation: m-sweep 900ms var(--ease-line) both;
+  animation-delay: calc(var(--i, 0) * 140ms);
+}
+
+@keyframes m-sweep {
+  0% { transform: scaleX(0); opacity: 1; }
+  65% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+.c4-motion [data-m='manifest']:not(.m-in) .m-row {
+  opacity: 0;
+}
+
+.c4-motion [data-m='manifest'] .m-row {
+  transition: opacity 400ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 140ms);
+}
+
+/* --- 19 Case study: the screen opens up (scroll-linked, CaseTemplate.vue) ------- */
+.c4-motion .m-open {
+  transform-origin: center top;
+  /* The small window it opens from, from the first paint (GSAP then
+     scrubs it open). Without motion it is simply full width. */
+  transform: translateY(40px) scale(0.62);
+}
+
+/* --- 20 Case study result: the outcome gets underlined ---------------------------
+   Each word of the result carries its own marker, so the sweep runs along
+   every line, left to right. */
+.m-hl {
+  position: relative;
+  z-index: 0;
+}
+
+.m-hl::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: -0.04em;
+  right: -0.3em;
+  bottom: 0.04em;
+  height: 0.38em;
+  background: rgba(245, 165, 36, 0.45);
+  transform-origin: left;
+}
+
+.m-hl:last-child::after {
+  right: -0.04em;
+}
+
+.c4-motion [data-m='underline']:not(.m-in) .m-hl::after {
+  transform: scaleX(0);
+}
+
+.c4-motion [data-m='underline'] .m-hl::after {
+  transition: transform 260ms linear;
+  transition-delay: calc(200ms + var(--i, 0) * 70ms);
+}
+
+/* --- 22 Contact offices: three cities, one line --------------------------------- */
+.c4-motion [data-m='cities']:not(.m-in) .m-pin {
+  transform: scale(0);
+}
+
+.c4-motion [data-m='cities'] .m-pin {
+  transition: transform 500ms var(--ease-pop);
+  transition-delay: calc(var(--i, 0) * 380ms);
+}
+
+.c4-motion [data-m='cities']:not(.m-in) .m-link,
+.c4-motion [data-m='cities']:not(.m-in).m-linked::before {
+  transform: scaleY(0);
+}
+
+.c4-motion [data-m='cities'] .m-link,
+.c4-motion [data-m='cities'].m-linked::before {
+  transform-origin: top;
+  transition: transform 900ms var(--ease-line) 250ms;
+}
+
+.c4-motion [data-m='cities']:not(.m-in) .m-item {
+  opacity: 0.35;
+}
+
+.c4-motion [data-m='cities'] .m-item {
+  transition: opacity 500ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 380ms);
+}
+
+/* --- 23 Footer: the logo draws itself ---------------------------------------------- */
+.c4-motion [data-m='signature']:not(.m-in) .m-stroke {
+  stroke-dashoffset: 1;
+}
+
+.c4-motion [data-m='signature'] .m-stroke {
+  stroke-dasharray: 1;
+  transition: stroke-dashoffset 800ms var(--ease-line);
+  transition-delay: calc(var(--i, 0) * 220ms);
+}
+
+.c4-motion [data-m='signature']:not(.m-in) .m-fill {
+  opacity: 0;
+}
+
+.c4-motion [data-m='signature'] .m-fill {
+  transition: opacity 500ms var(--ease-out);
+  transition-delay: calc(300ms + var(--i, 0) * 180ms);
+}
+
+.c4-motion [data-m='signature']:not(.m-in) .m-node {
+  transform: scale(0);
+}
+
+.c4-motion [data-m='signature'] .m-node {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 500ms var(--ease-pop) 1050ms;
+}
+
+/* --- Generic list entrance: cards rise one after another ------------------------ */
+.c4-motion [data-m='cards']:not(.m-in) .m-card {
+  opacity: 0;
+  transform: translateY(32px);
+}
+
+.c4-motion [data-m='cards'] .m-card {
+  transition: opacity var(--m-dur) var(--ease-out), transform 800ms var(--ease-out);
+  transition-delay: calc(min(var(--i, 0), 5) * 90ms);
+}
+
+/* --- 24 Between pages: a burst of speed -----------------------------------------
+   The road bursts for 400 ms (useRoadController.burst) while the old page
+   fades out fast and the new one fades in. Never a full-screen overlay. */
+.page-leave-active {
+  transition: opacity 180ms var(--ease-out);
+}
+
+.page-leave-to {
+  opacity: 0;
+}
+
+.page-enter-active {
+  transition: opacity 400ms var(--ease-out), transform 500ms var(--ease-out);
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+/* --- The section tone (plugins/motion.client.ts) ----------------------------------
+   With motion on, the sections' grounds are lifted onto one fixed layer that
+   cross-fades between them, so a change of section is never a hard edge. */
+.c4 {
+  isolation: isolate;
+}
+
+.c4-tone {
+  display: none;
+}
+
+.c4-tone-on .c4-tone {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  display: block;
+  pointer-events: none;
+}
+
+.c4-tone > i {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.c4-tone > [data-tone='white'] { background: var(--white); opacity: 1; }
+.c4-tone > [data-tone='paper'] { background: var(--paper); }
+.c4-tone > [data-tone='mist'] { background: var(--mist); }
+
+.c4-tone-on [data-tone-of] {
+  background-color: transparent !important;
+}
+
+/* Lenis (smooth wheel scrolling) */
+html.c4-lenis,
+html.c4-lenis body {
+  height: auto;
+}
+
+.c4-lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.c4-lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+/* --- Reduced motion: everything finished, nothing moving ------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .page-enter-active,
+  .page-leave-active {
+    transition: none;
+  }
+
+  .page-enter-from {
+    transform: none;
+  }
+}

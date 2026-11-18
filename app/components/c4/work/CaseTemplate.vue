@@ -33,6 +33,25 @@ const steps = computed(() => {
   if (c.value.result) out.push({ n: '03', label: CASE_LABELS.result, key: 'result' })
   return out
 })
+
+// Choreography 20: the result's key words, one marker per word, so the
+// amber sweep runs along every line.
+const hlWords = computed(() => c.value.result?.highlight.split(' ') ?? [])
+
+// Choreography 19, the screen opens up: the product image starts as a
+// small window and opens out to the page's full width as you scroll to it
+// (scrubbed, so scrolling back closes it again).
+const imageBox = useTemplateRef<HTMLElement>('imageBox')
+const frame = useTemplateRef<HTMLElement>('frame')
+useScrollMoment(({ gsap }) => {
+  if (!frame.value || !imageBox.value) return
+  gsap.fromTo(frame.value, { scale: 0.62, y: 40 }, {
+    scale: 1,
+    y: 0,
+    ease: 'none',
+    scrollTrigger: { trigger: imageBox.value, start: 'top 95%', end: 'top 15%', scrub: 0.5 },
+  })
+})
 </script>
 
 <template>
@@ -61,9 +80,9 @@ const steps = computed(() => {
     </PageHero>
 
     <!-- The product image: white above, mist below (board). -->
-    <section class="cs-image" aria-label="Screenshot">
+    <section ref="imageBox" class="cs-image" aria-label="Screenshot">
       <div class="c4-wrap">
-        <div class="cs-frame">
+        <div ref="frame" class="cs-frame m-open">
           <img :src="c.image.src" :alt="c.image.alt" :width="c.image.w" :height="c.image.h" fetchpriority="high">
         </div>
       </div>
@@ -72,7 +91,7 @@ const steps = computed(() => {
     <!-- LucidHR: who it is for (F4) -->
     <section v-if="c.audiences" class="c4-section" aria-label="Who LucidHR is for">
       <div class="c4-wrap cs-audiences">
-        <article v-for="a in c.audiences" :key="a.title" class="c4-card cs-audience">
+        <article v-for="(a, i) in c.audiences" :key="a.title" v-m="'rise'" class="c4-card cs-audience" :style="{ '--i': i }">
           <h2 class="cs-audience__title">{{ a.title }}</h2>
           <p class="cs-audience__text">{{ a.text }}</p>
         </article>
@@ -93,10 +112,10 @@ const steps = computed(() => {
           <h2 :id="`cs-${st.key}`" class="cs-step__name">{{ st.label }}</h2>
         </div>
         <div class="cs-step__body">
-          <p v-if="st.key === 'challenge'" class="cs-challenge">{{ c.challenge }}</p>
+          <p v-if="st.key === 'challenge'" v-m="'rise'" class="cs-challenge"><span>{{ c.challenge }}</span></p>
           <template v-else-if="st.key === 'solution' && c.solution">
             <p class="cs-solution">{{ c.solution.text }}</p>
-            <ul class="cs-points">
+            <ul v-m="'rise'" class="cs-points">
               <li v-for="(p, i) in c.solution.points" :key="p">
                 <C4Icon name="check" :size="32" :delay="i * 0.2" />
                 <span>{{ p }}</span>
@@ -104,7 +123,8 @@ const steps = computed(() => {
             </ul>
           </template>
           <template v-else-if="st.key === 'result' && c.result">
-            <p class="cs-result">{{ c.result.before }}<span class="cs-hl">{{ c.result.highlight }}</span></p>
+            <!-- Choreography 20: the outcome gets underlined. -->
+            <p v-m="'underline'" class="cs-result">{{ c.result.before }}<span class="cs-hl"><template v-for="(w, k) in hlWords" :key="k"><span class="m-hl" :style="{ '--i': k }">{{ w }}</span>{{ k < hlWords.length - 1 ? ' ' : '' }}</template></span></p>
             <div class="cs-actions">
               <C4Button v-for="a in c.actions" :key="a.label" :to="a.to" :href="a.href" :external="!!a.href" :variant="a.variant" :arrow="a.variant === 'primary'">{{ a.label }}</C4Button>
             </div>
@@ -116,7 +136,7 @@ const steps = computed(() => {
     <!-- Next -->
     <section v-if="next" class="c4-section" aria-label="Next">
       <div class="c4-wrap">
-        <NuxtLink :to="next.path" class="c4-card cs-next">
+        <NuxtLink v-m="'rise'" :to="next.path" class="c4-card cs-next">
           <span class="cs-next__copy">
             <span class="c4-label">{{ next.kind === 'case' ? CASE_LABELS.nextCase : CASE_LABELS.next }}</span>
             <span class="cs-next__text">
@@ -301,10 +321,10 @@ const steps = computed(() => {
 }
 
 /* The outcome underlined in amber (finished state; drawn in Phase 6). */
+/* The amber marker under each word is .m-hl (assets/css/motion.css): shown
+   finished without motion, swept in word by word with it. */
 .cs-hl {
-  background: linear-gradient(180deg, rgba(245, 165, 36, 0) 62%, rgba(245, 165, 36, 0.38) 62%) no-repeat;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
+  color: var(--ink);
 }
 
 .cs-actions {

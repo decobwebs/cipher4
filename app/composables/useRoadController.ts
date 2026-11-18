@@ -78,6 +78,13 @@ let scheduleQueued = false
 let scrollWired = false
 let lastBest: RoadEntry | null = null
 let retryTimer: ReturnType<typeof setTimeout> | undefined
+let burstUntil = 0
+const BURST_MS = 400
+
+function pulse(handle: RoadHandle, ms: number) {
+  handle.speedUp(true)
+  setTimeout(() => handle.speedUp(false), ms)
+}
 
 // --- Test switch: ?motion=on -------------------------------------------------
 
@@ -419,7 +426,20 @@ export function useRoadController() {
       handle.setSpeed(entry.baseSpeed)
       handle.pause()
       entry.running = false
+      // A road arriving during a page change starts with the burst too.
+      if (performance.now() < burstUntil) pulse(handle, BURST_MS)
       schedule()
+    },
+
+    /**
+     * Choreography 24, between pages: the road on screen stretches its light
+     * trails for 400 ms while the next page fades in. A road that arrives on
+     * the new page within the next second starts with the same burst.
+     */
+    burst() {
+      burstUntil = performance.now() + 1000
+      if (getRoadTier() === 'still' || getRoadTier() === 'none') return
+      for (const e of entries) if (e.running && e.handle) pulse(e.handle, BURST_MS)
     },
 
     unregister(entry: RoadEntry) {

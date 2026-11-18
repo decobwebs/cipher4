@@ -10,11 +10,12 @@ import { why } from '~/data/home'
         <Eyebrow>{{ why.eyebrow }}</Eyebrow>
         <h2 id="hy-title" class="c4-h2 hy__title">{{ why.title }}</h2>
       </div>
-      <ul class="hy__list">
-        <li v-for="(w, i) in why.items" :key="w.title" class="hy__item">
+      <!-- Choreography 07: each promise gets signed off. -->
+      <ul v-m="'sign'" class="hy__list">
+        <li v-for="(w, i) in why.items" :key="w.title" class="hy__item m-item" :style="{ '--i': i }">
           <C4Icon :name="w.icon" :size="44" :delay="i * 0.3" />
           <div class="hy__text">
-            <h3 class="hy__name">{{ w.title }}</h3>
+            <h3 class="hy__name">{{ w.title }}<CheckTick class="hy__tick" /></h3>
             <p class="hy__body">{{ w.text }}</p>
           </div>
         </li>
@@ -67,10 +68,18 @@ import { why } from '~/data/home'
 }
 
 .hy__name {
+  display: flex;
+  align-items: center;
+  gap: var(--s-12);
   font-size: 23px;
   line-height: 1.3;
   font-weight: 600;
   letter-spacing: -0.02em;
+}
+
+.hy__tick {
+  width: 24px;
+  height: 24px;
 }
 
 .hy__body {

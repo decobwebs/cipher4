@@ -26,7 +26,8 @@ const note = computed(() => (props.promise === null ? null : props.promise ?? co
 </script>
 
 <template>
-  <section class="c4-close" aria-labelledby="c4-close-title">
+  <!-- Choreography 12: the night road arrives below. -->
+  <section v-m="'night'" class="c4-close" aria-labelledby="c4-close-title">
     <div class="c4-close__band on-dark">
       <div class="c4-close__road" aria-hidden="true">
         <slot name="road">

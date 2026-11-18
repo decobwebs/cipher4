@@ -53,8 +53,9 @@ function onTrack() {
     <section class="c4-section c4-section--paper" aria-labelledby="sc-problems">
       <div class="c4-wrap">
         <SectionHeader title-id="sc-problems" :title="HEADINGS.problems" />
-        <ol ref="track" class="sc-problems" @scroll.passive="onTrack">
-          <li v-for="(p, i) in sector.problems" :key="p.title" class="c4-card sc-problem">
+        <!-- Choreography 17: the sector's own line runs across each card. -->
+        <ol ref="track" v-m="'tide'" class="sc-problems" @scroll.passive="onTrack">
+          <li v-for="(p, i) in sector.problems" :key="p.title" class="c4-card sc-problem m-card" :style="{ '--i': i }">
             <SectorLine :kind="sector.line" class="sc-problem__line" />
             <span class="sc-n">{{ String(i + 1).padStart(2, '0') }}</span>
             <h3 class="sc-problem__title">{{ p.title }}</h3>
@@ -74,8 +75,9 @@ function onTrack() {
           <h2 id="sc-build" class="c4-h2">{{ HEADINGS.build }}</h2>
           <C4Button :to="sector.cta.to" variant="text">{{ sector.cta.label }}</C4Button>
         </div>
-        <ol class="sc-list">
-          <li v-for="(b, i) in sector.build" :key="b" class="sc-list__item">
+        <!-- Choreography 18: checked off like a manifest. -->
+        <ol v-m="'manifest'" class="sc-list">
+          <li v-for="(b, i) in sector.build" :key="b" class="sc-list__item m-row" :style="{ '--i': i }">
             <span class="sc-code">{{ sector.code }}-{{ String(i + 1).padStart(2, '0') }}</span>
             <span class="sc-list__text">{{ b }}</span>
             <span class="sc-list__bar" :style="{ width: `${40 + i * 12}px` }" aria-hidden="true" />
@@ -88,7 +90,7 @@ function onTrack() {
     <section class="c4-section c4-section--mist" aria-labelledby="sc-context">
       <div class="c4-wrap">
         <SectionHeader title-id="sc-context" :title="HEADINGS.context" />
-        <ul class="sc-context">
+        <ul v-m="'rise'" class="sc-context">
           <li v-for="c in sector.context" :key="c">{{ c }}</li>
         </ul>
       </div>
@@ -98,8 +100,8 @@ function onTrack() {
     <section class="c4-section sc-services" aria-labelledby="sc-services">
       <div class="c4-wrap">
         <SectionHeader title-id="sc-services" :title="HEADINGS.services" />
-        <ul class="sc-chips">
-          <li v-for="(sv, i) in sector.services" :key="sv.to">
+        <ul v-m="'snap'" class="sc-chips">
+          <li v-for="(sv, i) in sector.services" :key="sv.to" class="m-chip" :style="scatter(i)">
             <NuxtLink :to="sv.to" class="c4-card sc-chip">
               <C4Icon :name="sv.icon" :size="40" :delay="i * 0.2" />
               <span class="sc-chip__title">{{ sv.title }}</span>
@@ -114,8 +116,8 @@ function onTrack() {
     <section class="c4-section" aria-labelledby="sc-related">
       <div class="c4-wrap">
         <SectionHeader title-id="sc-related" :title="sector.related.title" />
-        <ul v-if="sector.related.items.length" class="sc-work">
-          <li v-for="w in sector.related.items" :key="w.name">
+        <ul v-if="sector.related.items.length" v-m="'cards'" class="sc-work">
+          <li v-for="(w, i) in sector.related.items" :key="w.name" class="m-card" :style="{ '--i': i }">
             <NuxtLink :to="w.to" class="c4-card sc-work__card">
               <span class="sc-work__media">
                 <img v-if="w.image" :src="w.image.src" alt="" :width="w.image.w" :height="w.image.h" loading="lazy" class="sc-work__shot">
@@ -129,7 +131,7 @@ function onTrack() {
             </NuxtLink>
           </li>
         </ul>
-        <NuxtLink v-else :to="relatedReading.to" class="c4-card sc-reading">
+        <NuxtLink v-else v-m="'rise'" :to="relatedReading.to" class="c4-card sc-reading">
           <span class="sc-reading__meta"><span>{{ relatedReading.sector }}</span><span>{{ relatedReading.read }}</span></span>
           <span class="sc-reading__title">{{ relatedReading.title }}</span>
         </NuxtLink>
@@ -140,8 +142,8 @@ function onTrack() {
     <section class="c4-section c4-section--paper" aria-labelledby="sc-others">
       <div class="c4-wrap">
         <SectionHeader title-id="sc-others" :title="HEADINGS.others" />
-        <ul class="sc-others">
-          <li v-for="(o, i) in others" :key="o.slug">
+        <ul v-m="'cards'" class="sc-others">
+          <li v-for="(o, i) in others" :key="o.slug" class="m-card" :style="{ '--i': i }">
             <NuxtLink :to="`/sectors/${o.slug}`" class="sc-other">
               <C4Icon :name="otherIcon(o.slug)" :size="48" :delay="i * 0.25" />
               <span class="sc-other__name">{{ o.title }}<C4Glyph name="arrow" class="sc-arrow" /></span>

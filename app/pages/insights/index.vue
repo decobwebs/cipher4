@@ -24,8 +24,8 @@ const { data: articles } = await useAsyncData('insights-index', () =>
     <section class="c4-section c4-section--paper" aria-labelledby="in-list">
       <div class="c4-wrap">
         <h2 id="in-list" class="c4-sr-only">{{ page.eyebrow }}</h2>
-        <ul class="c4p-grid-2">
-          <li v-for="a in articles" :key="a.path">
+        <ul v-m="'turn'" class="c4p-grid-2">
+          <li v-for="(a, i) in articles" :key="a.path" class="m-card" :style="{ '--i': i }">
             <NuxtLink :to="a.path" class="c4-card c4p-link-card in-card">
               <span class="in-card__meta">
                 <span class="c4-label">{{ a.sector }}</span>

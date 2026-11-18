@@ -22,11 +22,14 @@ useSeoMeta({
     <HomeClients />
     <HomeMission />
     <HomeServices />
+    <!-- Motion board 03: a calm road joins one chapter to the next. -->
+    <RoadStrip />
     <HomeSectors />
     <HomeWork />
     <HomeWhy />
     <HomeDeliver />
     <HomeTechnologies />
+    <RoadStrip />
     <HomeInsights />
     <HomeYouth />
     <ClosingBand />

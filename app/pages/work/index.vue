@@ -41,15 +41,15 @@ const show = (k: Exclude<WorkFilter, 'all'>) => filter.value === 'all' || filter
     <section v-show="show('platforms')" class="c4-section c4-section--mist" aria-labelledby="wk-platforms">
       <div class="c4-wrap">
         <SectionHeader title-id="wk-platforms" :title="page.platformsTitle" />
-        <WorkCarousel :items="platformCards" :label="page.platformsTitle" />
+        <WorkCarousel v-m="'zoom'" :items="platformCards" :label="page.platformsTitle" />
       </div>
     </section>
 
     <section v-show="show('websites')" class="c4-section c4-section--white" aria-labelledby="wk-websites">
       <div class="c4-wrap">
         <SectionHeader title-id="wk-websites" :title="page.websitesTitle" />
-        <ul class="wk-sites">
-          <li v-for="w in websiteCards" :key="w.name" :class="{ 'wk-sites__wide': w.image }">
+        <ul v-m="'cards'" class="wk-sites">
+          <li v-for="(w, i) in websiteCards" :key="w.name" class="m-card" :class="{ 'wk-sites__wide': w.image }" :style="{ '--i': i }">
             <article class="c4-card wk-site" :class="{ 'wk-site--image': w.image }">
               <div class="wk-site__body">
                 <div class="wk-site__brand">

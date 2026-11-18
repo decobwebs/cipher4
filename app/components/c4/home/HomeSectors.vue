@@ -42,8 +42,11 @@ function pick(i: number) {
         </div>
       </div>
 
-      <ul class="hse__list">
-        <li v-for="(s, i) in sectors.items" :key="s.to" class="hse__item">
+      <!-- Choreography 05: one route joins four industries. -->
+      <ul v-m="'route'" data-seg class="hse__list">
+        <li v-for="(s, i) in sectors.items" :key="s.to" class="hse__item m-card" :style="{ '--i': i }">
+          <svg class="m-route hse__route" viewBox="0 0 100 2" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 1 H100" pathLength="1" /></svg>
+          <span class="m-stop hse__stop" aria-hidden="true" />
           <NuxtLink
             :to="s.to"
             class="hse__card"
@@ -203,6 +206,40 @@ function pick(i: number) {
 
   .hse__title {
     font-size: 19px;
+  }
+}
+
+/* The route (Choreography 05): one segment per card, on the line between
+   picture and words, reaching across the gap to the next card. */
+.hse__item {
+  position: relative;
+}
+
+.hse__route {
+  top: 299px;
+  z-index: 2;
+  width: calc(100% + var(--s-24));
+}
+
+.hse__item:last-child .hse__route {
+  width: 100%;
+}
+
+.hse__stop {
+  position: absolute;
+  z-index: 3;
+  left: var(--s-24);
+  top: 294px;
+}
+
+@media (max-width: 767px) {
+  .hse__route {
+    top: 189px;
+    width: calc(100% + var(--s-12));
+  }
+
+  .hse__stop {
+    top: 184px;
   }
 }
 </style>

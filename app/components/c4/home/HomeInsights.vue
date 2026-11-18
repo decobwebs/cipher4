@@ -11,8 +11,9 @@ import { insights } from '~/data/home'
           <C4Button :to="insights.link.to" variant="text">{{ insights.link.label }}</C4Button>
         </template>
       </SectionHeader>
-      <ul class="hi__list">
-        <li v-for="a in insights.items" :key="a.to" class="hi__item">
+      <!-- Choreography 10: articles turn down like pages. -->
+      <ul v-m="'turn'" class="hi__list">
+        <li v-for="(a, i) in insights.items" :key="a.to" class="hi__item m-card" :style="{ '--i': i }">
           <NuxtLink :to="a.to" class="hi__card">
             <span class="hi__meta"><span>{{ a.sector }}</span><span>{{ a.read }}</span></span>
             <span class="hi__bottom">

@@ -24,6 +24,10 @@ const tabs: { key: SectorKey | 'all'; label: string }[] = [
 ]
 const sector = ref<SectorKey | 'all'>('all')
 
+// One stack deals out six (as on the home page: six capabilities, one partner).
+const cards = useTemplateRef<HTMLElement>('cards')
+useDeal(cards)
+
 const lineFor = (s: (typeof services)[number]) =>
   sector.value === 'all' ? s.lead : s.sectors?.[sector.value] ?? s.lead
 </script>
@@ -41,7 +45,7 @@ const lineFor = (s: (typeof services)[number]) =>
     <section class="c4-section c4-section--paper" aria-labelledby="so-list">
       <div class="c4-wrap">
         <h2 id="so-list" class="c4-sr-only">{{ page.eyebrow }}</h2>
-        <div class="so-select" role="group" :aria-label="page.selector.label">
+        <div v-m="'rise'" class="so-select" role="group" :aria-label="page.selector.label">
           <span class="so-select__label" aria-hidden="true">{{ page.selector.label }}</span>
           <div class="so-select__tabs">
             <button
@@ -55,8 +59,8 @@ const lineFor = (s: (typeof services)[number]) =>
           </div>
         </div>
 
-        <ul class="so-cards">
-          <li v-for="(s, i) in services" :key="s.slug">
+        <ul ref="cards" v-m="'deal'" class="so-cards">
+          <li v-for="(s, i) in services" :key="s.slug" class="m-card" :style="{ '--i': i }">
             <NuxtLink :to="`/services/${s.slug}`" class="c4-card c4p-link-card so-card">
               <C4Icon :name="s.icon" :size="52" :delay="i * 0.15" />
               <span class="so-card__head">
@@ -71,11 +75,13 @@ const lineFor = (s: (typeof services)[number]) =>
       </div>
     </section>
 
-    <!-- How we deliver -->
+    <RoadStrip />
+
+    <!-- How we deliver: each stage checked off like a manifest. -->
     <section id="delivery" class="c4-section c4-section--white so-delivery" aria-labelledby="so-delivery">
       <div class="c4-wrap">
         <SectionHeader title-id="so-delivery" :eyebrow="delivery.eyebrow" :title="delivery.title" :lead="delivery.lead" />
-        <table class="so-table">
+        <table v-m="'manifest'" class="so-table">
           <thead>
             <tr>
               <th scope="col"><span class="c4-sr-only">Stage</span></th>
@@ -85,7 +91,7 @@ const lineFor = (s: (typeof services)[number]) =>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(st, i) in delivery.stages" :key="st.n">
+            <tr v-for="(st, i) in delivery.stages" :key="st.n" class="m-row" :style="{ '--i': i }">
               <th scope="row">
                 <span class="so-stage">
                   <C4Icon :name="st.icon" :size="40" :delay="i * 0.12" class="so-stage__icon" />
@@ -106,8 +112,8 @@ const lineFor = (s: (typeof services)[number]) =>
     <section class="c4-section c4-section--paper" aria-labelledby="so-ways">
       <div class="c4-wrap">
         <SectionHeader title-id="so-ways" :title="waysToWork.title" />
-        <ul class="c4p-grid-2">
-          <li v-for="(w, i) in waysToWork.items" :key="w.title" class="c4-card so-way">
+        <ul v-m="'cards'" class="c4p-grid-2">
+          <li v-for="(w, i) in waysToWork.items" :key="w.title" class="c4-card so-way m-card" :style="{ '--i': i }">
             <span class="c4p-n">{{ String(i + 1).padStart(2, '0') }}</span>
             <h3 class="c4p-link-card__title">{{ w.title }}</h3>
             <p class="c4p-link-card__text">{{ w.text }}</p>
@@ -120,11 +126,11 @@ const lineFor = (s: (typeof services)[number]) =>
     <!-- Support -->
     <section class="c4-section c4-section--white" aria-labelledby="so-support">
       <div class="c4-wrap c4p-split">
-        <div class="c4p-split__head">
+        <div v-m="'rise'" class="c4p-split__head">
           <h2 id="so-support" class="c4-h2">{{ support.title }}</h2>
           <p class="c4-lead">{{ support.lead }}</p>
         </div>
-        <ul class="so-tiers">
+        <ul v-m="'rise'" class="so-tiers">
           <li v-for="t in support.tiers" :key="t.name" class="c4-card so-tier">
             <h3 class="so-tier__name">{{ t.name }}</h3>
             <dl class="so-tier__terms">

@@ -59,8 +59,8 @@ const crumbs = computed(() => [
     <section v-if="others.length" class="c4-section c4-section--paper ar-more" aria-labelledby="ar-more">
       <div class="c4-wrap">
         <h2 id="ar-more" class="c4-h3 ar-more__title">{{ insightsPage.eyebrow }}</h2>
-        <ul class="c4p-grid-2">
-          <li v-for="a in others" :key="a.path">
+        <ul v-m="'cards'" class="c4p-grid-2">
+          <li v-for="(a, i) in others" :key="a.path" class="m-card" :style="{ '--i': i }">
             <NuxtLink :to="a.path" class="c4-card c4p-link-card">
               <span class="c4-label">{{ a.sector }} · {{ a.readingTime }}</span>
               <span class="c4p-link-card__title">{{ a.title }}</span>

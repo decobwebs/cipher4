@@ -13,21 +13,49 @@
  * once per visit) and Steering (desktop with a mouse only).
  */
 import { hero } from '~/data/home'
+
+// Motion board 02, leaving the hero: as you scroll out, the road speeds up
+// and the view widens, like pulling onto a motorway, then it fades as the
+// mission arrives. Scrolling back up reverses it (scrubbed to the scroll).
+const heroEl = useTemplateRef<HTMLElement>('heroSection')
+const roadBox = useTemplateRef<HTMLElement>('roadBox')
+const road = useTemplateRef<{ setSpeed: (n: number) => void; setFov: (d: number | null) => void }>('road')
+
+useScrollMoment(({ ScrollTrigger }) => {
+  if (!heroEl.value) return
+  let last = -1
+  ScrollTrigger.create({
+    trigger: heroEl.value,
+    start: 'top top',
+    end: 'bottom top',
+    onUpdate: (self) => {
+      const p = Math.round(self.progress * 100) / 100
+      if (p === last) return
+      last = p
+      road.value?.setSpeed(1 + p * 2.6)
+      road.value?.setFov(p > 0 ? 90 + p * 45 : null)
+      if (roadBox.value) roadBox.value.style.opacity = String(1 - Math.max(0, (p - 0.45) / 0.55))
+    },
+  })
+  return () => { road.value?.setSpeed(1); road.value?.setFov(null) }
+})
 </script>
 
 <template>
-  <section class="hh" aria-labelledby="hh-title">
-    <div class="hh__road">
-      <HyperspeedRoad preset="hero" arrival steering />
+  <!-- Choreography 01: lines rise into place while the road already runs. -->
+  <section ref="heroSection" v-m:now="'lines'" class="hh" aria-labelledby="hh-title">
+    <div ref="roadBox" class="hh__road">
+      <HyperspeedRoad ref="road" preset="hero" arrival steering />
     </div>
     <div class="c4-wrap hh__inner">
       <div class="hh__copy">
-        <Eyebrow>{{ hero.eyebrow }}</Eyebrow>
+        <Eyebrow class="m-after" style="--i: -2">{{ hero.eyebrow }}</Eyebrow>
         <h1 id="hh-title" class="hh__title">
-          {{ hero.titleLead }} <span class="c4-accent">{{ hero.titleAccent }}</span>
+          <span class="m-mask"><span class="m-line">{{ hero.titleLead }}</span></span>
+          {{ ' ' }}<span class="m-mask"><span class="m-line c4-accent" style="--i: 1">{{ hero.titleAccent }}</span></span>
         </h1>
-        <p class="hh__lead">{{ hero.lead }}</p>
-        <div class="hh__actions">
+        <p class="hh__lead m-after" style="--i: 1">{{ hero.lead }}</p>
+        <div class="hh__actions m-after" style="--i: 2">
           <C4Button :to="hero.primary.to" arrow>{{ hero.primary.label }}</C4Button>
           <C4Button :to="hero.secondary.to" variant="secondary">{{ hero.secondary.label }}</C4Button>
         </div>

@@ -189,6 +189,8 @@ defineExpose({
     if (entry) entry.baseSpeed = n
     handle?.setSpeed(n)
   },
+  /** Phase 6: widen the view (hero exit). null returns to normal. */
+  setFov(deg: number | null) { handle?.setFov(deg) },
   /** What is showing: 'canvas' (moving road), 'still', 'off' or 'idle'. */
   mode: () => mode.value,
   // --- Phase 2b ---------------------------------------------------------------

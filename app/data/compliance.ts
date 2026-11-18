@@ -2,9 +2,8 @@
  * Credentials and compliance page (content G2). Every string is from
  * design-handoff/content/cipher4-website-content-v1.md.
  *
- * Only registrations actually held are shown (G2 note). The RC number is an
- * open owner decision (plan section 9): until it is supplied in
- * data/site.ts, its row is left out rather than showing "[number]".
+ * Only registrations actually held are shown (G2 note). The RC number
+ * comes from data/site.ts (company.rcNumber), shown as "RC 8980008".
  */
 import type { C4IconName } from '~/lib/icons'
 import { company } from '~/data/site'
@@ -12,7 +11,7 @@ import { company } from '~/data/site'
 const registrationRows = [
   { label: 'Registered name', value: 'Cipher4 AI & Robotics Ltd' },
   { label: 'Registered with', value: 'Corporate Affairs Commission, Nigeria' },
-  { label: 'RC number', value: company.rcNumber },
+  { label: 'RC number', value: company.rcNumber ? `RC ${company.rcNumber}` : '' },
   { label: 'Established', value: '2023' },
 ]
 

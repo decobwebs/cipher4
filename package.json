@@ -14,7 +14,6 @@
   "dependencies": {
     "@nuxt/content": "^3.15.2",
     "@nuxt/fonts": "^0.14.0",
-    "@nuxt/icon": "^2.4.1",
     "@nuxt/image": "^2.1.0",
     "@nuxtjs/sitemap": "^8.6.2",
     "@types/three": "^0.185.4",
@@ -30,7 +29,6 @@
     "vue-router": "^5.2.0"
   },
   "devDependencies": {
-    "@iconify-json/lucide": "^1.2.122",
     "playwright": "^1.62.1"
   }
 }

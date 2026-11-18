@@ -15,8 +15,9 @@ import { technologies } from '~/data/home'
           <C4Button :to="technologies.link.to" variant="text">{{ technologies.link.label }}</C4Button>
         </template>
       </SectionHeader>
-      <ul class="ht__list">
-        <li v-for="(t, i) in technologies.names" :key="t" class="ht__item">
+      <!-- Choreography 09: a scattered stack snaps together. -->
+      <ul v-m="'snap'" class="ht__list">
+        <li v-for="(t, i) in technologies.names" :key="t" class="ht__item m-chip" :style="scatter(i)">
           <span class="ht__dot" :class="i % 2 ? 'ht__dot--indigo' : ''" aria-hidden="true" />{{ t }}
         </li>
       </ul>

@@ -18,22 +18,36 @@ const deskH: Record<string, number> = {
 </script>
 
 <template>
-  <section class="hc" aria-labelledby="hc-label">
+  <!-- Choreography 02: logos come into focus, one after the next. -->
+  <section v-m="'focus'" class="hc" aria-labelledby="hc-label">
     <div class="c4-wrap hc__inner">
       <h2 id="hc-label" class="hc__label">{{ clients.label }}</h2>
       <div class="hc__scroller" role="region" aria-labelledby="hc-label" tabindex="0">
         <ul class="hc__list">
-          <li v-for="l in clients.logos" :key="l.name" class="hc__item">
-            <img
-              :src="l.src"
-              :alt="l.name"
-              :width="l.w"
-              :height="l.h"
-              :style="{ '--h': `${deskH[l.name] ?? 44}px` }"
-              class="hc__logo"
-              loading="lazy"
-              decoding="async"
-            >
+          <li v-for="(l, i) in clients.logos" :key="l.name" class="hc__item" :style="{ '--i': i }">
+            <span class="m-focus">
+              <img
+                :src="l.src"
+                :alt="l.name"
+                :width="l.w"
+                :height="l.h"
+                :style="{ '--h': `${deskH[l.name] ?? 44}px` }"
+                class="hc__logo m-focus__sharp"
+                loading="lazy"
+                decoding="async"
+              >
+              <img
+                :src="l.src"
+                alt=""
+                aria-hidden="true"
+                :width="l.w"
+                :height="l.h"
+                :style="{ '--h': `${deskH[l.name] ?? 44}px` }"
+                class="hc__logo m-focus__blur"
+                loading="lazy"
+                decoding="async"
+              >
+            </span>
           </li>
         </ul>
       </div>
@@ -77,7 +91,17 @@ const deskH: Record<string, number> = {
   height: var(--h);
   width: auto;
   filter: brightness(0);
+}
+
+/* One tone at half strength, set on the wrapper so the focus entrance
+   (motion.css) can fade the two copies freely. */
+.m-focus {
   opacity: 0.5;
+}
+
+.hc__logo.m-focus__blur {
+  filter: brightness(0) blur(6px);
+  opacity: 0;
 }
 
 .hc__scroller:focus-visible {
@@ -122,9 +146,12 @@ const deskH: Record<string, number> = {
     scroll-snap-align: center;
   }
 
+  .m-focus {
+    opacity: 0.55;
+  }
+
   .hc__logo {
     height: 34px;
-    opacity: 0.55;
   }
 }
 </style>

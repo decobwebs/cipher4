@@ -13,7 +13,7 @@ definePageMeta({ layout: 'c4' })
 useSeoMeta({ title: page.seo.title, description: page.seo.description, ogTitle: page.seo.title, ogDescription: page.seo.description })
 
 const crumbs = [{ label: 'Home', to: '/' }, { label: 'Contact' }]
-const hero = ref<{ launch: () => void } | null>(null)
+const hero = ref<{ launch: () => void; speedUp: (ms?: number) => void } | null>(null)
 </script>
 
 <template>
@@ -31,13 +31,13 @@ const hero = ref<{ launch: () => void } | null>(null)
     <section class="ct c4-section c4-section--paper" aria-label="Send us a message">
       <div class="c4-wrap ct__grid">
         <div class="c4-card ct__form">
-          <ContactForm @sent="hero?.launch()" />
+          <ContactForm @sending="hero?.speedUp(400)" @sent="hero?.launch()" />
         </div>
 
         <aside class="ct__aside">
           <section class="c4-card ct__card" aria-labelledby="ct-reach">
             <h2 id="ct-reach" class="ct__title">{{ reach.title }}</h2>
-            <ul class="ct__reach">
+            <ul v-m="'rise'" class="ct__reach">
               <li v-for="(r, i) in reach.items" :key="r.kind">
                 <a :href="r.href" class="ct__row" :target="r.external ? '_blank' : undefined" :rel="r.external ? 'noopener' : undefined">
                   <C4Icon :name="r.icon as 'whatsapp' | 'mail' | 'phone'" :size="32" :delay="i * 0.25" />
@@ -58,9 +58,11 @@ const hero = ref<{ launch: () => void } | null>(null)
               <h2 id="ct-offices" class="ct__title">{{ officesBlock.title }}</h2>
               <p class="ct__note">{{ officesBlock.note }}</p>
             </div>
-            <ol class="ct__offices">
-              <li v-for="o in officesBlock.items" :key="o.label" class="ct__office" :class="{ 'is-head': o.head }">
-                <span class="ct__pin" aria-hidden="true" />
+            <!-- Choreography 22: the head office lights first, then a line
+                 reaches out to Lagos and Kaduna. -->
+            <ol v-m="'cities'" class="ct__offices m-linked">
+              <li v-for="(o, i) in officesBlock.items" :key="o.label" class="ct__office m-item" :class="{ 'is-head': o.head }" :style="{ '--i': i }">
+                <span class="ct__pin m-pin" aria-hidden="true" />
                 <span class="ct__office-text">
                   <span class="ct__label">{{ o.label }}</span>
                   <span class="ct__address">{{ o.address }}</span>

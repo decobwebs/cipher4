@@ -376,7 +376,7 @@ function mount(canvas, userOptions) {
   const saveData = () => !!(navigator.connection && navigator.connection.saveData) && o.saveData === 'off'
 
   const inert = {
-    supported: false, reason: '', setOptions() {}, speedUp() {}, setSpeed() {}, pause() {}, resume() {}, destroy() {},
+    supported: false, reason: '', setOptions() {}, speedUp() {}, setSpeed() {}, setFov() {}, pause() {}, resume() {}, destroy() {},
     getOptions: () => clone(o),
   }
   if (reduce() && o.reducedMotion === 'off') return Object.assign(inert, { reason: 'reduced-motion' })
@@ -808,6 +808,11 @@ function mount(canvas, userOptions) {
     },
     setSpeed(n) {
       speed = Math.max(0, Number(n) || 0)
+    },
+    // C4 site: widen or narrow the view. The camera eases towards it each
+    // frame (no rebuild), so it can follow the scroll. null = back to normal.
+    setFov(deg) {
+      fovTarget = deg == null ? o.fov : Math.max(30, Math.min(160, Number(deg) || o.fov))
     },
     // C4 site: like setSpeed, but negative runs the road backwards (trails
     // flow the other way). For roads that follow the scroll in both directions.

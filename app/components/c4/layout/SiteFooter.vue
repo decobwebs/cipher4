@@ -13,7 +13,7 @@ const year = new Date().getFullYear()
 const open = ref<string | null>(null)
 const colId = (label: string) => `c4-foot-${label.toLowerCase()}`
 const legalLine = computed(() =>
-  `© ${year} ${company.legalName}. All rights reserved. Registered in Nigeria${company.rcNumber ? `, RC ${company.rcNumber}` : ''}.`,
+  `© ${year} ${company.legalName}. All rights reserved. Registered in Nigeria.${company.rcNumber ? ` RC ${company.rcNumber}.` : ''}`,
 )
 </script>
 
@@ -23,7 +23,8 @@ const legalLine = computed(() =>
       <div class="c4-foot__top">
         <div class="c4-foot__brand">
           <NuxtLink to="/" class="c4-foot__home" aria-label="Cipher4, home">
-            <C4Logo variant="stacked" :size="50" />
+            <!-- Choreography 23: the logo draws itself, a signature at the end. -->
+            <C4Logo v-m="'signature'" variant="stacked" :size="50" />
           </NuxtLink>
           <p class="c4-foot__tagline">{{ company.tagline }}</p>
         </div>

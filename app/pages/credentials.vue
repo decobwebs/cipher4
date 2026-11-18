@@ -5,8 +5,8 @@
  * references, and "Preparing a submission?" as the closing band (it is the
  * page's last word and carries its own button).
  *
- * Only what Cipher4 holds is shown. The RC number row stays hidden until
- * the number is supplied (data/site.ts, company.rcNumber).
+ * Only what Cipher4 holds is shown. The RC number comes from data/site.ts
+ * (company.rcNumber).
  */
 import { credentialsPage as page } from '~/data/compliance'
 
@@ -27,10 +27,10 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Credentials' }]
     <!-- Registration -->
     <section class="c4-section c4-section--paper" aria-labelledby="cr-reg">
       <div class="c4-wrap c4p-split">
-        <div class="c4p-split__head">
+        <div v-m="'rise'" class="c4p-split__head">
           <h2 id="cr-reg" class="c4-h2">{{ page.registration.title }}</h2>
         </div>
-        <dl class="c4p-facts">
+        <dl v-m="'rise'" class="c4p-facts">
           <template v-for="r in page.registration.rows" :key="r.label">
             <dt>{{ r.label }}</dt>
             <dd>{{ r.value }}</dd>
@@ -43,10 +43,11 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Credentials' }]
     <section class="c4-section c4-section--white" aria-labelledby="cr-policy">
       <div class="c4-wrap">
         <SectionHeader title-id="cr-policy" :eyebrow="page.policies.label" :title="page.policies.title" :lead="page.policies.lead" />
-        <ul class="c4p-grid-2">
-          <li v-for="(g, i) in page.policies.groups" :key="g.title" class="c4-card cr-policy">
+        <!-- Commitments accepted as contract terms: each one signed off. -->
+        <ul v-m="'sign'" class="c4p-grid-2">
+          <li v-for="(g, i) in page.policies.groups" :key="g.title" class="c4-card cr-policy m-item" :style="{ '--i': i }">
             <C4Icon :name="g.icon" :size="44" :delay="i * 0.2" />
-            <h3 class="c4p-link-card__title">{{ g.title }}</h3>
+            <h3 class="c4p-link-card__title cr-policy__title">{{ g.title }}<CheckTick /></h3>
             <ul class="c4p-dots">
               <li v-for="x in g.items" :key="x">{{ x }}</li>
             </ul>
@@ -58,10 +59,10 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Credentials' }]
     <!-- References -->
     <section class="c4-section c4-section--paper cr-refs" aria-labelledby="cr-refs">
       <div class="c4-wrap c4p-split">
-        <div class="c4p-split__head">
+        <div v-m="'rise'" class="c4p-split__head">
           <h2 id="cr-refs" class="c4-h2">{{ page.references.title }}</h2>
         </div>
-        <div class="cr-refs__body">
+        <div v-m="'rise'" class="cr-refs__body">
           <p class="cr-refs__text">{{ page.references.text }}</p>
           <C4Button :to="page.references.cta.to" variant="secondary" arrow>{{ page.references.cta.label }}</C4Button>
         </div>
@@ -85,6 +86,13 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Credentials' }]
   gap: var(--s-24);
   height: 100%;
   padding: var(--s-48);
+}
+
+.cr-policy__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-12);
 }
 
 .cr-policy .c4p-dots {

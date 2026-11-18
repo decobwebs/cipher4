@@ -23,8 +23,11 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Youth and skills', to: '/y
     <section class="c4-section c4-section--paper" aria-labelledby="lp-how">
       <div class="c4-wrap">
         <SectionHeader title-id="lp-how" :title="page.steps.title" />
-        <ol class="lp-steps">
-          <li v-for="(s, i) in page.steps.items" :key="s.title" class="c4-card lp-step">
+        <!-- One route from idea to launch: each step lights as the line reaches it. -->
+        <ol v-m="'route'" data-seg class="lp-steps">
+          <li v-for="(s, i) in page.steps.items" :key="s.title" class="c4-card lp-step m-card" :style="{ '--i': i }">
+            <svg class="m-route lp-route" viewBox="0 0 100 2" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 1 H100" pathLength="1" /></svg>
+            <span class="m-stop lp-stop" aria-hidden="true" />
             <span class="c4p-n">{{ String(i + 1).padStart(2, '0') }}</span>
             <h3 class="c4p-link-card__title">{{ s.title }}</h3>
             <p class="c4p-link-card__text">{{ s.text }}</p>
@@ -35,10 +38,10 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Youth and skills', to: '/y
 
     <section class="c4-section c4-section--white" aria-labelledby="lp-look">
       <div class="c4-wrap c4p-split">
-        <div class="c4p-split__head">
+        <div v-m="'rise'" class="c4p-split__head">
           <h2 id="lp-look" class="c4-h2">{{ page.lookFor.title }}</h2>
         </div>
-        <ul class="lp-look">
+        <ul v-m="'rise'" class="lp-look">
           <li v-for="(x, i) in page.lookFor.items" :key="x">
             <C4Icon name="check" :size="32" :delay="i * 0.15" />
             <span>{{ x }}</span>
@@ -52,7 +55,7 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Youth and skills', to: '/y
         <div class="c4p-split__head">
           <h2 id="lp-form-title" class="c4-h2">{{ page.form.title }}</h2>
         </div>
-        <div class="c4-card lp-form">
+        <div v-m="'rise'" class="c4-card lp-form">
           <LaunchpadForm />
         </div>
       </div>
@@ -69,10 +72,33 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Youth and skills', to: '/y
 }
 
 .lp-step {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--s-16);
   padding: var(--s-32);
+}
+
+/* The route runs along the top edge of the four steps. */
+.lp-route {
+  top: -1px;
+  width: calc(100% + var(--s-24));
+}
+
+.lp-step:last-child .lp-route {
+  width: 100%;
+}
+
+.lp-stop {
+  position: absolute;
+  top: -7px;
+  left: var(--s-32);
+}
+
+@media (max-width: 1100px) {
+  .lp-route {
+    width: 100%;
+  }
 }
 
 .lp-look {

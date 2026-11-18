@@ -204,11 +204,13 @@ export interface WebsiteCard {
   image?: { src: string; w: number; h: number; alt: string }
   logo?: { src: string; w: number; h: number }
   /**
-   * "Visit site" link. The content file gives no addresses, so none are set
-   * yet (owner question, Phase 5). F1: fix the live Lighthouse and Zeal
-   * placeholders before linking to those sites.
+   * "Visit site" link (opens in a new tab, rel="noopener"). Set only once
+   * the owner has sent the address AND the public site has no leftover
+   * placeholder text (DECISIONS.md, 2026-11-18).
    */
   url?: string
+  /** Address supplied by the owner but not linked yet (placeholders found). */
+  pendingUrl?: string
 }
 
 export const websiteCards: WebsiteCard[] = [
@@ -218,6 +220,8 @@ export const websiteCards: WebsiteCard[] = [
     headline: 'A website built to win port-call business.',
     line: 'A focused digital presence that guides shipowners and operators straight to a cost estimate request, with service, port and port-call information to support the decision.',
     image: { src: '/images/work/lighthouse.jpg', w: 1400, h: 875, alt: 'The Lighthouse Maritime Agency website' },
+    // Not linked: on 18 Nov 2026 the site still showed "[X hours]" three times.
+    pendingUrl: 'https://lighthousemaritimeltd.com/',
     logo: { src: '/images/logos/lighthouse.png', w: 100, h: 122 },
   },
   {
@@ -226,6 +230,9 @@ export const websiteCards: WebsiteCard[] = [
     headline: 'A haulage brand built for trust and compliance.',
     line: "A complete website that presents Zeal's fleet, safety standards and services with precision, and turns visitors into quote requests.",
     logo: { src: '/images/logos/zeal.png', w: 273, h: 160 },
+    // Not linked: on 18 Nov 2026 the site still showed "[NUMBER] per tank",
+    // "[X hours]" and "[Monday to Saturday, 8am to 6pm]".
+    pendingUrl: 'https://zealgloballtd.com/',
   },
   {
     name: 'Quick Trips',

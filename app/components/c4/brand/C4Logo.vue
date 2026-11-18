@@ -42,12 +42,13 @@ const c = computed(() => props.tone === 'dark'
       focusable="false"
     >
       <template v-if="!compact">
-        <path d="M76.3 26.4 A42 42 0 1 0 76.3 97.6" fill="none" :stroke="c.arc" stroke-width="15" />
-        <polygon points="84,52 96,37.3 96,106 84,106" :fill="c.body" />
-        <polygon points="62,81 71,70 112,70 112,81" :fill="c.body" />
-        <line x1="56.5" y1="64.5" x2="88.5" y2="25.5" :stroke="c.body" stroke-width="8" />
-        <circle cx="52" cy="70" r="7" fill="none" :stroke="c.body" stroke-width="5" />
-        <circle cx="93" cy="20" r="8" fill="var(--amber)" />
+        <!-- m-stroke, m-fill, m-node: the footer signature draw (Choreography 23). -->
+        <path class="m-stroke" style="--i: 0" pathLength="1" d="M76.3 26.4 A42 42 0 1 0 76.3 97.6" fill="none" :stroke="c.arc" stroke-width="15" />
+        <polygon class="m-fill" style="--i: 1" points="84,52 96,37.3 96,106 84,106" :fill="c.body" />
+        <polygon class="m-fill" style="--i: 2" points="62,81 71,70 112,70 112,81" :fill="c.body" />
+        <line class="m-stroke" style="--i: 2" pathLength="1" x1="56.5" y1="64.5" x2="88.5" y2="25.5" :stroke="c.body" stroke-width="8" />
+        <circle class="m-stroke" style="--i: 3" pathLength="1" cx="52" cy="70" r="7" fill="none" :stroke="c.body" stroke-width="5" />
+        <circle class="m-node" cx="93" cy="20" r="8" fill="var(--amber)" />
       </template>
       <template v-else>
         <path d="M76.3 26.4 A42 42 0 1 0 76.3 97.6" fill="none" :stroke="c.arc" stroke-width="16" />

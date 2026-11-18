@@ -17,14 +17,14 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Careers' }]
     <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" road="case" :text-width="680" />
 
     <section class="c4-section c4-section--paper" aria-label="What we look for and what you get">
-      <div class="c4-wrap c4p-grid-2">
-        <div class="c4-card ca-list">
+      <div v-m="'cards'" class="c4-wrap c4p-grid-2">
+        <div class="c4-card ca-list m-card" style="--i: 0">
           <h2 class="c4-h3">{{ page.lookFor.title }}</h2>
           <ul class="c4p-dots">
             <li v-for="x in page.lookFor.items" :key="x">{{ x }}</li>
           </ul>
         </div>
-        <div class="c4-card ca-list">
+        <div class="c4-card ca-list m-card" style="--i: 1">
           <h2 class="c4-h3">{{ page.get.title }}</h2>
           <ul class="c4p-dots">
             <li v-for="x in page.get.items" :key="x">{{ x }}</li>
@@ -35,10 +35,10 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Careers' }]
 
     <section class="c4-section c4-section--white" aria-labelledby="ca-roles">
       <div class="c4-wrap c4p-split">
-        <div class="c4p-split__head">
+        <div v-m="'rise'" class="c4p-split__head">
           <h2 id="ca-roles" class="c4-h2">{{ page.roles.title }}</h2>
         </div>
-        <div class="ca-roles">
+        <div v-m="'rise'" class="ca-roles">
           <div class="ca-none">
             <p class="ca-none__title">{{ page.roles.none }}</p>
             <p class="c4p-row-text">{{ page.roles.noneText }}</p>

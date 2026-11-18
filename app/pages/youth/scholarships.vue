@@ -20,7 +20,7 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Youth and skills', to: '/y
     <!-- The status block (one content block, I3 note) -->
     <section v-if="page.status.state === 'coming-soon'" class="c4-section c4-section--paper" aria-labelledby="sc-status">
       <div class="c4-wrap">
-        <div class="c4-card sc-status">
+        <div v-m="'rise'" class="c4-card sc-status">
           <div class="sc-status__copy">
             <h2 id="sc-status" class="c4-h3">{{ page.status.title }}</h2>
             <p class="c4-lead">{{ page.status.text }}</p>

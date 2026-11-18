@@ -135,10 +135,10 @@ export const company = {
   legalName: 'Cipher4 AI & Robotics Ltd',
   tagline: 'Intelligence for critical operations.',
   /**
-   * Content B3. The RC number is an open decision (plan section 9). Until
-   * it is supplied the line ends at "Registered in Nigeria."
+   * Content B3. RC number from the owner (DECISIONS.md, 2026-11-18).
+   * Footer: "Registered in Nigeria. RC 8980008."
    */
-  rcNumber: '' as string,
+  rcNumber: '8980008' as string,
 }
 
 /** Content B4: the closing band at the bottom of most pages. */

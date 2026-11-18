@@ -20,13 +20,13 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Technologies' }]
       <div class="c4-wrap">
         <h2 id="tx-list" class="c4-sr-only">{{ page.title }}</h2>
         <ul class="c4p-rows">
-          <li v-for="(g, i) in page.groups" :key="g.title" class="tx-group">
-            <h3 class="tx-group__title">
+          <li v-for="(g, i) in page.groups" :key="g.title" v-m="'snap'" class="tx-group">
+            <h3 class="tx-group__title m-chip" style="--x: 0px; --y: 12px; --r: 0deg">
               <span class="c4p-n">{{ String(i + 1).padStart(2, '0') }}</span>
               {{ g.title }}
             </h3>
             <ul class="c4p-pills">
-              <li v-for="t in g.items" :key="t">{{ t }}</li>
+              <li v-for="(t, k) in g.items" :key="t" class="m-chip" :style="scatter(k + 1)">{{ t }}</li>
             </ul>
           </li>
         </ul>
@@ -35,7 +35,7 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Technologies' }]
 
     <section class="c4-section c4-section--white tx-close" aria-label="Our standards">
       <div class="c4-wrap">
-        <p class="c4p-statement">{{ page.closing }}</p>
+        <p v-m="'lines'" class="c4p-statement"><span class="m-mask"><span class="m-line">{{ page.closing }}</span></span></p>
       </div>
     </section>
 

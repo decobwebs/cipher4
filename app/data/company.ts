@@ -41,7 +41,7 @@ export const company = {
 
   // TODO(cipher4): your CAC registration number. Nigerian buyers look for
   // this before they read anything else — it belongs in the footer.
-  rcNumber: '' as string,
+  rcNumber: '8980008' as string,
 
   description:
     'Cipher4 AI & Robotics Ltd builds software platforms and robotic systems for transport, logistics, oil and gas, and supply chain operations across Nigeria and West Africa.',

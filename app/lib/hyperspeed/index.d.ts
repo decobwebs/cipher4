@@ -38,6 +38,8 @@ export interface RoadHandle {
   speedUp(on: boolean): void
   /** 1 = normal, 0 = frozen frame. */
   setSpeed(n: number): void
+  /** Ease the view to this field of view (degrees); null returns to normal. */
+  setFov(deg: number | null): void
   /** Draw the frame at effect time t (seconds). */
   setTime(t: number): void
   /** Phase 2b: start fast (or build up over rampMs first) and settle over ms. */

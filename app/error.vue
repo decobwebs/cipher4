@@ -26,15 +26,15 @@ useSeoMeta({
 <template>
   <NuxtLayout name="c4">
     <section class="nf" aria-labelledby="nf-title">
-      <div class="c4-wrap nf__copy">
-        <Eyebrow>{{ is404 ? page.eyebrow : error?.statusCode }}</Eyebrow>
-        <h1 id="nf-title" class="nf__title">{{ page.heading }}</h1>
-        <p v-if="is404" class="c4-lead">{{ page.lead }}</p>
-        <div class="nf__actions">
+      <div v-m:now="'lines'" class="c4-wrap nf__copy">
+        <Eyebrow class="m-after" style="--i: -2">{{ is404 ? page.eyebrow : error?.statusCode }}</Eyebrow>
+        <h1 id="nf-title" class="nf__title"><span class="m-mask"><span class="m-line">{{ page.heading }}</span></span></h1>
+        <p v-if="is404" class="c4-lead m-after">{{ page.lead }}</p>
+        <div class="nf__actions m-after" style="--i: 1">
           <C4Button :to="page.primary.to" arrow>{{ page.primary.label }}</C4Button>
           <C4Button :to="page.secondary.to" variant="secondary">{{ page.secondary.label }}</C4Button>
         </div>
-        <nav class="nf__links" aria-label="Site sections">
+        <nav class="nf__links m-after" style="--i: 2" aria-label="Site sections">
           <NuxtLink v-for="l in page.links" :key="l.to" :to="l.to" class="nf__link">
             {{ l.label }}<C4Glyph name="arrow" />
           </NuxtLink>

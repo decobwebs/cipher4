@@ -7,6 +7,55 @@
    page is gone, `.c4` moves to <body> and the legacy-*.css files go.
    ========================================================================= */
 
+/* --- Global reset (moved from the old legacy-base.css, Phase 6) -------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  /* Room for the floating header, so #anchor links don't land under it. */
+  scroll-padding-top: 112px;
+}
+
+body {
+  margin: 0;
+  background: var(--white);
+}
+
+img {
+  height: auto;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+::selection {
+  background: rgba(245, 165, 36, 0.28);
+  color: var(--ink);
+}
+
+.on-dark ::selection {
+  background: rgba(245, 165, 36, 0.35);
+  color: var(--white);
+}
+
+@media print {
+  .c4-header,
+  .c4-dock,
+  .c4-road {
+    display: none !important;
+  }
+}
+
 .c4 {
   min-height: 100dvh;
   font-family: var(--font-sans);

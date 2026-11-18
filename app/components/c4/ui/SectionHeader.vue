@@ -25,6 +25,7 @@ withDefaults(defineProps<{
 
 <template>
   <header
+    v-m="'rise'"
     class="c4-sh"
     :class="[`c4-sh--${layout}`, { 'c4-sh--flush': flush }]"
   >

@@ -24,11 +24,14 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Sectors' }]
     <section class="c4-section c4-section--paper" aria-labelledby="sx-list">
       <div class="c4-wrap">
         <h2 id="sx-list" class="c4-sr-only">{{ page.eyebrow }}</h2>
-        <ul class="sx-panels">
-          <li v-for="(s, i) in home.items" :key="s.to">
+        <!-- One route joins four industries (the meaning of Choreography 05). -->
+        <ul v-m="'route'" data-seg class="sx-panels">
+          <li v-for="(s, i) in home.items" :key="s.to" class="m-card" :style="{ '--i': i }">
             <NuxtLink :to="s.to" class="c4-card sx-panel">
               <span class="sx-panel__img" :class="`sx-panel__img--${s.tint}`" aria-hidden="true" />
               <span class="sx-panel__body">
+                <svg class="m-route sx-route" viewBox="0 0 100 2" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 1 H100" pathLength="1" /></svg>
+                <span class="m-stop sx-stop" aria-hidden="true" />
                 <C4Icon :name="s.icon" :size="48" :delay="i * 0.2" />
                 <span class="sx-panel__title">{{ s.title }}</span>
                 <span class="sx-panel__line">{{ s.line }}</span>
@@ -45,7 +48,7 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Sectors' }]
         <div class="c4p-split__head">
           <h2 id="sx-beyond" class="c4-h2">{{ page.beyond.title }}</h2>
         </div>
-        <div class="sx-beyond">
+        <div v-m="'rise'" class="sx-beyond">
           <p class="sx-beyond__text">{{ page.beyond.text }}</p>
           <C4Button :to="page.beyond.link.to" variant="text">{{ page.beyond.link.label }}</C4Button>
         </div>
@@ -88,7 +91,18 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Sectors' }]
 .sx-panel__img--c { background: linear-gradient(140deg, #D5DDF4, #EEF1FA); }
 .sx-panel__img--d { background: linear-gradient(220deg, #EEF1FA, #F4E3C2); }
 
+.sx-route {
+  top: -1px;
+}
+
+.sx-stop {
+  position: absolute;
+  top: -7px;
+  left: var(--s-48);
+}
+
 .sx-panel__body {
+  position: relative;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -135,6 +149,10 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Sectors' }]
 
   .sx-panel__body {
     padding: var(--s-24);
+  }
+
+  .sx-stop {
+    left: var(--s-24);
   }
 
   .sx-panel__title {

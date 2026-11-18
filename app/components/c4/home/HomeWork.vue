@@ -11,7 +11,8 @@ import { work } from '~/data/home'
           <C4Button :to="work.all.to" variant="text">{{ work.all.label }}</C4Button>
         </template>
       </SectionHeader>
-      <WorkCarousel :items="work.items" :label="work.title" />
+      <!-- Choreography 06: zoom-through from depth. -->
+      <WorkCarousel v-m="'zoom'" :items="work.items" :label="work.title" />
     </div>
   </section>
 </template>

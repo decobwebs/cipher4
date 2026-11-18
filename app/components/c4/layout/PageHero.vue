@@ -47,21 +47,22 @@ const styleVars = computed(() => ({
 </script>
 
 <template>
-  <section class="ph" :class="`ph--${size}`" :style="styleVars" aria-labelledby="ph-title">
+  <!-- Choreography 13: the path types itself, then the headline rises. -->
+  <section v-m:now="'path'" class="ph" :class="`ph--${size}`" :style="styleVars" aria-labelledby="ph-title">
     <div v-if="road" class="ph__road">
       <HyperspeedRoad ref="roadEl" :preset="road" />
     </div>
     <div class="c4-wrap ph__inner">
       <div class="ph__copy">
         <Breadcrumb :items="crumbs" />
-        <Eyebrow v-if="eyebrow">{{ eyebrow }}</Eyebrow>
-        <h1 id="ph-title" class="ph__title">{{ title }}</h1>
-        <p v-if="lead" class="ph__lead">{{ lead }}</p>
-        <slot name="meta" />
-        <div v-if="$slots.actions" class="ph__actions">
+        <Eyebrow v-if="eyebrow" class="m-after">{{ eyebrow }}</Eyebrow>
+        <h1 id="ph-title" class="ph__title"><span class="m-mask"><span class="m-line">{{ title }}</span></span></h1>
+        <p v-if="lead" class="ph__lead m-after" style="--i: 1">{{ lead }}</p>
+        <div v-if="$slots.meta" class="m-after" style="--i: 2"><slot name="meta" /></div>
+        <div v-if="$slots.actions" class="ph__actions m-after" style="--i: 3">
           <slot name="actions" />
         </div>
-        <slot name="below" />
+        <div v-if="$slots.below" class="ph__below m-after" style="--i: 3"><slot name="below" /></div>
       </div>
     </div>
   </section>

@@ -49,3 +49,11 @@ Each new decision the owner makes is added here, with its date. Newer entries wi
 | Date | Decision |
 |---|---|
 | 2026-11-18 | File created with the decisions above. Phase 4 approved; Phase 5 started. |
+| 2026-11-18 | Phase 5 approved. Phase 6 started. |
+| 2026-11-18 | Website addresses: Zeal Global Resources `https://zealgloballtd.com/`, Lighthouse Maritime Agency `https://lighthousemaritimeltd.com/`. Before adding a "Visit site" link, check the public site for leftover placeholder text (lorem ipsum, "your text here", dummy phone numbers or emails), viewing public pages only: never log in or submit anything. A site with placeholders gets no link, and the owner is told what was found. The other website cards stay without links until the owner sends their addresses. |
+| 2026-11-18 | Every external link opens in a new tab with `rel="noopener"`. |
+| 2026-11-18 | RC number: 8980008. Footer: "Registered in Nigeria. RC 8980008." Credentials registration row: "RC 8980008". |
+| 2026-11-18 | The Critical operations support tier (1 hour, 24/7) stays out. |
+| 2026-11-18 | "Last updated" on Privacy and Terms stays hidden until launch day. |
+| 2026-11-18 | Old unused files (old header, footer, mobile menu and default layout, old small components, old data files, legacy styles) may be deleted, after checking nothing still uses them. |
+| 2026-11-18 | Header road choices per page (Phase 5) are approved: Sectors uses the maritime road; Our work, Credentials, Careers and Launchpad the long straight road; the other pages the service road; articles, Privacy and Terms have no road. |

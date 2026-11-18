@@ -62,8 +62,9 @@ const logoFor = (name: string) => clients.logos.find((l) => l.name === name)
         <div class="sp-split__head">
           <h2 id="sp-problems" class="c4-h2">{{ PROBLEMS_TITLE }}</h2>
         </div>
-        <ol class="sp-problems__list">
-          <li v-for="(p, i) in service.problems" :key="i" class="c4-card sp-problem">
+        <!-- Choreography 14: problems fall into line. -->
+        <ol v-m="'straighten'" class="sp-problems__list">
+          <li v-for="(p, i) in service.problems" :key="i" class="c4-card sp-problem m-card" :style="{ '--i': i }">
             <span class="sp-n">{{ String(i + 1).padStart(2, '0') }}</span>
             <p class="sp-problem__text">{{ p }}</p>
           </li>
@@ -81,8 +82,15 @@ const logoFor = (name: string) => clients.logos.find((l) => l.name === name)
           :title="service.build.title"
         />
         <SectionHeader v-else title-id="sp-build" :title="service.build.label" />
-        <div class="sp-build" :class="{ 'sp-build--three': service.build.items.length === 3, 'sp-build--four': fourWay }">
-          <article v-for="(b, i) in service.build.items" :key="b.title" class="c4-card sp-part" :class="{ 'is-open': openPart === i }">
+        <!-- Choreography 15 (four parts): four parts join one record. -->
+        <div v-m="fourWay ? 'join' : 'cards'" class="sp-build" :class="{ 'sp-build--three': service.build.items.length === 3, 'sp-build--four': fourWay }">
+          <template v-if="fourWay">
+            <span class="m-join m-join--t sp-joins" style="--i: 0" aria-hidden="true" />
+            <span class="m-join m-join--r sp-joins" style="--i: 1" aria-hidden="true" />
+            <span class="m-join m-join--b sp-joins" style="--i: 2" aria-hidden="true" />
+            <span class="m-join m-join--l sp-joins" style="--i: 3" aria-hidden="true" />
+          </template>
+          <article v-for="(b, i) in service.build.items" :key="b.title" class="c4-card sp-part m-card" :class="{ 'is-open': openPart === i }" :style="{ '--i': i }">
             <C4Icon v-if="b.icon" :name="b.icon" :size="52" :delay="i * 0.25" class="sp-part__icon" />
             <h3 class="sp-part__title">
               <!-- Phones: the parts fold, one open at a time (Phone-Screens 04). -->
@@ -107,7 +115,7 @@ const logoFor = (name: string) => clients.logos.find((l) => l.name === name)
             </div>
           </article>
           <!-- Four parts on one shared record: the mark at the centre. -->
-          <div v-if="fourWay" class="sp-hub" aria-hidden="true">
+          <div v-if="fourWay" class="sp-hub m-seal" aria-hidden="true">
             <C4Logo :size="44" />
           </div>
         </div>
@@ -118,8 +126,8 @@ const logoFor = (name: string) => clients.logos.find((l) => l.name === name)
     <section v-if="service.approach" class="c4-section" :class="tone('approach')" aria-labelledby="sp-approach">
       <div class="c4-wrap">
         <SectionHeader title-id="sp-approach" :title="service.approach.title" />
-        <ul class="sp-columns">
-          <li v-for="a in service.approach.items" :key="a.title" class="sp-column">
+        <ul v-m="'cards'" class="sp-columns">
+          <li v-for="(a, i) in service.approach.items" :key="a.title" class="sp-column m-card" :style="{ '--i': i }">
             <h3 class="sp-column__title">{{ a.title }}</h3>
             <p>{{ a.text }}</p>
           </li>
@@ -133,7 +141,7 @@ const logoFor = (name: string) => clients.logos.find((l) => l.name === name)
         <div class="sp-split__head">
           <h2 id="sp-includes" class="c4-h2">{{ service.includes.title }}</h2>
         </div>
-        <ul class="sp-checks">
+        <ul v-m="'rise'" class="sp-checks">
           <li v-for="(x, i) in service.includes.items" :key="x">
             <C4Icon name="check" :size="32" :delay="i * 0.15" />
             <span>{{ x }}</span>
@@ -146,8 +154,9 @@ const logoFor = (name: string) => clients.logos.find((l) => l.name === name)
     <section v-if="service.sectors" class="c4-section" :class="tone('sectors')" aria-labelledby="sp-sectors">
       <div class="c4-wrap">
         <SectionHeader title-id="sp-sectors" :title="SECTORS_TITLE" />
-        <ul class="sp-rows">
-          <li v-for="(r, i) in sectorRows" :key="r.key">
+        <!-- Each sector accounted for, row by row. -->
+        <ul v-m="'manifest'" class="sp-rows">
+          <li v-for="(r, i) in sectorRows" :key="r.key" class="m-row" :style="{ '--i': i }">
             <NuxtLink :to="r.to" class="sp-row">
               <C4Icon :name="r.icon" :size="44" :delay="i * 0.2" class="sp-row__icon" />
               <span class="sp-row__title">{{ r.title }}</span>
@@ -165,7 +174,7 @@ const logoFor = (name: string) => clients.logos.find((l) => l.name === name)
         <div class="sp-split__head">
           <h2 id="sp-note" class="c4-h2">{{ service.note.title }}</h2>
         </div>
-        <p class="sp-note__text">{{ service.note.text }}</p>
+        <p v-m="'rise'" class="sp-note__text"><span>{{ service.note.text }}</span></p>
       </div>
     </section>
 
@@ -180,14 +189,15 @@ const logoFor = (name: string) => clients.logos.find((l) => l.name === name)
             <p>{{ service.fits.deployment.text }}</p>
           </div>
         </div>
-        <div class="sp-fits__diagram">
+        <!-- Choreography 16: your systems plug in. -->
+        <div v-m="'plug'" class="sp-fits__diagram">
           <ul class="sp-systems">
-            <li v-for="x in service.fits.items" :key="x" class="sp-system"><span class="sp-system__dot" aria-hidden="true" />{{ x }}</li>
+            <li v-for="(x, i) in service.fits.items" :key="x" class="sp-system m-item" :style="{ '--i': i }"><span class="sp-system__dot" aria-hidden="true" />{{ x }}</li>
           </ul>
           <svg class="sp-wires" viewBox="0 0 140 328" preserveAspectRatio="none" aria-hidden="true">
-            <path v-for="k in 5" :key="k" :d="`M0 ${28 + (k - 1) * 68} C70 ${28 + (k - 1) * 68} 70 164 140 164`" />
+            <path v-for="k in 5" :key="k" class="m-wire" pathLength="1" :style="{ '--i': k - 1 }" :d="`M0 ${28 + (k - 1) * 68} C70 ${28 + (k - 1) * 68} 70 164 140 164`" />
           </svg>
-          <div class="sp-target" aria-hidden="true">
+          <div class="sp-target m-target" aria-hidden="true">
             <C4Logo :size="56" />
           </div>
         </div>
@@ -198,8 +208,8 @@ const logoFor = (name: string) => clients.logos.find((l) => l.name === name)
     <section v-if="service.selected" class="c4-section" :class="tone('selected')" aria-labelledby="sp-selected">
       <div class="c4-wrap">
         <SectionHeader title-id="sp-selected" :title="service.selected.title" />
-        <ul class="sp-logos">
-          <li v-for="n in service.selected.items" :key="n">
+        <ul v-m="'snap'" class="sp-logos">
+          <li v-for="(n, i) in service.selected.items" :key="n" class="m-chip" :style="scatter(i)">
             <NuxtLink :to="service.selected.to" class="c4-card sp-logo">
               <img v-if="logoFor(n)" :src="logoFor(n)!.src" alt="" :width="logoFor(n)!.w" :height="logoFor(n)!.h" loading="lazy" class="sp-logo__img">
               <span class="sp-logo__name">{{ n }}</span>
@@ -213,8 +223,8 @@ const logoFor = (name: string) => clients.logos.find((l) => l.name === name)
     <section v-if="service.brands" class="c4-section" :class="tone('brands')" aria-labelledby="sp-brands">
       <div class="c4-wrap">
         <SectionHeader title-id="sp-brands" :title="service.brands.title" />
-        <ul class="sp-brands">
-          <li v-for="b in service.brands.items" :key="b">{{ b }}</li>
+        <ul v-m="'snap'" class="sp-brands">
+          <li v-for="(b, i) in service.brands.items" :key="b" class="m-chip" :style="scatter(i)">{{ b }}</li>
         </ul>
       </div>
     </section>
@@ -223,8 +233,8 @@ const logoFor = (name: string) => clients.logos.find((l) => l.name === name)
     <section v-if="service.related?.length" class="c4-section" :class="tone('related')" aria-labelledby="sp-related">
       <div class="c4-wrap">
         <SectionHeader title-id="sp-related" :title="RELATED_TITLE" />
-        <ul class="sp-related">
-          <li v-for="(r, i) in service.related" :key="r.to" :class="{ 'sp-related__wide': r.image }">
+        <ul v-m="'cards'" class="sp-related">
+          <li v-for="(r, i) in service.related" :key="r.to" class="m-card" :class="{ 'sp-related__wide': r.image }" :style="{ '--i': i }">
             <NuxtLink :to="r.to" class="c4-card sp-rel" :class="{ 'sp-rel--image': r.image }">
               <span class="sp-rel__body">
                 <C4Icon v-if="r.icon" :name="r.icon" :size="52" :delay="i * 0.3" />
@@ -365,8 +375,18 @@ const logoFor = (name: string) => clients.logos.find((l) => l.name === name)
   background: var(--amber);
 }
 
+.sp-joins {
+  z-index: 0;
+}
+
+.sp-build--four .sp-part {
+  position: relative;
+  z-index: 1;
+}
+
 .sp-hub {
   position: absolute;
+  z-index: 2;
   left: 50%;
   top: 50%;
   display: flex;
@@ -722,7 +742,8 @@ const logoFor = (name: string) => clients.logos.find((l) => l.name === name)
     grid-template-columns: 1fr;
   }
 
-  .sp-hub {
+  .sp-hub,
+  .sp-joins {
     display: none;
   }
 }

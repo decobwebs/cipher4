@@ -17,7 +17,7 @@ import {
   privacyLine, messages, type FormType,
 } from '~/data/contact'
 
-const emit = defineEmits<{ sent: [] }>()
+const emit = defineEmits<{ sent: []; sending: [] }>()
 
 const type = ref<FormType>('general')
 const types: FormType[] = ['general', 'quote']
@@ -58,7 +58,17 @@ function next() {
 }
 
 // --- Send -------------------------------------------------------------------
+// Choreography 21, your message travels: on send the arrow leaves on a
+// light trail and the header road speeds up (the page listens for
+// `sending`); the thank-you follows once the trail has gone (600 ms).
+const flying = ref(false)
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
 async function onSubmit() {
+  const moving = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  flying.value = moving
+  emit('sending')
+  const trail = moving ? wait(600) : Promise.resolve()
   const fields: Record<string, string> = {
     form_type: f.value.tab,
     subject: `${f.value.tab}${form.organisation ? ` from ${form.organisation}` : ''}`,
@@ -75,7 +85,8 @@ async function onSubmit() {
     fields.timeline = form.timeline
     fields.tender = form.tender
   }
-  const ok = await submit(fields)
+  const [ok] = await Promise.all([submit(fields), trail])
+  flying.value = false
   await nextTick()
   if (ok) {
     emit('sent')
@@ -208,7 +219,7 @@ async function onSubmit() {
           <button type="button" class="cf-next" @click="next">
             Continue<C4Glyph name="arrow" />
           </button>
-          <C4Button type="submit" arrow class="cf-send">
+          <C4Button type="submit" arrow class="cf-send" :class="{ 'is-flying': flying }">
             {{ state === 'submitting' ? messages.sending : f.submit }}
           </C4Button>
           <p class="cf-steps" aria-live="polite">
@@ -426,6 +437,53 @@ async function onSubmit() {
   margin-top: var(--s-4);
   font-size: 16px;
   color: var(--slate);
+}
+
+/* Choreography 21: the arrow leaves on a light trail. */
+.cf-send {
+  position: relative;
+}
+
+.cf-send::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  width: 200px;
+  height: 2px;
+  margin-top: -1px;
+  background: linear-gradient(90deg, rgba(245, 165, 36, 0), var(--amber));
+  transform-origin: left;
+  transform: translateX(28px) scaleX(0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cf-send.is-flying :deep(.c4-btn__arrow) {
+  animation: cf-fly 460ms cubic-bezier(0.7, 0, 0.84, 0) forwards;
+}
+
+.cf-send.is-flying::after {
+  animation: cf-trail 600ms cubic-bezier(0.7, 0, 0.84, 0) forwards;
+}
+
+@keyframes cf-fly {
+  to { transform: translateX(220px); opacity: 0; }
+}
+
+@keyframes cf-trail {
+  0% { transform: translateX(28px) scaleX(0); opacity: 1; }
+  75% { transform: translateX(28px) scaleX(1); opacity: 1; }
+  100% { transform: translateX(28px) scaleX(1); opacity: 0; }
+}
+
+/* ...then the thank-you appears. */
+.c4-motion .cf-done {
+  animation: cf-arrive 700ms var(--ease-out) both;
+}
+
+@keyframes cf-arrive {
+  from { opacity: 0; transform: translateY(12px); }
 }
 
 /* --- Phones: two steps, the button pinned to the bottom ------------------- */

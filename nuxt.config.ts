@@ -6,29 +6,24 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/image',
     '@nuxt/fonts',
-    '@nuxt/icon',
     '@nuxt/content',
     '@vueuse/nuxt',
   ],
 
-  // The legacy-*.css files style the pages that have not been rebuilt yet.
-  // The new design system (tokens, base, layout) is scoped to `.c4` and loads
-  // last. The legacy files go once the last old page is replaced (Phase 5).
+  // The design system: tokens, base, layout, then the shared page and form
+  // blocks. (The old legacy-*.css files were removed in Phase 6.)
   css: [
-    '~/assets/css/legacy-tokens.css',
-    '~/assets/css/legacy-base.css',
-    '~/assets/css/legacy-components.css',
-    '~/assets/css/legacy-utilities.css',
     '~/assets/css/tokens.css',
     '~/assets/css/base.css',
     '~/assets/css/layout.css',
     '~/assets/css/pages.css',
     '~/assets/css/forms.css',
+    '~/assets/css/motion.css',
   ],
 
-  // New components live in app/components/c4/** and are registered by their
-  // file name alone (C4Logo, SiteHeader...), as the plan names them. The old
-  // components keep their folder prefixes (UiPageHero, LayoutAppHeader...).
+  // Components live in app/components/c4/** and are registered by their
+  // file name alone (C4Logo, SiteHeader...), as the plan names them.
+  // app/components/dev holds the internal /_roads demo frame (DevRoadDemo).
   components: [
     { path: '~/components/c4', pathPrefix: false },
     '~/components',
@@ -59,88 +54,33 @@ export default defineNuxtConfig({
       // line and word is simply shown. It also keeps a copy of the address's
       // query string: during start-up the router briefly drops it, and the
       // road's ?motion=on test switch needs to see it.
+      //
+      // Phase 6: `.c4-motion` turns on the sections' starting states (they
+      // play in from there), unless the device asks for reduced motion.
+      // Safety: if the app has not started within 4 s (a script failed, or
+      // a very slow phone), it is taken off again, so nothing stays hidden.
       script: [
-        { innerHTML: "document.documentElement.classList.add('c4-js');window.__c4Search=location.search", tagPosition: 'head' },
+        {
+          innerHTML: "var d=document.documentElement;d.classList.add('c4-js');window.__c4Search=location.search;if(!matchMedia('(prefers-reduced-motion: reduce)').matches){d.classList.add('c4-motion');setTimeout(function(){if(!window.__c4m)d.classList.remove('c4-motion')},4000)}",
+          tagPosition: 'head',
+        },
       ],
     },
+    // Choreography 24: the old page fades out quickly, the new one fades in
+    // as the road bursts (styles in assets/css/motion.css).
     pageTransition: { name: 'page', mode: 'out-in' },
   },
 
-  // Self-host the type. Removes the render-blocking Google Fonts request
-  // and the third-party data transfer that came with it.
-  // Self-host the type. Removes the render-blocking Google Fonts request
-  // and the third-party data transfer that came with it.
-  //
-  // Inter Tight 300 exists for the display headline only. `font-synthesis-weight:
-  // none` in base.css means an unlisted weight does not degrade gracefully —
-  // the browser silently substitutes the nearest loaded weight, so a light
-  // headline would render at 600 and nobody would see an error. Any weight
-  // referenced in tokens.css must appear here.
+  // Self-host the type: no request to Google at runtime. Only the weights
+  // in use (Geist 400/500/600, Geist Mono 400). `font-synthesis-weight: none`
+  // in base.css means an unlisted weight silently falls back to the nearest
+  // loaded one, so any weight used in CSS must appear here.
   fonts: {
     families: [
-      { name: 'Inter', provider: 'google', weights: [400, 500, 600] },
-      { name: 'Inter Tight', provider: 'google', weights: [300, 600, 700] },
-      // Redesign. Only the weights in use: Geist 400/500/600, Geist Mono 400.
       { name: 'Geist', provider: 'google', weights: [400, 500, 600] },
       { name: 'Geist Mono', provider: 'google', weights: [400] },
     ],
     defaults: { subsets: ['latin'] },
-  },
-
-  // Lucide only. The old site loaded Font Awesome twice and Material Symbols
-  // once — three icon stylesheets for about twenty glyphs.
-  //
-  // Both bundles are pinned to the locally installed @iconify-json/lucide so
-  // nothing is fetched from the Iconify API at build or at runtime. Without
-  // this the prerender tries the network and silently drops icons.
-  icon: {
-    mode: 'svg',
-    provider: 'server',
-    serverBundle: 'local',
-    fallbackToApi: false,
-    clientBundle: {
-      scan: true,
-      sizeLimitKb: 512,
-      // `scan` only finds icon names written literally in templates. Every
-      // icon below is referenced dynamically from a file in app/data, so it
-      // has to be declared here or it silently renders as nothing.
-      // Adding an icon to a data file? Add it here too.
-      icons: [
-        // solutions.ts
-        'lucide:layout-dashboard',
-        'lucide:bot',
-        'lucide:server',
-        // industries.ts
-        'lucide:route',
-        'lucide:container',
-        'lucide:flame',
-        'lucide:git-branch',
-        // process.ts
-        'lucide:target',
-        'lucide:package',
-        'lucide:life-buoy',
-        'lucide:settings',
-        // credentials.ts
-        'lucide:building-2',
-        'lucide:hard-hat',
-        'lucide:badge-check',
-        'lucide:shield',
-        'lucide:shield-check',
-        'lucide:lock',
-        'lucide:check-circle-2',
-        'lucide:scale',
-        // home differentiators
-        'lucide:map-pin',
-        'lucide:plug',
-        'lucide:cloud-off',
-        'lucide:flag',
-        // Formerly ProofStrip.vue (removed in the redesign); kept until the
-        // old pages that use @nuxt/icon are rebuilt. Referenced from a computed, not written literally
-        // in the template, so `scan` cannot find them.
-        'lucide:layers',
-        'lucide:calendar',
-      ],
-    },
   },
 
   image: {

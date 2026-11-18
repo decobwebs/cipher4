@@ -20,14 +20,15 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'About' }]
     <!-- Mission and vision -->
     <section class="c4-section c4-section--paper" aria-labelledby="ab-mission">
       <div class="c4-wrap ab-mv">
-        <div class="ab-mv__block">
-          <Eyebrow>{{ page.mission.label }}</Eyebrow>
-          <h2 id="ab-mission" class="c4p-statement">{{ page.mission.statement }}</h2>
-          <p class="c4-lead">{{ page.mission.text }}</p>
+        <!-- The mission and vision rise from behind a clean edge, like the hero. -->
+        <div v-m="'lines'" class="ab-mv__block">
+          <Eyebrow class="m-after" style="--i: -3">{{ page.mission.label }}</Eyebrow>
+          <h2 id="ab-mission" class="c4p-statement"><span class="m-mask"><span class="m-line">{{ page.mission.statement }}</span></span></h2>
+          <p class="c4-lead m-after">{{ page.mission.text }}</p>
         </div>
-        <div class="ab-mv__block ab-mv__block--vision">
-          <Eyebrow>{{ page.vision.label }}</Eyebrow>
-          <p class="ab-vision">{{ page.vision.statement }}</p>
+        <div v-m="'lines'" class="ab-mv__block ab-mv__block--vision">
+          <Eyebrow class="m-after" style="--i: -3">{{ page.vision.label }}</Eyebrow>
+          <p class="ab-vision"><span class="m-mask"><span class="m-line">{{ page.vision.statement }}</span></span></p>
         </div>
       </div>
     </section>
@@ -36,8 +37,8 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'About' }]
     <section class="c4-section c4-section--white" aria-labelledby="ab-values">
       <div class="c4-wrap">
         <SectionHeader title-id="ab-values" :eyebrow="page.values.label" :title="page.values.title" />
-        <ul class="c4p-grid-3">
-          <li v-for="(v, i) in page.values.items" :key="v.title" class="c4-card ab-value">
+        <ul v-m="'cards'" class="c4p-grid-3">
+          <li v-for="(v, i) in page.values.items" :key="v.title" class="c4-card ab-value m-card" :style="{ '--i': i }">
             <span class="c4p-n">{{ String(i + 1).padStart(2, '0') }}</span>
             <h3 class="c4p-link-card__title">{{ v.title }}</h3>
             <p class="c4p-link-card__text">{{ v.text }}</p>
@@ -49,15 +50,16 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'About' }]
     <!-- How we work -->
     <section class="c4-section c4-section--paper" aria-labelledby="ab-how">
       <div class="c4-wrap c4p-split">
-        <div class="c4p-split__head">
+        <div v-m="'rise'" class="c4p-split__head">
           <Eyebrow>{{ page.how.label }}</Eyebrow>
           <h2 id="ab-how" class="c4-h2">{{ page.how.title }}</h2>
         </div>
-        <ol class="c4p-rows">
-          <li v-for="(h, i) in page.how.items" :key="h.title" class="ab-commit">
+        <!-- Three commitments, each signed off (the meaning of Choreography 07). -->
+        <ol v-m="'sign'" class="c4p-rows">
+          <li v-for="(h, i) in page.how.items" :key="h.title" class="ab-commit m-item" :style="{ '--i': i }">
             <span class="c4p-n">{{ String(i + 1).padStart(2, '0') }}</span>
             <div class="ab-commit__body">
-              <h3 class="c4p-row-title">{{ h.title }}</h3>
+              <h3 class="c4p-row-title ab-commit__title">{{ h.title }}<CheckTick /></h3>
               <p class="c4p-row-text">{{ h.text }}</p>
             </div>
           </li>
@@ -67,7 +69,7 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'About' }]
 
     <!-- In-house and facts -->
     <section class="c4-section c4-section--white" aria-labelledby="ab-inhouse">
-      <div class="c4-wrap ab-two">
+      <div v-m="'rise'" class="c4-wrap ab-two">
         <div class="ab-two__col">
           <h2 id="ab-inhouse" class="c4-h3 ab-two__title">{{ page.inHouse.title }}</h2>
           <ul class="c4p-pills">
@@ -89,12 +91,16 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'About' }]
     <!-- Community -->
     <section class="c4-section c4-section--paper ab-community" aria-labelledby="ab-community">
       <div class="c4-wrap">
-        <div class="c4-card ab-community__card">
-          <div class="ab-community__copy">
+        <!-- Lines grow up into a light (the meaning of Choreography 11). -->
+        <div v-m="'grow'" class="c4-card ab-community__card">
+          <div class="m-grow" aria-hidden="true">
+            <span v-for="(h, k) in [36, 60, 48, 72]" :key="k" :style="{ '--h': `${h}px`, '--i': k }" />
+          </div>
+          <div class="ab-community__copy m-item" style="--i: 1">
             <Eyebrow>{{ page.community.title }}</Eyebrow>
             <p id="ab-community" class="ab-community__text">{{ page.community.text }}</p>
           </div>
-          <C4Button :to="page.community.link.to" variant="secondary" arrow>{{ page.community.link.label }}</C4Button>
+          <C4Button :to="page.community.link.to" variant="secondary" arrow class="m-item" style="--i: 2">{{ page.community.link.label }}</C4Button>
         </div>
       </div>
     </section>
@@ -145,6 +151,12 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'About' }]
   align-items: baseline;
 }
 
+.ab-commit__title {
+  display: flex;
+  align-items: center;
+  gap: var(--s-12);
+}
+
 .ab-commit__body {
   display: flex;
   flex-direction: column;
@@ -175,6 +187,7 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'About' }]
 }
 
 .ab-community__copy {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: var(--s-16);
