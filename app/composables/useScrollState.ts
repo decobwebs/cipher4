@@ -5,7 +5,15 @@
  * `direction` only changes after 8 px of travel in the new direction, so a
  * trembling thumb doesn't make the bars flicker.
  */
+import { getMotionLibs } from '~/composables/useMotion'
+
 const y = ref(0)
+
+/** Lenis's own number when it runs, so the page's layout is not read. */
+function pos() {
+  const lenis = getMotionLibs()?.lenis as { animatedScroll?: number } | null | undefined
+  return typeof lenis?.animatedScroll === 'number' ? lenis.animatedScroll : window.scrollY
+}
 const direction = ref<'up' | 'down'>('up')
 let users = 0
 let lastY = 0
@@ -13,7 +21,7 @@ let ticking = false
 
 function read() {
   ticking = false
-  const now = window.scrollY
+  const now = pos()
   const delta = now - lastY
   if (Math.abs(delta) >= 8) {
     direction.value = delta > 0 ? 'down' : 'up'

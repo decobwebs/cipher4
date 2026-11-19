@@ -17,7 +17,7 @@ export interface RoadOptions {
   reducedMotion?: 'still' | 'off' | 'animate'
   /** Phase 2b: a set viewpoint instead of the road-following camera.
       fitWidth sets the height so that many road units span the canvas. */
-  fixedCamera?: { position: [number, number, number]; target: [number, number, number]; up?: [number, number, number]; fitWidth?: number }
+  fixedCamera?: { position: [number, number, number]; target: [number, number, number]; up?: [number, number, number]; fitWidth?: number; fitHeight?: number }
   /** Phase 2b: both lanes travel the same way. */
   oneWay?: boolean
   /** Phase 2b: several shapes in one road, blended live by morphTo(). */

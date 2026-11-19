@@ -22,6 +22,7 @@
  * /_styleguide pages only (see motionForced).
  */
 import type { RoadHandle } from '~/lib/hyperspeed/index'
+import { getMotionLibs } from '~/composables/useMotion'
 import type { RoadKind } from '~/lib/hyperspeed/roads'
 
 export type RoadTier = 'full' | 'mobile' | 'still' | 'none'
@@ -78,6 +79,7 @@ let scheduleQueued = false
 let scrollWired = false
 let lastBest: RoadEntry | null = null
 let retryTimer: ReturnType<typeof setTimeout> | undefined
+let settleTimer: ReturnType<typeof setTimeout> | undefined
 let burstUntil = 0
 const BURST_MS = 400
 
@@ -216,7 +218,9 @@ export function loadRoadLib() {
 
 function ensureObservers() {
   if (visObserver) return
-  const thresholds = Array.from({ length: 21 }, (_, i) => i / 20)
+  // Enough steps to pick the most visible road; each step costs work on
+  // every scroll frame, so not more.
+  const thresholds = [0, 0.1, 0.25, 0.5, 0.75, 1]
   visObserver = new IntersectionObserver((list) => {
     for (const e of list) {
       const entry = [...entries].find((x) => x.el === e.target)
@@ -239,24 +243,44 @@ function ensureObservers() {
   document.addEventListener('visibilitychange', schedule)
 }
 
+/**
+ * The scroll position, without asking the page for it when Lenis is running
+ * (Lenis keeps its own number). Reading window.scrollY straight after the
+ * page has changed makes the browser finish style and layout on the spot,
+ * which is what made scrolling stutter (owner's review, 19 Nov 2026).
+ */
+function scrollPos(): number {
+  const lenis = getMotionLibs()?.lenis as { animatedScroll?: number } | null | undefined
+  return typeof lenis?.animatedScroll === 'number' ? lenis.animatedScroll : window.scrollY
+}
+
+let lastFrameT = 0
+/** Speed of the scroll since the last frame. Called once per frame, in run(). */
+function measureScroll() {
+  const now = performance.now()
+  const y = scrollPos()
+  const dyS = y - lastScrollY
+  const dt = Math.max(16, now - lastFrameT)
+  scrollVelocity = (Math.abs(dyS) / dt) * 1000
+  scrollSigned = (dyS / dt) * 1000
+  lastScrollY = y
+  lastFrameT = now
+}
+
 function wireScroll() {
   if (scrollWired) return
   scrollWired = true
-  lastScrollY = window.scrollY
-  let lastT = performance.now()
+  lastScrollY = scrollPos()
+  lastFrameT = performance.now()
+  // The listener only notes that a scroll happened; the position is read
+  // once per frame, in run().
   window.addEventListener('scroll', () => {
-    const now = performance.now()
-    const dyS = window.scrollY - lastScrollY
-    const dy = Math.abs(dyS)
-    const dt = Math.max(16, now - lastT)
-    scrollVelocity = (dy / dt) * 1000
-    scrollSigned = (dyS / dt) * 1000
-    lastScrollY = window.scrollY
-    lastT = now
-    lastScrollAt = now
+    lastScrollAt = performance.now()
     schedule()
-    // Settle: one more pass after scrolling stops, to pause scroll-driven roads.
-    setTimeout(schedule, 200)
+    // Settle: one more pass after scrolling stops, to pause scroll-driven
+    // roads. One timer, pushed back while scrolling continues.
+    clearTimeout(settleTimer)
+    settleTimer = setTimeout(schedule, 200)
   }, { passive: true })
 }
 
@@ -274,6 +298,7 @@ function schedule() {
 }
 
 function run() {
+  if (scrollWired) measureScroll()
   // The one road allowed to move: most visible, then by priority.
   let best: RoadEntry | null = null
   for (const e of entries) {

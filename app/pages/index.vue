@@ -29,7 +29,6 @@ useSeoMeta({
     <HomeWhy />
     <HomeDeliver />
     <HomeTechnologies />
-    <RoadStrip />
     <HomeInsights />
     <HomeYouth />
     <ClosingBand />

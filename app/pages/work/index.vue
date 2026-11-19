@@ -17,6 +17,24 @@ definePageMeta({ layout: 'c4' })
 useSeoMeta({ title: page.seo.title, description: page.seo.description, ogTitle: page.seo.title, ogDescription: page.seo.description })
 
 const crumbs = [{ label: 'Home', to: '/' }, { label: 'Our work' }]
+
+/**
+ * Logos (owner, 19 Nov 2026): every logo inside the same 160 x 48 box,
+ * scaled to fit, never stretched, in solid ink. Sized by area rather than
+ * by height, so a tall mark and a long wordmark carry the same visual
+ * weight; then capped to the box.
+ */
+const BOX_W = 160
+const BOX_H = 48
+const AREA = 3600
+function logoBox(l: { w: number; h: number }) {
+  const ratio = l.w / l.h
+  let w = Math.sqrt(AREA * ratio)
+  let h = w / ratio
+  if (h > BOX_H) { h = BOX_H; w = h * ratio }
+  if (w > BOX_W) { w = BOX_W; h = w / ratio }
+  return { width: `${Math.round(w)}px`, height: `${Math.round(h)}px` }
+}
 const filter = ref<WorkFilter>('all')
 const show = (k: Exclude<WorkFilter, 'all'>) => filter.value === 'all' || filter.value === k
 </script>
@@ -53,7 +71,9 @@ const show = (k: Exclude<WorkFilter, 'all'>) => filter.value === 'all' || filter
             <article class="c4-card wk-site" :class="{ 'wk-site--image': w.image }">
               <div class="wk-site__body">
                 <div class="wk-site__brand">
-                  <img v-if="w.logo" :src="w.logo.src" alt="" :width="w.logo.w" :height="w.logo.h" loading="lazy" class="wk-site__logo">
+                  <span v-if="w.logo" class="wk-site__logo-box" aria-hidden="true">
+                    <span class="wk-site__logo" :style="{ ...logoBox(w.logo), '--logo': `url(${w.logo.src})` }" />
+                  </span>
                   <div>
                     <h3 class="wk-site__name">{{ w.name }}</h3>
                     <p class="c4-label wk-site__field">{{ w.field }}</p>
@@ -158,12 +178,22 @@ html:not(.c4-js) .wk-filter {
   margin-bottom: var(--s-8);
 }
 
-/* Logos are white on transparent: one tone on white (plan, section 2). */
+/* Logos (owner, 19 Nov 2026): the same 160 x 48 box for every logo, the
+   logo scaled to fit inside it, in solid ink. The files are white on
+   transparent, so the logo's own shape is used as a mask over an ink fill:
+   exact #0E1222, never grey, never stretched, never blurred. */
+.wk-site__logo-box {
+  display: flex;
+  align-items: center;
+  width: 160px;
+  height: 48px;
+}
+
 .wk-site__logo {
-  height: 44px;
-  width: auto;
-  filter: brightness(0);
-  opacity: 0.55;
+  display: block;
+  background: var(--ink);
+  -webkit-mask: var(--logo) center / contain no-repeat;
+  mask: var(--logo) center / contain no-repeat;
 }
 
 .wk-site__name {

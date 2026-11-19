@@ -110,7 +110,13 @@ onMounted(() => {
   entry = {
     el: root.value,
     kind: road.value.kind,
-    onNear: () => { start() },
+    // Set up in an idle moment once near the screen, so the WebGL set-up
+    // never lands in the middle of a scroll frame.
+    onNear: () => {
+      const ric = (window as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => void }).requestIdleCallback
+      if (ric) ric(() => { start() }, { timeout: 600 })
+      else setTimeout(() => { start() }, 50)
+    },
     handle: null,
     baseSpeed: props.speed ?? (road.value as { speed?: number }).speed ?? 1,
     ratio: 0,
@@ -119,9 +125,12 @@ onMounted(() => {
     // per pixel = fitWidth / canvas width; the trails travel about 60 road
     // units a second at speed 1.
     scrollSpeed: (v: number) => {
-      const fit = (road.value.options as { fixedCamera?: { fitWidth?: number } }).fixedCamera?.fitWidth ?? 18
+      const fc = (road.value.options as { fixedCamera?: { fitWidth?: number; fitHeight?: number } }).fixedCamera
+      // Road units per screen pixel: across the width (fitWidth), or down
+      // the height (fitHeight, a road lying across a wide band).
+      if (fc?.fitHeight) return (v * fc.fitHeight) / ((root.value?.clientHeight || 160) * 60)
       const w = root.value?.clientWidth || 200
-      return (v * fit) / (w * 60)
+      return (v * (fc?.fitWidth ?? 18)) / (w * 60)
     },
   }
   ctl.register(entry)
@@ -295,6 +304,12 @@ defineExpose({
   mask-image:
     linear-gradient(90deg, transparent 0, transparent var(--road-clear), #000 calc(var(--road-clear) + 160px)),
     linear-gradient(180deg, #000 58%, transparent 100%);
+}
+
+/* A road lying across a band (How we deliver): soft ends left and right. */
+.c4-road--across {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%);
 }
 
 /* Phones: header roads sit below the headline in their own band. */

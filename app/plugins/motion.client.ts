@@ -3,15 +3,19 @@
  *
  * After the page is up (never before the headline), loads GSAP,
  * ScrollTrigger and Lenis in their own small chunk and connects them:
- * Lenis smooths the wheel, and every Lenis scroll updates ScrollTrigger, so
- * scroll-linked moments follow the smoothed position. One clock drives both
- * (gsap.ticker), so they never drift.
+ *   - Lenis is driven by gsap.ticker (one clock for both, so they never
+ *     drift), with GSAP's lag smoothing off
+ *   - every Lenis scroll updates ScrollTrigger, so scroll-linked moments
+ *     follow the smoothed position
+ *   - ScrollTrigger measures again after fonts load, after images and late
+ *     content change the page height, and after every page change
  *
  * Also here:
  *   - page transitions: the 400 ms road burst as the next page fades in
  *     (Choreography 24); the new page starts at the top
- *   - the section tone: the page's background eases between white, paper
- *     and mist as sections arrive, so no section change is a hard cut
+ *   - section seams: where one section's ground (white, paper, mist) meets a
+ *     different one, a soft blend replaces the hard edge. Set once per page;
+ *     nothing runs while scrolling.
  *   - the mobile menu pauses smooth scrolling while it is open
  *
  * Reduced motion: none of this loads. The page scrolls natively and every
@@ -35,8 +39,6 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   if (!motionAllowed()) return
 
-  let tone: ReturnType<typeof setupTone> | null = null
-
   // After the page has fully hydrated (layout and page included), so nothing
   // is touched while Vue is still taking over the server's HTML.
   let started = false
@@ -56,6 +58,9 @@ export default defineNuxtPlugin((nuxtApp) => {
       import('lenis'),
     ])
     gsap.registerPlugin(ScrollTrigger)
+    // Measure on resize only when the width changes (a phone's address bar
+    // showing and hiding changes the height, and must not re-measure).
+    ScrollTrigger.config({ ignoreMobileResize: true })
 
     // Touch keeps the phone's own scrolling (syncTouch off): nothing to
     // relearn, and swipers and the page never fight.
@@ -68,88 +73,82 @@ export default defineNuxtPlugin((nuxtApp) => {
     watch(menuOpen, (open) => (open ? lenis.stop() : lenis.start()))
 
     provideMotionLibs({ gsap, ScrollTrigger, lenis })
-    tone = setupTone(gsap, ScrollTrigger)
-    tone.scan()
+    seams()
+    watchHeight(ScrollTrigger, lenis)
   }
 
-  // The new page: start at the top (or at its #anchor), measure again, and
-  // set up its section tones.
+  // The new page: start at the top (or at its #anchor), add its seams and
+  // measure again.
   nuxtApp.hook('page:finish', () => {
     const l = getMotionLibs()
-    // Before boot (the first page) there is nothing to do: boot() scans it.
+    // Before boot (the first page) there is nothing to do: boot() does it.
     if (!l) return
     const hash = router.currentRoute.value.hash
     if (hash) l.lenis?.scrollTo(hash, { offset: -112, immediate: true })
     else l.lenis?.scrollTo(0, { immediate: true, force: true })
     requestAnimationFrame(() => {
-      tone?.scan()
+      seams()
       l.ScrollTrigger.refresh()
     })
   })
 })
 
-// --- Section tone -------------------------------------------------------------
-// Each top-level section on a page has a ground: white, paper or mist. With
-// motion on, those grounds are lifted onto one fixed layer behind the page,
-// which cross-fades (opacity only) to the ground of whichever section holds
-// the middle of the screen. A section change becomes a 600 ms ease instead
-// of a hard edge. The section's own colour stays in the CSS, so without
-// JavaScript or with reduced motion nothing changes.
+// --- Measuring again ------------------------------------------------------------
+// Fonts arriving, lazy images loading and content expanding all move things
+// down the page. ScrollTrigger must measure again when that happens, or pins
+// and scroll-linked moments fire in the wrong place. One debounced refresh
+// whenever the page's height really changes.
+function watchHeight(
+  ScrollTrigger: typeof import('gsap/ScrollTrigger').ScrollTrigger,
+  lenis: { resize: () => void },
+) {
+  let last = document.documentElement.scrollHeight
+  let timer: ReturnType<typeof setTimeout> | undefined
+  const refresh = () => {
+    clearTimeout(timer)
+    timer = setTimeout(() => {
+      lenis.resize()
+      ScrollTrigger.refresh()
+      last = document.documentElement.scrollHeight
+    }, 200)
+  }
+  document.fonts?.ready.then(refresh)
+  if (document.readyState !== 'complete') window.addEventListener('load', refresh, { once: true })
+  const main = document.getElementById('main')
+  if (!main) return
+  new ResizeObserver(() => {
+    // Pins add their own spacing when ScrollTrigger measures; only a real
+    // change in content height asks for another measure.
+    const h = document.documentElement.scrollHeight
+    if (Math.abs(h - last) > 2) refresh()
+  }).observe(main)
+}
 
-const TONES: Record<string, 'white' | 'paper' | 'mist'> = {
+// --- Section seams ----------------------------------------------------------------
+// Where a section's ground differs from the one above it, it gets
+// data-seam="<the colour above>"; motion.css then blends that colour into its
+// own over its first 96 px (inside its padding, so it never touches words).
+// Static: set once per page, costs nothing while scrolling. A data
+// attribute, not a class, because Vue owns the class list.
+
+const GROUNDS: Record<string, 'white' | 'paper' | 'mist'> = {
   'rgb(255, 255, 255)': 'white',
   'rgb(245, 247, 252)': 'paper',
   'rgb(238, 241, 248)': 'mist',
 }
 
-function setupTone(gsap: typeof import('gsap').gsap, ScrollTrigger: typeof import('gsap/ScrollTrigger').ScrollTrigger) {
-  let layer = document.querySelector<HTMLElement>('.c4-tone')
-  let triggers: { kill: () => void }[] = []
-  let current = 'white'
-
-  function set(name: string) {
-    if (!layer || name === current) return
-    current = name
-    for (const el of layer.children) {
-      gsap.to(el, { opacity: (el as HTMLElement).dataset.tone === name ? 1 : 0, duration: 0.6, ease: 'power2.out', overwrite: true })
-    }
+function seams() {
+  let page = document.querySelector('#main > div')
+  if (!page) return
+  // Pages built from one template component (case studies, legal pages)
+  // wrap their sections in one more element: look inside it.
+  while (page.children.length === 1 && page.firstElementChild?.tagName === 'DIV') page = page.firstElementChild
+  let above: string | null = null
+  for (const el of page.children) {
+    if (!(el instanceof HTMLElement)) continue
+    const own = GROUNDS[getComputedStyle(el).backgroundColor]
+    if (!own) continue // a road strip or other see-through block
+    if (above && above !== own) el.dataset.seam = above
+    above = own
   }
-
-  function scan() {
-    layer = document.querySelector<HTMLElement>('.c4-tone')
-    for (const t of triggers) t.kill()
-    triggers = []
-    if (!layer) return
-    let page = document.querySelector('#main > div')
-    if (!page) return
-    // Pages built from one template component (case studies, legal pages)
-    // wrap their sections in one more element: look inside it.
-    while (page.children.length === 1 && page.firstElementChild?.tagName === 'DIV') page = page.firstElementChild
-    document.documentElement.classList.add('c4-tone-on')
-    // The page's top-level blocks, in order (sections and road strips).
-    const blocks = [...page.children].filter((el): el is HTMLElement => el instanceof HTMLElement)
-    for (const el of blocks) {
-      const own = el.dataset.toneOf ?? TONES[getComputedStyle(el).backgroundColor]
-      if (!own) continue
-      // A data attribute, not a class: Vue owns the class list.
-      el.dataset.toneOf = own
-      triggers.push(ScrollTrigger.create({
-        trigger: el,
-        start: 'top 55%',
-        end: 'bottom 55%',
-        onToggle: (self) => { if (self.isActive) set(own) },
-      }))
-    }
-    // Land on the right tone straight away (no fade on arrival).
-    current = ''
-    const first = blocks.find((el) => {
-      const r = el.getBoundingClientRect()
-      return el.dataset.toneOf && r.top <= innerHeight * 0.55 && r.bottom > innerHeight * 0.55
-    })
-    const name = first?.dataset.toneOf ?? 'white'
-    for (const el of layer.children) gsap.set(el, { opacity: (el as HTMLElement).dataset.tone === name ? 1 : 0 })
-    current = name
-  }
-
-  return { scan }
 }

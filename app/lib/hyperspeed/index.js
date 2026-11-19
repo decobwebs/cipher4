@@ -386,6 +386,10 @@ function mount(canvas, userOptions) {
   let renderer
   try {
     renderer = new WebGLRenderer({ canvas, antialias: false, alpha: true })
+    // C4 site: no synchronous shader-error check. Reading the shader log
+    // makes the browser finish compiling on the spot, which froze the page
+    // for up to a second when a road mounted during scrolling.
+    renderer.debug.checkShaderErrors = false
   } catch (e) {
     return Object.assign(inert, { reason: 'no-webgl' })
   }
@@ -741,6 +745,12 @@ function mount(canvas, userOptions) {
     if (o.fixedCamera && o.fixedCamera.fitWidth) {
       const half = Math.tan((camera.fov * Math.PI) / 360)
       camera.position.y = o.fixedCamera.fitWidth / (2 * half * camera.aspect)
+    }
+    // C4 site: fixedCamera.fitHeight, the camera height that fits that many
+    // road units down the canvas (a road running across a wide band).
+    if (o.fixedCamera && o.fixedCamera.fitHeight) {
+      const half = Math.tan((camera.fov * Math.PI) / 360)
+      camera.position.y = o.fixedCamera.fitHeight / (2 * half)
     }
     camera.updateProjectionMatrix()
     if (composer) composer.setSize(cw, ch)

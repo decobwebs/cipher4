@@ -75,13 +75,30 @@ const styleVars = computed(() => ({
   background: var(--white);
 }
 
+/* Desktop: the road has its own box, from where the text column ends to
+   the right edge of the screen, so the road (which the library always
+   centres in its canvas) sits in the open space. Before 19 Nov 2026 the
+   box was the full width: the road was centred under the words and the
+   mask that keeps it off them hid almost all of it, leaving fragments that
+   flickered in and out as it bent (owner: "the road breaks").
+   The first 160 px of the box overlap the column's end and fade in. */
 .ph__road {
   position: absolute;
-  inset: 0;
+  /* Below the floating header bar (68 px + 16 px), so a climbing road
+     never runs up behind the menu. */
+  top: calc(68px + var(--s-16));
+  bottom: 0;
+  right: 0;
+  left: calc(max(0px, 50% - 660px) + var(--gutter) + var(--ph-text) - 160px);
 }
 
 .ph__road :deep(.c4-road--header) {
-  --road-text: var(--ph-text);
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0, #000 160px),
+    linear-gradient(180deg, #000 58%, transparent 100%);
+  mask-image:
+    linear-gradient(90deg, transparent 0, #000 160px),
+    linear-gradient(180deg, #000 58%, transparent 100%);
 }
 
 .ph__inner {
@@ -145,6 +162,12 @@ const styleVars = computed(() => ({
     inset: auto;
     order: 1;
     height: 260px;
+  }
+
+  /* Its own band under the words: full width, no side fade needed. */
+  .ph__road :deep(.c4-road--header) {
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 70%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 70%, transparent 100%);
   }
 }
 

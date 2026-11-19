@@ -1,50 +1,75 @@
 <script setup lang="ts">
 /**
- * How we deliver (content C8). Desktop: six stages across, joined by an
- * amber track (Home-Desktop). Phones: a vertical timeline (Home-Mobile).
+ * How we deliver (content C8; Choreography 08; Motion board 04). Rebuilt
+ * 19 Nov 2026 to the owner's brief (docs/redesign/DECISIONS.md):
  *
- * Choreography 08 and Motion board 04, the journey (scroll-linked):
- *   desktop  the section holds still while you scroll; the road above the
- *            stages drives forward only while you scroll (useRoadController:
- *            'deliver' roads follow the scroll speed), and each stage lights
- *            as you reach it. The stage text sits below the road, never on it.
- *   phones   no hold and no road; each stage lights as it crosses the screen.
- * Scrolling back up dims them again. Reduced motion: all stages lit, no hold.
+ *   desktop (1025 px and up), motion on
+ *     The section pins. Scrolling down moves the six stages sideways: the
+ *     row slides left, so you travel through them in reading order. Each
+ *     stage lights as it reaches the centre of the screen. The light-speed
+ *     road lies across the section beneath the stages (never under the
+ *     words) and moves only while you scroll, at the scroll's speed
+ *     ('deliver-across' road, useRoadController). After the last stage the
+ *     page scrolls on normally; scrolling back up reverses everything.
+ *
+ *   phones and tablets
+ *     No pin and no road: a vertical timeline, each stage lighting as it
+ *     crosses the screen (and dimming again on the way back up).
+ *
+ *   reduced motion, or before the motion code has loaded
+ *     The six stages in a row (desktop) or the timeline (phones), all lit.
  */
 import { deliver } from '~/data/home'
 
+const n = deliver.stages.length
 const section = useTemplateRef<HTMLElement>('section')
-const stagesEl = useTemplateRef<HTMLElement>('stages')
+const track = useTemplateRef<HTMLElement>('track')
 /** Highest stage reached (-1: none yet). Only used while the journey runs. */
 const lit = ref(-1)
-const journey = ref(false)
+/** 'across' (desktop, pinned) or 'down' (phones and tablets) while running. */
+const mode = ref<'' | 'across' | 'down'>('')
 
 useScrollMoment(({ gsap, ScrollTrigger }) => {
   const el = section.value
-  if (!el) return
-  journey.value = true
+  const row = track.value
+  if (!el || !row) return
   const mm = gsap.matchMedia()
 
   mm.add('(min-width: 1025px)', () => {
-    const n = deliver.stages.length
-    // Hold where the stages are in view: from the top if the whole section
-    // fits the screen, otherwise once its bottom reaches the screen's.
-    const fits = el.offsetHeight <= window.innerHeight
-    ScrollTrigger.create({
-      trigger: el,
-      start: fits ? 'top top' : 'bottom bottom',
-      end: `+=${Math.round(window.innerHeight * 0.42 * n)}`,
-      pin: true,
-      anticipatePin: 1,
-      onUpdate: (self) => { lit.value = Math.min(n - 1, Math.floor(self.progress * n * 0.999 + 0.0001)) },
-      onLeave: () => { lit.value = n - 1 },
-      onLeaveBack: () => { lit.value = 0 },
-    })
+    mode.value = 'across'
     lit.value = 0
+    // Wait one frame for the row layout (is-across) before measuring.
+    let st: ReturnType<typeof ScrollTrigger.create> | null = null
+    const raf = requestAnimationFrame(() => {
+      const stages = [...row.querySelectorAll<HTMLElement>('.hd__stage')]
+      const first = stages[0]!
+      const last = stages[n - 1]!
+      // How far the row travels: from the first stage centred to the last.
+      const distance = () => last.offsetLeft - first.offsetLeft
+      const tween = gsap.to(row, { x: () => -distance(), ease: 'none' })
+      st = ScrollTrigger.create({
+        trigger: el,
+        start: () => (el.offsetHeight <= window.innerHeight ? 'top top' : 'bottom bottom'),
+        end: () => `+=${Math.round(distance() * 1.15)}`,
+        pin: true,
+        scrub: 0.4,
+        animation: tween,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          // A stage lights as its centre reaches the screen's centre.
+          lit.value = Math.min(n - 1, Math.floor(self.progress * (n - 1) + 0.08))
+        },
+      })
+      ScrollTrigger.refresh()
+    })
+    return () => { cancelAnimationFrame(raf); st?.kill(); gsap.set(row, { clearProps: 'transform' }); mode.value = '' }
   })
 
   mm.add('(max-width: 1024px)', () => {
-    const items = stagesEl.value?.querySelectorAll<HTMLElement>('.hd__stage') ?? []
+    mode.value = 'down'
+    lit.value = -1
+    const items = [...row.querySelectorAll<HTMLElement>('.hd__stage')]
     items.forEach((it, k) => {
       ScrollTrigger.create({
         trigger: it,
@@ -53,37 +78,42 @@ useScrollMoment(({ gsap, ScrollTrigger }) => {
         onLeaveBack: () => { lit.value = Math.min(lit.value, k - 1) },
       })
     })
+    return () => { mode.value = '' }
   })
 
-  return () => { mm.revert(); journey.value = false }
+  return () => mm.revert()
 })
 </script>
 
 <template>
-  <section ref="section" class="hd c4-section c4-section--paper" :class="{ 'm-journey': journey }" aria-labelledby="hd-title">
+  <section
+    ref="section"
+    class="hd c4-section c4-section--paper"
+    :class="{ 'm-journey': mode !== '', 'is-across': mode === 'across' }"
+    aria-labelledby="hd-title"
+  >
     <div class="c4-wrap">
-      <SectionHeader title-id="hd-title" :eyebrow="deliver.eyebrow" :title="deliver.title" :lead="deliver.lead">
+      <!-- Split heading (title left, lead and link right) so the held
+           section fits a laptop screen. -->
+      <SectionHeader layout="split" title-id="hd-title" :eyebrow="deliver.eyebrow" :title="deliver.title" :lead="deliver.lead" class="hd__head">
         <template #action>
           <C4Button :to="deliver.link.to" variant="text">{{ deliver.link.label }}</C4Button>
         </template>
       </SectionHeader>
+    </div>
 
-      <!-- The road ahead (desktop): moves only while you scroll. -->
-      <div class="hd__road" aria-hidden="true">
-        <HyperspeedRoad preset="deliver" />
-      </div>
-
-      <ol ref="stages" class="hd__stages">
+    <div class="hd__viewport">
+      <ol ref="track" class="hd__stages">
         <li
           v-for="(s, i) in deliver.stages"
           :key="s.n"
           class="hd__stage"
-          :class="{ 'is-lit': !journey || i <= lit, 'is-passed': !journey || i < lit }"
-          :aria-current="journey && i === lit ? 'step' : undefined"
+          :class="{ 'is-lit': mode === '' || i <= lit, 'is-passed': mode === '' || i < lit }"
+          :aria-current="mode !== '' && i === lit ? 'step' : undefined"
         >
           <span class="hd__track" aria-hidden="true">
             <span class="hd__dot" />
-            <span v-if="i < deliver.stages.length - 1" class="hd__line" />
+            <span v-if="i < n - 1" class="hd__line" />
           </span>
           <div class="hd__body">
             <C4Icon :name="s.icon" :size="40" :delay="i * 0.2" class="hd__icon" />
@@ -96,25 +126,29 @@ useScrollMoment(({ gsap, ScrollTrigger }) => {
           </div>
         </li>
       </ol>
+
+      <!-- The road lies across the section, beneath the stages (desktop).
+           The amber tick marks the centre, where each stage lights. -->
+      <div class="hd__road" aria-hidden="true">
+        <HyperspeedRoad preset="deliver-across" />
+        <span class="hd__centre" />
+      </div>
     </div>
   </section>
 </template>
 
 <style scoped>
-.hd__road {
-  height: 200px;
-  margin: calc(-1 * var(--s-48)) 0 var(--s-32);
-}
-
-@media (max-width: 1024px) {
-  .hd__road {
-    display: none;
-  }
+/* --- Default (and reduced motion, desktop): six stages in a row ------------- */
+.hd__viewport {
+  width: 100%;
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
 }
 
 .hd__stages {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   row-gap: var(--s-48);
   list-style: none;
 }
@@ -188,12 +222,76 @@ useScrollMoment(({ gsap, ScrollTrigger }) => {
   color: var(--slate);
 }
 
-/* Phones: a vertical timeline, dot and line on the left. */
-@media (max-width: 767px) {
+/* The road band: shown only in the pinned, across layout. */
+.hd__road {
+  display: none;
+}
+
+/* --- Desktop, motion on: the pinned horizontal journey ------------------------ */
+@media (min-width: 1025px) {
+  .hd.is-across {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+    padding-block: var(--s-64);
+    overflow: hidden;
+  }
+
+  .is-across .hd__head {
+    margin-bottom: var(--s-48);
+  }
+
+  .is-across .hd__viewport {
+    max-width: none;
+    padding-inline: 0;
+  }
+
+  /* One long row. Padding puts the first stage's centre at the screen's
+     centre, and lets the last one reach it too. */
+  .is-across .hd__stages {
+    display: flex;
+    width: max-content;
+    padding-inline: calc(50vw - 170px);
+    will-change: transform;
+  }
+
+  .is-across .hd__stage {
+    flex: none;
+    width: 340px;
+    padding-right: var(--s-48);
+  }
+
+  .is-across .hd__line {
+    margin-right: calc(-1 * var(--s-48));
+  }
+
+  .is-across .hd__road {
+    position: relative;
+    display: block;
+    height: clamp(96px, 15vh, 160px);
+    margin-top: var(--s-32);
+  }
+
+  .hd__centre {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    margin-left: -1px;
+    background: linear-gradient(180deg, rgba(245, 165, 36, 0), var(--amber) 30%, var(--amber) 70%, rgba(245, 165, 36, 0));
+    opacity: 0.7;
+  }
+}
+
+/* --- Phones and tablets: a vertical timeline, dot and line on the left -------- */
+@media (max-width: 1024px) {
   .hd__stages {
     display: flex;
     flex-direction: column;
     row-gap: 0;
+    max-width: 640px;
   }
 
   .hd__stage {
@@ -231,11 +329,7 @@ useScrollMoment(({ gsap, ScrollTrigger }) => {
   }
 
   .hd__title {
-    font-size: 19px;
-  }
-
-  .hd__receive {
-    padding-top: var(--s-8);
+    font-size: 18px;
   }
 }
 </style>

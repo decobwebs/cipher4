@@ -19,7 +19,7 @@
 import type { RoadOptions } from './index'
 
 export type RoadKind = 'hero' | 'header' | 'closing' | 'strip' | 'deliver' | 'spine'
-export type RoadMask = 'hero' | 'header' | 'band' | 'strip' | 'deliver' | 'closing' | 'spine' | 'none'
+export type RoadMask = 'hero' | 'header' | 'band' | 'strip' | 'deliver' | 'closing' | 'spine' | 'across' | 'none'
 
 export interface RoadPreset {
   kind: RoadKind
@@ -45,6 +45,7 @@ export const roads = {
   service: {
     kind: 'header', mask: 'header',
     options: { seed: 21, distortionUniforms: { uAmp: [20, 2, 8] } },
+    still: { desktop: [900, 720], mobile: [780, 600], sizes: '(max-width: 1100px) 100vw, 62vw' },
   },
   // Sector headers. Shapes from the plan's table. Each must stay readable,
   // with no loops or folds at any moment: scripts/check-road-folds.mjs
@@ -56,26 +57,31 @@ export const roads = {
     kind: 'header', mask: 'header',
     // Waves. The board's [18, 4, 8, 8] looped and folded (up to 43 px).
     options: { seed: 14, distortion: 'turbulentDistortion', distortionUniforms: { uAmp: [15, 4, 2, 0] } },
+    still: { desktop: [900, 720], mobile: [780, 600], sizes: '(max-width: 1100px) 100vw, 62vw' },
   },
   'sector-oil-gas': {
     kind: 'header', mask: 'header',
     // A deep climb. The preset's [10, 20] folded by up to 331 px.
     options: { seed: 15, distortion: 'deepDistortion', distortionUniforms: { uAmp: [10, 3] } },
+    still: { desktop: [900, 720], mobile: [780, 600], sizes: '(max-width: 1100px) 100vw, 62vw' },
   },
   'sector-logistics': {
     kind: 'header', mask: 'header',
     // A long straight route. The preset's [35, 10] folded by up to 50 px.
     options: { seed: 16, distortion: 'LongRaceDistortion', distortionUniforms: { uAmp: [35, 1.5] } },
+    still: { desktop: [900, 720], mobile: [780, 600], sizes: '(max-width: 1100px) 100vw, 62vw' },
   },
   'sector-supply-chain': {
     kind: 'header', mask: 'header',
     // A gentle chain of bends, at low amplitude. [12, 8] folded by up to 28 px.
     options: { seed: 17, distortion: 'xyDistortion', distortionUniforms: { uAmp: [12, 2] } },
+    still: { desktop: [900, 720], mobile: [780, 600], sizes: '(max-width: 1100px) 100vw, 62vw' },
   },
   // Case study headers: a long straight road. ([24, 8] folded by up to 37 px.)
   case: {
     kind: 'header', mask: 'header',
     options: { seed: 31, distortion: 'LongRaceDistortion', distortionUniforms: { uAmp: [24, 1.5] } },
+    still: { desktop: [900, 720], mobile: [780, 600], sizes: '(max-width: 1100px) 100vw, 62vw' },
   },
   // Contact header: deep, slow. When the form is sent: the 400 ms burst and
   // one amber car racing away (Message sent, kept from Phase 2b).
@@ -84,6 +90,7 @@ export const roads = {
     kind: 'header', mask: 'header',
     options: { seed: 8, distortion: 'deepDistortion', distortionUniforms: { uAmp: [8, 3] }, launchCar: true },
     speed: 0.45,
+    still: { desktop: [900, 720], mobile: [780, 600], sizes: '(max-width: 1100px) 100vw, 62vw' },
   },
   // Thin strip between sections. Moves only while scrolling.
   // ([20, 6] folded by up to 23 px.)
@@ -96,6 +103,24 @@ export const roads = {
   deliver: {
     kind: 'deliver', mask: 'deliver',
     options: { seed: 9, distortion: 'turbulentDistortion', distortionUniforms: { uAmp: [14, 3, 2, 0] } },
+  },
+  // How we deliver (owner, 19 Nov 2026): the road runs horizontally across
+  // the pinned section, beneath the stages. Looking straight down with the
+  // road's width fitted to the band's height, so it lies left to right.
+  // Straight (no bends, so it cannot fold); both lanes travel the same way.
+  // The trails move only while you scroll, at the scroll's own speed, and
+  // run backwards when you scroll up ('spine' kind, useRoadController).
+  'deliver-across': {
+    kind: 'spine', mask: 'across',
+    options: {
+      seed: 9,
+      distortion: 'LongRaceDistortion',
+      distortionUniforms: { uAmp: [0, 0] },
+      oneWay: true,
+      fixedCamera: { position: [0, 40, -200], target: [0, 0, -200], up: [1, 0, 0], fitHeight: 17 },
+      maxPixelRatio: 1.5,
+    },
+    still: { desktop: [1440, 160], mobile: [780, 120], sizes: '100vw' },
   },
   // Closing band: the night road.
   // ([22, 22, 14] folded by up to 195 px.)

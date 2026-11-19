@@ -268,7 +268,7 @@
   transform: scaleX(0);
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1024px) {
   .c4-motion .m-journey .hd__line {
     transform-origin: top;
   }
@@ -707,38 +707,29 @@
   transform: translateY(12px);
 }
 
-/* --- The section tone (plugins/motion.client.ts) ----------------------------------
-   With motion on, the sections' grounds are lifted onto one fixed layer that
-   cross-fades between them, so a change of section is never a hard edge. */
-.c4 {
-  isolation: isolate;
+/* --- Section seams (plugins/motion.client.ts) ------------------------------------
+   Where a section's ground differs from the one above, the colour above
+   blends into it over its first 96 px (inside the section's padding), so a
+   change of section is never a hard edge. Static: nothing runs while
+   scrolling. */
+[data-seam] {
+  position: relative;
 }
 
-.c4-tone {
-  display: none;
-}
-
-.c4-tone-on .c4-tone {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  display: block;
+[data-seam]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 96px;
+  background: linear-gradient(180deg, var(--seam-from), transparent);
   pointer-events: none;
 }
 
-.c4-tone > i {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-}
-
-.c4-tone > [data-tone='white'] { background: var(--white); opacity: 1; }
-.c4-tone > [data-tone='paper'] { background: var(--paper); }
-.c4-tone > [data-tone='mist'] { background: var(--mist); }
-
-.c4-tone-on [data-tone-of] {
-  background-color: transparent !important;
-}
+[data-seam='white'] { --seam-from: var(--white); }
+[data-seam='paper'] { --seam-from: var(--paper); }
+[data-seam='mist'] { --seam-from: var(--mist); }
 
 /* Lenis (smooth wheel scrolling) */
 html.c4-lenis,
