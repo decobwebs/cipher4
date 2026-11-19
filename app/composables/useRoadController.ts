@@ -314,8 +314,12 @@ function run() {
   // moment while its shaders compile: the frame-rate check starts afresh,
   // with its full warm-up.
   if (best !== lastBest) {
+    // A different road taking over stutters for a moment while it starts:
+    // skip a short settle, but keep counting (owner's review, 19 Nov 2026:
+    // restarting the full warm-up at every handover meant the check never
+    // judged on the home page, which hands over between five roads).
     lastBest = best
-    fpsMonitor(false)
+    settleFps()
   }
 
   for (const e of entries) {
@@ -342,8 +346,10 @@ function run() {
 // gap of more than 250 ms between frames, such as a hidden tab or a
 // minimised window, restarts the count).
 //
-// Never judges during the first 3 s after a road starts, nor until 3 s after
-// the page finished loading. Judges the last 2 s of frames: under 40 fps is
+// Never judges during the first 3 s after the first road starts, nor until
+// 3 s after the page finished loading. When another road takes over, or a
+// new one sets up, the next 600 ms are skipped (start-up stutter) and the
+// count carries on. Judges the last 2 s of frames: under 40 fps is
 // a failure. A first failure shows the still frame and tries again after
 // 10 s. Only a second failure keeps the still frames, for the rest of the
 // visit. The ?motion=on test switch turns the check off.
@@ -351,6 +357,14 @@ function run() {
 let fpsRaf = 0
 let fpsFrames: number[] = []
 let fpsReadyAt = 0
+const SWITCH_SETTLE = 600 // ms skipped after a road takes over or sets up
+let fpsWarmed = false
+
+/** Skip the next 600 ms of frames (a road starting up), keep the rest. */
+function settleFps() {
+  fpsReadyAt = Math.max(fpsReadyAt, performance.now() + SWITCH_SETTLE)
+  fpsFrames = []
+}
 
 function pageLoadedAt(): number | null {
   if (document.readyState !== 'complete') return null
@@ -368,7 +382,9 @@ function fpsMonitor(active: boolean) {
   }
   if (fpsRaf) return
   fpsFrames = []
-  fpsReadyAt = performance.now() + WARM_UP
+  // The full warm-up once per visit; later restarts only settle briefly.
+  fpsReadyAt = Math.max(fpsReadyAt, performance.now() + (fpsWarmed ? SWITCH_SETTLE : WARM_UP))
+  fpsWarmed = true
   let last = 0
   const tick = (t: number) => {
     fpsRaf = requestAnimationFrame(tick)
@@ -446,8 +462,8 @@ export function useRoadController() {
     /** The road has mounted; let the scheduler decide whether it runs. */
     attach(entry: RoadEntry, handle: RoadHandle) {
       entry.handle = handle
-      lastBest = null // set-up stutter is not a slow device: restart the warm-up
-      fpsMonitor(false)
+      // Set-up stutter is not a slow device: a short settle, not a restart.
+      settleFps()
       handle.setSpeed(entry.baseSpeed)
       handle.pause()
       entry.running = false

@@ -21,7 +21,9 @@ useScrollMoment(({ gsap }) => {
     opacity: 1,
     ease: 'none',
     stagger: 0.12,
-    scrollTrigger: { trigger: el, start: 'top 82%', end: 'bottom 42%', scrub: 0.4 },
+    // Fully dark by the time the statement reaches the middle of the screen,
+    // where it is read (owner's review: the last words stayed grey).
+    scrollTrigger: { trigger: el, start: 'top 90%', end: 'bottom 75%', scrub: 0.3 },
   })
 })
 </script>
