@@ -8,7 +8,7 @@ import type { Distortion } from '~/lib/hyperspeed/index'
 
 export const homeSeo = {
   title: 'Cipher4 AI & Robotics | Intelligence for critical operations',
-  description: 'Cipher4 engineers software, AI and connected systems for maritime, oil and gas, logistics and supply chain operations: platforms that let organisations see, control and prove every part of their work.',
+  description: 'Cipher4 engineers software, AI and connected systems for maritime, oil and gas, logistics and supply chain: platforms to see, control and prove the work.',
   socialTitle: 'Cipher4 AI & Robotics',
   socialDescription: 'Intelligence for critical operations.',
 }

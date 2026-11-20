@@ -83,7 +83,7 @@ export const cases: Case[] = [
     kind: 'case',
     seo: {
       title: 'Harbours360 case study | Cipher4 AI & Robotics',
-      description: 'How Cipher4 engineered Harbours360, a digital marketplace where verified buyers and sellers trade high-value maritime and industrial assets with confidence.',
+      description: 'How Cipher4 engineered Harbours360, a marketplace where verified buyers and sellers trade high-value maritime and industrial assets with confidence.',
     },
     eyebrow: 'Case study · Maritime and ports · Supply chain and procurement',
     title: 'A trusted marketplace for high-value maritime assets',

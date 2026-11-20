@@ -65,7 +65,7 @@ export const services: Service[] = [
     slug: 'operational-platforms',
     seo: {
       title: 'Operational platforms | Cipher4 AI & Robotics',
-      description: 'Custom platforms that bring people, assets, approvals and records into one controlled system, built for maritime, oil and gas, logistics and supply chain operations.',
+      description: 'Custom platforms that bring people, assets, approvals and records into one controlled system for maritime, oil and gas, logistics and supply chain.',
     },
     title: 'One system for the whole operation',
     lead: 'We build the platforms that sit between your assets and the people who make decisions about them. Operations, approvals, records and reporting live in one place, instead of six spreadsheets and a WhatsApp group.',
@@ -109,7 +109,7 @@ export const services: Service[] = [
     slug: 'ai-automation',
     seo: {
       title: 'AI and automation | Cipher4 AI & Robotics',
-      description: 'Artificial intelligence built into operational systems: intelligent matching, document understanding, forecasting, assistants and automation for critical industries.',
+      description: 'AI built into operational systems: intelligent matching, document understanding, forecasting, assistants and automation for critical industries.',
     },
     title: 'Intelligence built into the work itself',
     lead: 'AI earns its place when it removes real work from skilled people. We build it into the systems your teams already use, so it reads, predicts, matches and acts where decisions are made.',
@@ -155,7 +155,7 @@ export const services: Service[] = [
     slug: 'iot-robotics',
     seo: {
       title: 'IoT and robotics | Cipher4 AI & Robotics',
-      description: 'Sensors, connected devices and robotic systems that monitor assets and environments continuously, bringing real-world data into the systems decisions are made on.',
+      description: 'Sensors, connected devices and robotic systems that monitor assets continuously, bringing real-world data into the systems decisions are made on.',
     },
     title: 'Connecting physical assets to the systems that manage them',
     lead: "Sensors, connected devices and robotic systems that watch your assets continuously, so problems are seen before they become failures and inspections happen without putting people in harm's way.",
@@ -234,7 +234,7 @@ export const services: Service[] = [
     slug: 'it-infrastructure',
     seo: {
       title: 'IT infrastructure and support | Cipher4 AI & Robotics',
-      description: 'Procurement, installation, software setup, maintenance, repairs and upgrades for offices and field sites. Computers, servers, networks and workplace technology, set up properly and kept that way.',
+      description: 'Procurement, installation, maintenance and upgrades for offices and field sites: computers, servers, networks and workplace technology, set up properly.',
     },
     title: 'Technology set up properly, and kept that way',
     lead: 'Everything an organisation needs to equip its offices and field sites and keep them running, from choosing the right equipment to supporting it for years after installation. One contract, one accountable partner.',
@@ -273,7 +273,7 @@ export const services: Service[] = [
     slug: 'education-technology',
     seo: {
       title: 'Education technology | Cipher4 AI & Robotics',
-      description: 'E-learning platforms, learning management systems, examination software and emerging learning technology for schools, universities, training providers and organisations.',
+      description: 'E-learning platforms, learning management systems, examination software and learning technology for schools, universities and training providers.',
     },
     title: 'Technology for learning',
     lead: 'We build the digital platforms schools, universities, training providers and organisations use to teach, train and assess, whether learners are in the room or across the world.',
@@ -309,7 +309,7 @@ export const serviceBySlug = (slug: string) => services.find((s) => s.slug === s
 export const servicesOverview = {
   seo: {
     title: 'Services | Cipher4 AI & Robotics',
-    description: 'Operational platforms, AI and automation, IoT and robotics, digital platforms, IT infrastructure and education technology for maritime, oil and gas, logistics and supply chain organisations.',
+    description: 'Operational platforms, AI and automation, IoT and robotics, digital platforms, IT infrastructure and education technology for critical industries.',
   },
   eyebrow: 'Services',
   title: 'Technology for the industries that keep the world moving',

@@ -1,6 +1,8 @@
 ---
 title: Design field systems for the connection you actually have
 description: Offshore and remote-site software fails for a predictable reason. It assumes a network. Here is how to build systems that keep working when the link drops, and what that changes about the architecture.
+seoTitle: Field systems for the connection you actually have | Cipher4
+seoDescription: Offshore software fails because it assumes a network. How to build field systems that keep working when the link drops, and what that changes.
 date: 2026-07-14
 author: Cipher4 Engineering
 sector: Oil and gas

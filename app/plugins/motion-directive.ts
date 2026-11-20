@@ -32,11 +32,14 @@ function observer() {
 }
 
 const m: Directive<HTMLElement, string> = {
+  // v-m:now also writes data-m-now: the arrival headers run as CSS
+  // animations from the first paint (motion.css), without waiting for this.
   getSSRProps(binding) {
-    return { 'data-m': binding.value }
+    return { 'data-m': binding.value, ...(binding.arg === 'now' ? { 'data-m-now': '' } : {}) }
   },
   mounted(el, binding) {
     el.dataset.m = binding.value
+    if (binding.arg === 'now') el.dataset.mNow = ''
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduce || !('IntersectionObserver' in window) || binding.arg === 'now') {
       // Next frame, so the starting state paints once and the movement runs.

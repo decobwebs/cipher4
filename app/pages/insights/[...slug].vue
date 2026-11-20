@@ -21,10 +21,12 @@ const { data: all } = await useAsyncData('insights-all', () =>
 const others = computed(() => (all.value || []).filter((a) => a.path !== route.path))
 
 useSeoMeta({
-  title: () => `${article.value?.title} | Cipher4 AI & Robotics`,
-  description: () => article.value?.description,
+  // The title tag and description use the shorter search versions when the
+  // article has them; the heading on the page stays the article's title.
+  title: () => article.value?.seoTitle || `${article.value?.title} | Cipher4 AI & Robotics`,
+  description: () => article.value?.seoDescription || article.value?.description,
   ogTitle: () => article.value?.title,
-  ogDescription: () => article.value?.description,
+  ogDescription: () => article.value?.seoDescription || article.value?.description,
   ogType: 'article',
   articlePublishedTime: () => article.value?.date,
 })

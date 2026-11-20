@@ -67,7 +67,7 @@ export const sectors: Sector[] = [
     code: 'M',
     seo: {
       title: 'Maritime and ports | Cipher4 AI & Robotics',
-      description: 'Systems for vessel operations, port calls, bunkering, crewing and marine services: every movement coordinated, every quantity accounted for, every record ready for scrutiny.',
+      description: 'Systems for vessel operations, port calls, bunkering, crewing and marine services: every movement coordinated, every record ready for scrutiny.',
     },
     title: 'Maritime and ports',
     lead: 'A single vessel call can involve an agent, a terminal, a fuel supplier, several regulators and a crew, each working from a different record. We build the systems that keep them on the same page, from arrival to sailing.',
@@ -103,7 +103,7 @@ export const sectors: Sector[] = [
     code: 'O',
     seo: {
       title: 'Oil and gas | Cipher4 AI & Robotics',
-      description: 'Systems for field operations, compliance, asset integrity and remote monitoring in oil and gas, where access is hard and every record must satisfy a regulator.',
+      description: 'Systems for field operations, compliance, asset integrity and remote monitoring, where access is hard and every record must satisfy a regulator.',
     },
     title: 'Oil and gas',
     lead: 'In oil and gas the expensive problems are access problems: getting people to the asset, getting data back from it, and proving to a regulator that both were done properly. We build the systems that make each of those faster, safer and easier to defend.',
@@ -178,7 +178,7 @@ export const sectors: Sector[] = [
     code: 'S',
     seo: {
       title: 'Supply chain and procurement | Cipher4 AI & Robotics',
-      description: 'Sourcing and procurement systems that are faster to run and straightforward to defend: structured tenders, consistent evaluation, supplier history and a complete audit trail.',
+      description: 'Sourcing and procurement systems that are faster to run and easy to defend: structured tenders, consistent evaluation and a complete audit trail.',
     },
     title: 'Supply chain and procurement',
     lead: 'Procurement is where operational money is won and lost, and where scrutiny lands hardest. We build sourcing systems that make the process faster to run and straightforward to defend.',
@@ -225,7 +225,7 @@ export const sectorBySlug = (slug: string) => sectors.find((s) => s.slug === slu
 export const sectorsOverview = {
   seo: {
     title: 'Sectors | Cipher4 AI & Robotics',
-    description: 'Cipher4 builds systems for maritime and ports, oil and gas, logistics and transport, and supply chain and procurement: industries where assets are valuable, regulation is strict and records must hold.',
+    description: 'Systems for maritime and ports, oil and gas, logistics and transport, and supply chain: industries where regulation is strict and records must hold.',
   },
   eyebrow: 'Sectors',
   title: 'Built for industries where failure is expensive',

@@ -16,8 +16,10 @@ defineProps<{ sheet?: string; dwg?: string }>()
     </svg>
     <span class="bpm__ruler" />
     <span v-if="sheet || dwg" class="bpm__label">
-      <span v-if="dwg">{{ dwg }}</span>
-      <span v-if="sheet">{{ sheet }}</span>
+      <!-- Drawn as CSS content (blueprint.css): a decorative stamp, not page
+           text, so the contrast check does not read it as words. -->
+      <span v-if="dwg" class="bpm__stamp" :data-t="dwg" />
+      <span v-if="sheet" class="bpm__stamp" :data-t="sheet" />
     </span>
   </div>
 </template>

@@ -5,7 +5,7 @@
 export const insightsPage = {
   seo: {
     title: 'Insights | Cipher4 AI & Robotics',
-    description: 'Engineering notes on building systems for maritime, oil and gas, logistics and supply chain: field connectivity, auditable procurement and operational intelligence.',
+    description: 'Engineering notes on systems for maritime, oil and gas, logistics and supply chain: field connectivity, auditable procurement and operational intelligence.',
   },
   eyebrow: 'Insights',
   title: 'Notes from the work',

@@ -129,3 +129,12 @@ Screenshots of the home page sections (desktop and phone), a screen recording of
 | 2026-11-20 | **How Phase 7 was built (Claude, for review):** the sitemap stays a small generated file (`server/routes/sitemap.xml.ts`) built from the same data as the pages, not the `@nuxtjs/sitemap` module; it lists the 30 public pages and leaves out redirects, the 404 page and the internal pages. robots.txt also blocks `/_og`, the internal share-card page. Share images are made from the built site by `scripts/make-og-images.mjs` into `public/og/`; pages without their own card (lists, About, legal, articles) use the default card. `scripts/check-redirects.mjs` checks content B1, `nuxt.config.ts` and `vercel.json` agree, and can test a build or a running server. |
 | 2026-11-20 | **Descriptions kept as written:** 9 page descriptions run past 160 characters and two article titles past 70, so search results may shorten them. They are the content file's wording, so they stay unless the owner shortens them. |
 | 2026-11-20 | **Removed as unused after Phase 7:** `app/data/company.ts` (replaced by `data/site.ts` in the structured data), `app/data/industries.ts` and `app/data/solutions.ts` (only the old sitemap used them). `public/images/og-default.jpg` is now unused but kept until the owner says to remove it. |
+
+## Phase 8 (2026-11-20)
+
+| Date | Decision |
+|---|---|
+| 2026-11-20 | **Phase 7 approved** (commit `129727c`). Phase 8 started: speed, accessibility and checks. |
+| 2026-11-20 | **Search lengths:** page descriptions 155 characters or fewer; article title tags 60 or fewer. The visible heading and card summary of an article stay as written: articles carry separate `seoTitle` and `seoDescription` fields for search only. This replaces the Phase 7 "kept as written" note. Claude also shortened seven more descriptions that were 156 to 170 characters (listed in the Phase 8 report), so the rule holds on every page. |
+| 2026-11-20 | **`public/images/og-default.jpg` deleted** (unused since the Phase 7 share cards). |
+| 2026-11-20 | **Phase 8 targets:** Lighthouse mobile on Home, a service page and Contact: performance 90+, accessibility, best practices and SEO 100. LCP under 2.5 s (mobile 4G), CLS under 0.05, first-load JavaScript under 150 KB gzip excluding the road. Keyboard-only run of the whole site, screen-reader pass on Home and Contact, Chrome, Edge and Firefox on this laptop, and step-by-step instructions for the owner's real iPhone and Android phone. Measured on the local production build, because there are no Vercel previews. |

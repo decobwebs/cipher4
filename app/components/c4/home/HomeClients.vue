@@ -19,7 +19,7 @@ const deskH: Record<string, number> = {
 
 <template>
   <!-- Choreography 02: logos come into focus, one after the next. -->
-  <section v-m="'focus'" class="hc" aria-labelledby="hc-label">
+  <section v-m="'focus'" class="hc">
     <div class="c4-wrap hc__inner">
       <h2 id="hc-label" class="hc__label">{{ clients.label }}</h2>
       <div class="hc__scroller" role="region" aria-labelledby="hc-label" tabindex="0">

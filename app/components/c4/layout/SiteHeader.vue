@@ -90,7 +90,7 @@ const groupCurrent = (g: (typeof mainNav)[number]) =>
   <div class="c4-header" :class="{ 'is-hidden': hidden }">
     <div class="c4-wrap">
       <header ref="root" class="c4-header__pill" @keydown="onKey" @focusout="onFocusOut">
-        <NuxtLink to="/" class="c4-header__home" aria-label="Cipher4, home">
+        <NuxtLink to="/" class="c4-header__home">
           <C4Logo variant="inline" class="c4-header__logo" />
         </NuxtLink>
 

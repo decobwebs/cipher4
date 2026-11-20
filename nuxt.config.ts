@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { dropInlinedStylesheets } from './scripts/drop-inlined-css.mjs'
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-01-01',
   devtools: { enabled: true },
@@ -78,8 +80,10 @@ export default defineNuxtConfig({
   // loaded one, so any weight used in CSS must appear here.
   fonts: {
     families: [
-      { name: 'Geist', provider: 'google', weights: [400, 500, 600] },
-      { name: 'Geist Mono', provider: 'google', weights: [400] },
+      // Phase 8: preloaded, so the real fonts arrive with the first paint
+      // instead of swapping in a second later (a second full layout).
+      { name: 'Geist', provider: 'google', weights: [400, 500, 600], styles: ['normal'], preload: true },
+      { name: 'Geist Mono', provider: 'google', weights: [400], styles: ['normal'], preload: true },
     ],
     defaults: { subsets: ['latin'] },
   },
@@ -123,6 +127,10 @@ export default defineNuxtConfig({
     // C4_OUTPUT_DIR builds somewhere else, so a running `nuxi preview` (which
     // holds .output open) does not block a test build. Unset: .output.
     ...(process.env.C4_OUTPUT_DIR ? { output: { dir: process.env.C4_OUTPUT_DIR } } : {}),
+    // Phase 8: drop stylesheet links whose CSS is already inline on the page.
+    hooks: {
+      'prerender:generate': dropInlinedStylesheets,
+    },
     prerender: {
       crawlLinks: true,
       // `/_styleguide` and `/_roads` are linked from nowhere, so the crawler
@@ -168,6 +176,21 @@ export default defineNuxtConfig({
 
   experimental: {
     payloadExtraction: true,
+    // Phase 8: links fetch their page when hovered, focused or touched, not
+    // as soon as they scroll into view, so loading the page is not shared
+    // with preparing every page it links to.
+    defaults: {
+      nuxtLink: {
+        prefetchOn: { visibility: false, interaction: true },
+      },
+    },
+  },
+
+  // Phase 8: write all the CSS a page needs into its HTML, including the
+  // global design-system files, so the first paint does not wait on a row
+  // of separate stylesheet downloads (each one a round trip on a phone).
+  features: {
+    inlineStyles: true,
   },
 
   typescript: {

@@ -208,9 +208,10 @@ function whenIdle(): Promise<void> {
   })
 }
 
-/** The road module, loaded once, after load + idle. */
+/** The road module, loaded once: after load, once the visitor engages
+ *  (utils/engaged.ts, Phase 8), and in an idle moment. */
 export function loadRoadLib() {
-  libPromise ??= whenIdle().then(() => import('~/lib/hyperspeed/index'))
+  libPromise ??= whenEngaged().then(whenIdle).then(() => import('~/lib/hyperspeed/index'))
   return libPromise
 }
 

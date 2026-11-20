@@ -1,6 +1,8 @@
 ---
 title: What makes a procurement record survive an audit
 description: Most digital procurement systems record the decision but not the reasoning. Two years later that distinction is the whole ballgame. What an auditable sourcing trail actually needs to hold.
+seoTitle: What makes a procurement record survive an audit | Cipher4
+seoDescription: Most procurement systems record the decision but not the reasoning. What an auditable sourcing trail needs to hold to survive an audit.
 date: 2026-06-02
 author: Cipher4 Engineering
 sector: Supply chain

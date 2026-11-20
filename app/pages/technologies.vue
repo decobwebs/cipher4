@@ -16,7 +16,7 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Technologies' }]
   <div>
     <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" :drawing="{ icon: 'works-with-what-you-have', code: 'C4-040' }" :text-width="680" />
 
-    <section class="c4-section c4-section--paper" aria-labelledby="tx-list">
+    <section class="c4-section c4-section--paper">
       <div class="c4-wrap">
         <h2 id="tx-list" class="c4-sr-only">{{ page.title }}</h2>
         <ul class="c4p-rows">

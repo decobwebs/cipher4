@@ -12,7 +12,7 @@
   --ink: #0E1222;
   --ink-2: #2A3146;
   --slate: #4A5268;
-  --grey: #8A92A6;
+  --grey: #656E85;             /* Phase 8: was #8A92A6 (3.1:1); now 5.1:1 on white, 4.5:1 on mist */
   --line: #E3E7F0;
   --line-2: #D5DBE8;
   --indigo: #1A3AB5;

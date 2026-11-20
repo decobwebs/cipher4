@@ -33,6 +33,15 @@ function onTrack() {
   const max = el.scrollWidth - el.clientWidth
   progress.value = max > 0 ? el.scrollLeft / max : 0
 }
+// When the cards swipe (phones), the strip takes keyboard focus so it can be
+// scrolled with the arrow keys too.
+const swipes = ref(false)
+function measureTrack() {
+  const el = track.value
+  swipes.value = !!el && el.scrollWidth > el.clientWidth + 1
+}
+onMounted(measureTrack)
+useEventListener('resize', measureTrack, { passive: true })
 </script>
 
 <template>
@@ -54,7 +63,7 @@ function onTrack() {
       <div class="c4-wrap">
         <SectionHeader title-id="sc-problems" :title="HEADINGS.problems" />
         <!-- Choreography 17: the sector's own line runs across each card. -->
-        <ol ref="track" v-m="'tide'" class="sc-problems" @scroll.passive="onTrack">
+        <ol ref="track" v-m="'tide'" class="sc-problems" aria-labelledby="sc-problems" :tabindex="swipes ? 0 : undefined" @scroll.passive="onTrack">
           <li v-for="(p, i) in sector.problems" :key="p.title" class="c4-card sc-problem m-card" :style="{ '--i': i }">
             <SectorLine :kind="sector.line" class="sc-problem__line" />
             <span class="sc-n">{{ String(i + 1).padStart(2, '0') }}</span>

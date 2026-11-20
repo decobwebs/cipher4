@@ -84,3 +84,17 @@
   border: 1px solid var(--line);
   background: var(--white);
 }
+
+/* Phase 8 (speed), phones only: the browser skips laying out and painting
+   the sections below the first screen until they come near, so the first
+   paint lays out one screen, not the whole page. Phones have no pinned or
+   stacked sections (those are desktop only), and the motion code measures
+   again whenever the page height changes. "auto" remembers each section's
+   real height once it has been shown. */
+@media (max-width: 767px) {
+  .c4-main > div > section:not(:first-child),
+  .c4-foot {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 720px;
+  }
+}

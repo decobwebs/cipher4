@@ -53,8 +53,11 @@ export default defineNuxtPlugin((nuxtApp) => {
     started = true
     const go = () => { void boot() }
     const ric = (window as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => void }).requestIdleCallback
-    if (ric) ric(go, { timeout: 1200 })
-    else setTimeout(go, 200)
+    // Phase 8: once the visitor engages (utils/engaged.ts), then idle.
+    void whenEngaged().then(() => {
+      if (ric) ric(go, { timeout: 1200 })
+      else setTimeout(go, 200)
+    })
   })
 
   async function boot() {

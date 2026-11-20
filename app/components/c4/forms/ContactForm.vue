@@ -40,6 +40,18 @@ const errorEl = ref<HTMLElement | null>(null)
 const setupEl = ref<HTMLElement | null>(null)
 useFieldMessages(formEl)
 
+// Phones: the step bar pins to the bottom of the screen only once the form
+// has come up into view (its top above 60% of the screen). Before that it
+// sits under the fields, so it never covers the first field on arrival.
+const pinned = ref(false)
+let pinObserver: IntersectionObserver | null = null
+onMounted(() => {
+  if (!formEl.value || !('IntersectionObserver' in window)) { pinned.value = true; return }
+  pinObserver = new IntersectionObserver(([e]) => { pinned.value = !!e?.isIntersecting }, { rootMargin: '0px 0px -40% 0px' })
+  pinObserver.observe(formEl.value)
+})
+onBeforeUnmount(() => pinObserver?.disconnect())
+
 // --- Prefill from the address (content J2 note) ------------------------------
 const SECTOR_BY_PARAM: Record<string, string> = {
   maritime: 'Maritime and ports',
@@ -175,13 +187,12 @@ async function onSubmit() {
         >{{ forms[t].tab }}</button>
       </div>
 
+      <!-- The tab panel wraps the form: a <form> may not carry role="tabpanel". -->
+      <div id="cf-panel" role="tabpanel" :aria-labelledby="`cf-tab-${type}`">
       <form
-        id="cf-panel"
         ref="formEl"
         class="cf-form"
         :class="`cf-form--step${step}`"
-        role="tabpanel"
-        :aria-labelledby="`cf-tab-${type}`"
         novalidate
         @submit.prevent="formEl?.reportValidity() && onSubmit()"
       >
@@ -270,7 +281,7 @@ async function onSubmit() {
         </div>
 
         <!-- Pinned to the bottom of the screen on phones (Phone-Screens 07). -->
-        <div class="cf-bar">
+        <div class="cf-bar" :class="{ 'is-pinned': pinned }">
           <button type="button" class="cf-next" @click="next">
             Continue<C4Glyph name="arrow" />
           </button>
@@ -287,6 +298,7 @@ async function onSubmit() {
           {{ privacyLine.before }}<NuxtLink :to="privacyLine.to">{{ privacyLine.link }}</NuxtLink>{{ privacyLine.after }}
         </p>
       </form>
+      </div>
     </template>
   </div>
 </template>
@@ -585,7 +597,7 @@ async function onSubmit() {
   }
 
   .cf-bar {
-    position: sticky;
+    position: relative;
     bottom: 0;
     z-index: 2;
     flex-direction: column;
@@ -593,6 +605,10 @@ async function onSubmit() {
     margin: 0 calc(-1 * var(--s-24));
     padding: var(--s-16) var(--s-24) calc(var(--s-16) + env(safe-area-inset-bottom));
     background: linear-gradient(180deg, rgba(255, 255, 255, 0), var(--white) 30%);
+  }
+
+  .cf-bar.is-pinned {
+    position: sticky;
   }
 
   .cf-bar :deep(.c4-btn),

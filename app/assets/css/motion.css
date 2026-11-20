@@ -56,27 +56,47 @@
   display: block;
 }
 
-.c4-motion [data-m='lines']:not(.m-in) .m-line,
-.c4-motion [data-m='path']:not(.m-in) .m-line {
+.c4-motion [data-m='lines']:not(.m-in):not([data-m-now]) .m-line {
   transform: translateY(110%);
 }
 
-.c4-motion [data-m='lines'] .m-line,
-.c4-motion [data-m='path'] .m-line {
+.c4-motion [data-m='lines']:not([data-m-now]) .m-line {
   transition: transform 900ms var(--ease-out);
   transition-delay: calc(var(--d, 0ms) + var(--i, 0) * 110ms);
 }
 
-.c4-motion [data-m='lines']:not(.m-in) .m-after,
-.c4-motion [data-m='path']:not(.m-in) .m-after {
+.c4-motion [data-m='lines']:not(.m-in):not([data-m-now]) .m-after {
   opacity: 0;
   transform: translateY(16px);
 }
 
-.c4-motion [data-m='lines'] .m-after,
-.c4-motion [data-m='path'] .m-after {
+.c4-motion [data-m='lines']:not([data-m-now]) .m-after {
   transition: opacity var(--m-dur) var(--ease-out), transform var(--m-dur) var(--ease-out);
   transition-delay: calc(var(--d, 0ms) + 240ms + var(--i, 0) * 70ms);
+}
+
+/* Phase 8: the headers that play on arrival (home hero, every page header)
+   run as CSS animations from the first paint, not after the scripts load.
+   Same movement and timing; the main words no longer wait for JavaScript,
+   which was most of the slow "largest paint" on a phone. */
+.c4-motion [data-m-now][data-m='lines'] .m-line,
+.c4-motion [data-m-now][data-m='path'] .m-line {
+  animation: m-line-rise 900ms var(--ease-out) both;
+  animation-delay: calc(var(--d, 0ms) + var(--i, 0) * 110ms);
+}
+
+.c4-motion [data-m-now][data-m='lines'] .m-after,
+.c4-motion [data-m-now][data-m='path'] .m-after {
+  animation: m-after-in var(--m-dur) var(--ease-out) both;
+  animation-delay: calc(var(--d, 0ms) + 240ms + var(--i, 0) * 70ms);
+}
+
+@keyframes m-line-rise {
+  from { transform: translateY(110%); }
+}
+
+@keyframes m-after-in {
+  from { opacity: 0; transform: translateY(16px); }
 }
 
 /* 13: the breadcrumb types first (Breadcrumb.vue), then the headline rises. */
@@ -119,6 +139,8 @@
    (--dx, --dy); the cards start stacked there and deal out to their places. */
 .c4-motion [data-m='deal']:not(.m-in) .m-card {
   transform: translate(var(--dx, 0), var(--dy, 0)) rotate(var(--r, 0deg)) scale(0.96);
+  /* Phase 8: stacked cards are not clickable until they have dealt out. */
+  pointer-events: none;
 }
 
 .c4-motion [data-m='deal'] .m-card {
@@ -288,7 +310,9 @@
 
 /* --- 09 Technologies: a scattered stack snaps together ------------------------ */
 .c4-motion [data-m='snap']:not(.m-in) .m-chip {
-  opacity: 0.4;
+  /* Phase 8: 0, was 0.4. Half-faded names read as low-contrast text to
+     accessibility checks before the section is reached. */
+  opacity: 0;
   transform: translate(var(--x, 0), var(--y, 0)) rotate(var(--r, 0deg));
 }
 

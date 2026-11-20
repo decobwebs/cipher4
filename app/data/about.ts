@@ -5,7 +5,7 @@
 export const aboutPage = {
   seo: {
     title: 'About | Cipher4 AI & Robotics',
-    description: 'Cipher4 AI & Robotics Ltd engineers intelligent systems for critical operations in maritime, oil and gas, logistics and supply chain. Headquartered in Abuja, with offices in Lagos and Kaduna.',
+    description: 'Cipher4 AI & Robotics Ltd engineers intelligent systems for critical operations. Headquartered in Abuja, with offices in Lagos and Kaduna.',
   },
   eyebrow: 'About Cipher4',
   title: 'A technology company built for critical operations',

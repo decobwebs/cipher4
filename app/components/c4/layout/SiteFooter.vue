@@ -22,7 +22,7 @@ const legalLine = computed(() =>
     <div class="c4-wrap c4-foot__inner">
       <div class="c4-foot__top">
         <div class="c4-foot__brand">
-          <NuxtLink to="/" class="c4-foot__home" aria-label="Cipher4, home">
+          <NuxtLink to="/" class="c4-foot__home">
             <!-- Choreography 23: the logo draws itself, a signature at the end. -->
             <C4Logo v-m="'signature'" variant="stacked" :size="50" />
           </NuxtLink>

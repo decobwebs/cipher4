@@ -14,7 +14,7 @@ import { work } from '~/data/home'
         </template>
       </SectionHeader>
       <!-- Choreography 06: zoom-through from depth. -->
-      <WorkCarousel v-m="'zoom'" :items="work.items" :label="work.title" />
+      <WorkCarousel v-m="'zoom'" :items="work.items" label="Projects" />
     </div>
   </section>
 </template>

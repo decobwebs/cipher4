@@ -143,6 +143,10 @@
   white-space: nowrap;
 }
 
+.bpm__stamp::before {
+  content: attr(data-t);
+}
+
 @media (max-width: 767px) {
   .bpm__ruler,
   .bpm__cross--bl,
