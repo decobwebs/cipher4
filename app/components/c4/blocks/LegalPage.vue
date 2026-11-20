@@ -22,7 +22,7 @@ const crumbs = computed(() => [{ label: 'Home', to: '/' }, { label: props.page.t
 
 <template>
   <div>
-    <PageHero :crumbs="crumbs" :title="page.title" :min-height="0" :text-width="880">
+    <PageHero :crumbs="crumbs" :title="page.title" :min-height="0" :text-width="760" :drawing="{ icon: 'document', code: page.title === 'Privacy policy' ? 'C4-090' : 'C4-091' }">
       <template v-if="page.lastUpdated" #meta>
         <p class="lg-date">{{ LAST_UPDATED_LABEL }} {{ page.lastUpdated }}</p>
       </template>
@@ -66,7 +66,6 @@ const crumbs = computed(() => [{ label: 'Home', to: '/' }, { label: props.page.t
 
 .lg-body {
   padding-top: var(--s-64);
-  border-top: 1px solid var(--line);
 }
 
 .lg-layout {

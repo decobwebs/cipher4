@@ -5,7 +5,8 @@ import { youth } from '~/data/home'
 
 <template>
   <!-- Choreography 11: lines grow up into a light. -->
-  <section v-m="'grow'" class="hyo" aria-label="Community">
+  <section v-m="'grow'" class="hyo bp-host" aria-label="Community">
+    <BlueprintGround kind="grid" draw="right" marks sheet="SHEET 09 / 09" dwg="DWG C4-009" />
     <div class="c4-wrap hyo__inner">
       <div class="m-grow hyo__grow" aria-hidden="true">
         <span v-for="(h, k) in [40, 64, 52, 80, 58]" :key="k" :style="{ '--h': `${h}px`, '--i': k }" />
@@ -24,7 +25,6 @@ import { youth } from '~/data/home'
 <style scoped>
 .hyo {
   background: var(--white);
-  border-top: 1px solid var(--line);
 }
 
 .hyo__inner {

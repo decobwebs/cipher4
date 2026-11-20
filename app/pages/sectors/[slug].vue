@@ -42,7 +42,7 @@ function onTrack() {
       :eyebrow="SECTOR_EYEBROW"
       :title="sector.title"
       :lead="sector.lead"
-      :road="sector.road"
+      :drawing="{ icon: sector.icon, code: `C4-02${['M', 'O', 'L', 'S'].indexOf(sector.code[0]!) + 1}` }"
     >
       <template #actions>
         <C4Button :to="sector.cta.to" arrow>{{ sector.cta.label }}</C4Button>

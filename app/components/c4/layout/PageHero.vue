@@ -12,6 +12,7 @@
  * under the lead).
  */
 import type { RoadName } from '~/lib/hyperspeed/roads'
+import type { C4IconName } from '~/lib/icons'
 
 interface Crumb { label: string; to?: string }
 
@@ -20,7 +21,14 @@ const props = withDefaults(defineProps<{
   eyebrow?: string
   title: string
   lead?: string
+  /** Only the contact page keeps a road (owner, 20 Nov 2026). */
   road?: RoadName
+  /**
+   * Every other inner page: a large blueprint drawing of the page's icon,
+   * with construction lines, guide circles and measurements, drawing itself
+   * on arrival (owner, 20 Nov 2026).
+   */
+  drawing?: { icon: C4IconName; code: string; title?: string }
   /** Width of the text column, which the road keeps clear of. */
   textWidth?: number
   /** 'page' (services, sectors, contact) or 'case' (smaller H1, board). */
@@ -63,6 +71,9 @@ const styleVars = computed(() => ({
           <slot name="actions" />
         </div>
         <div v-if="$slots.below" class="ph__below m-after" style="--i: 3"><slot name="below" /></div>
+      </div>
+      <div v-if="drawing && !road" class="ph__drawing">
+        <BlueprintDrawing :icon="drawing.icon" :code="drawing.code" :title="drawing.title" now />
       </div>
     </div>
   </section>
@@ -194,6 +205,37 @@ const styleVars = computed(() => ({
 
   .ph__road {
     height: 230px;
+  }
+}
+
+/* The blueprint drawing: its own column on the right, never under words. */
+.ph__inner {
+  justify-content: space-between;
+  gap: var(--s-48);
+}
+
+.ph__drawing {
+  flex: 0 0 auto;
+  width: min(460px, 34vw);
+  margin-right: calc(-1 * var(--s-24));
+}
+
+@media (max-width: 1100px) {
+  .ph__inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ph__drawing {
+    align-self: center;
+    width: min(360px, 80vw);
+    margin: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .ph__drawing {
+    width: min(280px, 76vw);
   }
 }
 </style>

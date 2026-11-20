@@ -4,7 +4,9 @@ import { work } from '~/data/home'
 </script>
 
 <template>
-  <section class="hw c4-section c4-section--mist" aria-labelledby="hw-title">
+  <!-- Grid draw-in: the grid paper draws down from the top edge first. -->
+  <section class="hw c4-section c4-section--mist bp-host" aria-labelledby="hw-title">
+    <BlueprintGround kind="grid" draw="top" />
     <div class="c4-wrap">
       <SectionHeader title-id="hw-title" :eyebrow="work.eyebrow" :title="work.title">
         <template #action>

@@ -12,7 +12,9 @@ useDeal(grid)
 </script>
 
 <template>
-  <section class="hs c4-section c4-section--paper" aria-labelledby="hs-title">
+  <!-- Colour wash: the paper-to-mist ground fades up as the section enters. -->
+  <section class="hs c4-section c4-section--paper bp-host" aria-labelledby="hs-title">
+    <BlueprintGround kind="wash" fade />
     <div class="c4-wrap">
       <SectionHeader
         layout="split"

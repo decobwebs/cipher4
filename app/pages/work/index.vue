@@ -41,7 +41,7 @@ const show = (k: Exclude<WorkFilter, 'all'>) => filter.value === 'all' || filter
 
 <template>
   <div>
-    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" road="case" :text-width="680">
+    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" :drawing="{ icon: 'chart', code: 'C4-030' }" :text-width="680">
       <template #below>
         <div class="wk-filter" role="group" aria-label="Show">
           <button

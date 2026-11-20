@@ -1,0 +1,282 @@
+/* ============================================================================
+   The blueprint: Cipher4's second brand language (owner, 20 Nov 2026).
+   An engineer's drawing, from the owner's blueprint T-shirt design.
+
+   Grounds (BlueprintGround.vue), sit under a section's content:
+     grid   1 px lines, indigo at 7%, 48 px squares, fading out at the edges
+     dots   1.5 px dots at the same spacing
+     wash   a soft paper-to-mist gradient
+   Construction marks (BlueprintMarks.vue): corner crosshairs, a measuring
+   edge, a drawing-sheet label in Geist Mono at 50%.
+   Drawings (BlueprintDrawing.vue): 1.5 px indigo lines, amber nodes, drawing
+   themselves as they arrive.
+
+   The grounds never reduce text contrast: at 7% the lines sit far below
+   any text colour (ink, slate) on white or paper.
+   ========================================================================= */
+
+:root {
+  --bp-line: rgba(26, 58, 181, 0.07);
+  --bp-dot: rgba(26, 58, 181, 0.2);
+  --bp-ink: var(--indigo);
+  --bp-cell: 48px;
+}
+
+/* A section that holds a ground: the ground sits above the section's own
+   colour and below all its content. */
+.bp-host {
+  position: relative;
+  isolation: isolate;
+}
+
+.bpg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.bpg--grid {
+  background-image:
+    linear-gradient(to right, var(--bp-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--bp-line) 1px, transparent 1px);
+  background-size: var(--bp-cell) var(--bp-cell);
+  background-position: center top;
+  -webkit-mask-image: radial-gradient(ellipse 75% 70% at 50% 50%, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 75% 70% at 50% 50%, #000 35%, transparent 100%);
+}
+
+.bpg--dots {
+  background-image: radial-gradient(circle, var(--bp-dot) 0.75px, transparent 1.2px);
+  background-size: var(--bp-cell) var(--bp-cell);
+  background-position: center top;
+  -webkit-mask-image: radial-gradient(ellipse 80% 75% at 50% 50%, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 75% at 50% 50%, #000 40%, transparent 100%);
+}
+
+.bpg--wash {
+  background: linear-gradient(180deg, var(--paper) 0%, var(--mist) 100%);
+}
+
+/* Grid draw-in: the ground's lines draw in from one edge before the
+   section's content arrives (transform only). */
+.c4-motion .bpg[data-draw]:not(.is-in) {
+  transform: scaleX(0);
+}
+
+.c4-motion .bpg[data-draw='top']:not(.is-in) {
+  transform: scaleY(0);
+}
+
+.bpg[data-draw='left'] { transform-origin: left center; }
+.bpg[data-draw='right'] { transform-origin: right center; }
+.bpg[data-draw='top'] { transform-origin: center top; }
+
+.c4-motion .bpg[data-draw] {
+  transition: transform 1100ms var(--ease-line);
+}
+
+/* Colour wash: the section's new ground fades up as it enters. */
+.c4-motion .bpg[data-fade]:not(.is-in) {
+  opacity: 0;
+}
+
+.c4-motion .bpg[data-fade] {
+  transition: opacity 1200ms var(--ease-out);
+}
+
+/* The dimming layer, used by the sheet stack on the section underneath. */
+.bpg-dim {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: var(--ink);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* --- Construction marks ------------------------------------------------------ */
+.bpm {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  color: var(--bp-ink);
+  opacity: 0.5;
+}
+
+.bpm__cross {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+}
+
+.bpm__cross--tl { top: var(--s-24); left: var(--s-24); }
+.bpm__cross--tr { top: var(--s-24); right: var(--s-24); }
+.bpm__cross--bl { bottom: var(--s-24); left: var(--s-24); }
+.bpm__cross--br { bottom: var(--s-24); right: var(--s-24); }
+
+.bpm__ruler {
+  position: absolute;
+  top: var(--s-64);
+  bottom: var(--s-64);
+  left: var(--s-12);
+  width: 12px;
+  background-image:
+    linear-gradient(to bottom, currentColor 1px, transparent 1px),
+    linear-gradient(to bottom, currentColor 1px, transparent 1px);
+  background-size: 12px 48px, 6px 12px;
+  background-repeat: repeat-y;
+  opacity: 0.5;
+}
+
+.bpm__label {
+  position: absolute;
+  top: var(--s-32);
+  right: var(--s-64);
+  display: flex;
+  gap: var(--s-16);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .bpm__ruler,
+  .bpm__cross--bl,
+  .bpm__cross--br {
+    display: none;
+  }
+
+  .bpm__cross--tl { top: var(--s-12); left: var(--s-8); }
+  .bpm__cross--tr { top: var(--s-12); right: var(--s-8); }
+
+  .bpm__label {
+    top: var(--s-16);
+    right: var(--s-32);
+  }
+}
+
+/* --- Drawings: draw themselves as they arrive --------------------------------
+   .bp-draw    a line that draws (pathLength 1)
+   .bp-fade    construction and labels that fade in
+   .bp-node    an amber node that lights last
+   Order with --i (0, 1, 2...). Plays once (v-m="'blueprint'"). */
+.bp-svg {
+  display: block;
+  overflow: visible;
+}
+
+.bp-svg .bp-draw {
+  fill: none;
+  stroke: var(--bp-ink);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bp-svg .bp-guide {
+  fill: none;
+  stroke: var(--bp-ink);
+  stroke-opacity: 0.28;
+}
+
+.bp-svg .bp-text {
+  font-family: var(--font-mono);
+  fill: var(--bp-ink);
+  letter-spacing: 0.12em;
+}
+
+.bp-svg .bp-node {
+  fill: var(--amber);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.c4-motion [data-m='blueprint']:not(.m-in) .bp-draw {
+  stroke-dashoffset: 1;
+}
+
+.c4-motion [data-m='blueprint'] .bp-draw {
+  stroke-dasharray: 1;
+  transition: stroke-dashoffset 900ms var(--ease-line);
+  transition-delay: calc(var(--i, 0) * 120ms);
+}
+
+.c4-motion [data-m='blueprint']:not(.m-in) .bp-fade {
+  opacity: 0;
+}
+
+.c4-motion [data-m='blueprint'] .bp-fade {
+  transition: opacity 700ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 120ms);
+}
+
+.c4-motion [data-m='blueprint']:not(.m-in) .bp-node {
+  transform: scale(0);
+}
+
+.c4-motion [data-m='blueprint'] .bp-node {
+  transition: transform 500ms var(--ease-pop);
+  transition-delay: calc(var(--i, 0) * 120ms);
+}
+
+/* --- Inner sections: textures by ground colour --------------------------------
+   Paper sections carry the dot grid and mist sections the grid paper, so a
+   page alternating white and paper never has two plain sections in a row.
+   Drawn as a pseudo-element under the content. */
+.c4-section--paper,
+.c4-section--mist {
+  position: relative;
+  isolation: isolate;
+}
+
+.c4-section--paper::after,
+.c4-section--mist::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.c4-section--paper:not(.bp-host)::after {
+  background-image: radial-gradient(circle, var(--bp-dot) 0.75px, transparent 1.2px);
+  background-size: var(--bp-cell) var(--bp-cell);
+  background-position: center top;
+  -webkit-mask-image: radial-gradient(ellipse 80% 75% at 50% 50%, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 75% at 50% 50%, #000 40%, transparent 100%);
+}
+
+.c4-section--mist:not(.bp-host)::after {
+  background-image:
+    linear-gradient(to right, var(--bp-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--bp-line) 1px, transparent 1px);
+  background-size: var(--bp-cell) var(--bp-cell);
+  background-position: center top;
+  -webkit-mask-image: radial-gradient(ellipse 75% 70% at 50% 50%, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 75% 70% at 50% 50%, #000 35%, transparent 100%);
+}
+
+/* Inner sections draw their texture in as they enter (plugins/motion.client.ts
+   sets data-bp-in). */
+.c4-motion [data-bp-enter='grid']:not([data-bp-in])::after {
+  transform: scaleX(0);
+}
+
+.c4-motion [data-bp-enter='wash']:not([data-bp-in])::after {
+  opacity: 0;
+}
+
+.c4-motion [data-bp-enter]::after {
+  transform-origin: left center;
+  transition: transform 1100ms var(--ease-line), opacity 1200ms var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bpg,
+  .bp-svg * {
+    transition: none !important;
+  }
+}

@@ -14,33 +14,29 @@
  * arrive.
  */
 import { sectors } from '~/data/home'
-import type { Distortion } from '~/lib/hyperspeed/index'
 
-const road = ref<{ morphTo: (n: Distortion, ms?: number) => void } | null>(null)
+// The Sector road was removed (owner, 20 Nov 2026: the road appears only
+// where it means an operation in motion). The heading now uses the split
+// layout, so no column sits empty beside it.
 const current = ref(0)
-function pick(i: number) {
-  if (i === current.value) return
-  current.value = i
-  road.value?.morphTo(sectors.items[i]!.shape, 800)
-}
+function pick(i: number) { current.value = i }
+
+const sheet = useTemplateRef<HTMLElement>('sheet')
+useSheetStack(sheet)
 </script>
 
 <template>
-  <section class="hse c4-section" aria-labelledby="hse-title">
+  <!-- Sheet stack: slides up over Services like a sheet of drawing paper. -->
+  <section ref="sheet" class="hse c4-section bp-host" data-sheet aria-labelledby="hse-title">
+    <BlueprintGround kind="dots" marks sheet="SHEET 02 / 09" dwg="DWG C4-002" />
     <div class="c4-wrap">
-      <div class="hse__top">
-        <SectionHeader
-          class="hse__header"
-          layout="stack"
-          title-id="hse-title"
-          :eyebrow="sectors.eyebrow"
-          :title="sectors.title"
-          :lead="sectors.lead"
-        />
-        <div class="hse__road">
-          <HyperspeedRoad ref="road" preset="home-sectors" />
-        </div>
-      </div>
+      <SectionHeader
+        layout="split"
+        title-id="hse-title"
+        :eyebrow="sectors.eyebrow"
+        :title="sectors.title"
+        :lead="sectors.lead"
+      />
 
       <!-- Choreography 05: one route joins four industries. -->
       <ul v-m="'route'" data-seg class="hse__list">
@@ -72,31 +68,6 @@ function pick(i: number) {
 <style scoped>
 .hse {
   background: var(--white);
-}
-
-/* The sector road: desktop only, in a box beside the heading. */
-.hse__road {
-  display: none;
-}
-
-@media (min-width: 1025px) {
-  .hse__top {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: end;
-    gap: var(--s-64);
-    margin-bottom: var(--head-gap);
-  }
-
-  /* The heading (eyebrow, title, lead) stacks on the left of the road. */
-  .hse__header {
-    margin-bottom: 0;
-  }
-
-  .hse__road {
-    display: block;
-    height: 320px;
-  }
 }
 
 .hse__list {

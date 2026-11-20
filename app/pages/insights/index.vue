@@ -19,7 +19,7 @@ const { data: articles } = await useAsyncData('insights-index', () =>
 
 <template>
   <div>
-    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" road="service" :text-width="680" />
+    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" :drawing="{ icon: 'document', code: 'C4-060' }" :text-width="680" />
 
     <section class="c4-section c4-section--paper" aria-labelledby="in-list">
       <div class="c4-wrap">

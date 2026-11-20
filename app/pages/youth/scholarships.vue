@@ -15,7 +15,7 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Youth and skills', to: '/y
 
 <template>
   <div>
-    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" road="service" :text-width="640" />
+    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" :drawing="{ icon: 'training', code: 'C4-072' }" :text-width="640" />
 
     <!-- The status block (one content block, I3 note) -->
     <section v-if="page.status.state === 'coming-soon'" class="c4-section c4-section--paper" aria-labelledby="sc-status">

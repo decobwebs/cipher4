@@ -19,6 +19,7 @@ export default defineNuxtConfig({
     '~/assets/css/pages.css',
     '~/assets/css/forms.css',
     '~/assets/css/motion.css',
+    '~/assets/css/blueprint.css',
   ],
 
   // Components live in app/components/c4/** and are registered by their
@@ -119,6 +120,9 @@ export default defineNuxtConfig({
 
   nitro: {
     preset: 'static',
+    // C4_OUTPUT_DIR builds somewhere else, so a running `nuxi preview` (which
+    // holds .output open) does not block a test build. Unset: .output.
+    ...(process.env.C4_OUTPUT_DIR ? { output: { dir: process.env.C4_OUTPUT_DIR } } : {}),
     prerender: {
       crawlLinks: true,
       // `/_styleguide` and `/_roads` are linked from nowhere, so the crawler

@@ -14,7 +14,7 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Careers' }]
 
 <template>
   <div>
-    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" road="case" :text-width="680" />
+    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" :drawing="{ icon: 'one-partner', code: 'C4-080' }" :text-width="680" />
 
     <section class="c4-section c4-section--paper" aria-label="What we look for and what you get">
       <div v-m="'cards'" class="c4-wrap c4p-grid-2">

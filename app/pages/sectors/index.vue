@@ -19,7 +19,7 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Sectors' }]
 
 <template>
   <div>
-    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" road="sector-maritime" :text-width="680" />
+    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" :drawing="{ icon: 'specialists', code: 'C4-020' }" :text-width="680" />
 
     <section class="c4-section c4-section--paper" aria-labelledby="sx-list">
       <div class="c4-wrap">

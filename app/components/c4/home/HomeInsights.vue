@@ -1,10 +1,14 @@
 <script setup lang="ts">
 /** Insights (content C10). Two article cards; on phones they swipe sideways. */
 import { insights } from '~/data/home'
+
+const sheet = useTemplateRef<HTMLElement>('sheet')
+useSheetStack(sheet)
 </script>
 
 <template>
-  <section class="hi c4-section c4-section--paper" aria-labelledby="hi-title">
+  <!-- Sheet stack: slides up over Technologies. -->
+  <section ref="sheet" class="hi c4-section c4-section--paper" data-sheet aria-labelledby="hi-title">
     <div class="c4-wrap">
       <SectionHeader title-id="hi-title" :eyebrow="insights.eyebrow" :title="insights.title">
         <template #action>

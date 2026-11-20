@@ -18,7 +18,7 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Credentials' }]
 
 <template>
   <div>
-    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" road="case" :text-width="680">
+    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" :drawing="{ icon: 'check', code: 'C4-051' }" :text-width="680">
       <template #actions>
         <C4Button :to="page.cta.to" arrow>{{ page.cta.label }}</C4Button>
       </template>

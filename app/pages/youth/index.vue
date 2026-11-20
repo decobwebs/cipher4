@@ -15,7 +15,7 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Youth and skills' }]
 
 <template>
   <div>
-    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" road="service" :text-width="720" />
+    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" :drawing="{ icon: 'education-technology', code: 'C4-070' }" :text-width="720" />
 
     <section class="c4-section c4-section--paper" aria-labelledby="yo-focus">
       <div class="c4-wrap">

@@ -105,7 +105,6 @@ useSeoMeta({
 
 .nf__road {
   height: 460px;
-  border-top: 1px solid var(--line);
 }
 
 @media (max-width: 900px) {

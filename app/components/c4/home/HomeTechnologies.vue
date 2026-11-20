@@ -8,7 +8,9 @@ import { technologies } from '~/data/home'
 </script>
 
 <template>
-  <section class="ht c4-section" aria-labelledby="ht-title">
+  <!-- Colour wash. -->
+  <section class="ht c4-section bp-host" aria-labelledby="ht-title">
+    <BlueprintGround kind="wash" fade />
     <div class="c4-wrap">
       <SectionHeader title-id="ht-title" :eyebrow="technologies.eyebrow" :title="technologies.title">
         <template #action>

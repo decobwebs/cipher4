@@ -14,7 +14,7 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Youth and skills', to: '/y
 
 <template>
   <div>
-    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" road="case" :text-width="680">
+    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" :drawing="{ icon: 'pilot', code: 'C4-071' }" :text-width="680">
       <template #actions>
         <C4Button to="#lp-form" arrow>{{ page.form.title }}</C4Button>
       </template>
@@ -52,8 +52,12 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Youth and skills', to: '/y
 
     <section id="lp-form" class="c4-section c4-section--paper" aria-labelledby="lp-form-title">
       <div class="c4-wrap c4p-split">
+        <!-- Sticky: the heading and a drawing stay beside the long form. -->
         <div class="c4p-split__head">
           <h2 id="lp-form-title" class="c4-h2">{{ page.form.title }}</h2>
+          <div class="lp-form__drawing">
+            <BlueprintDrawing icon="design" code="C4-073" :title="page.form.title" />
+          </div>
         </div>
         <div v-m="'rise'" class="c4-card lp-form">
           <LaunchpadForm />
@@ -118,6 +122,17 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Youth and skills', to: '/y
 
 .lp-look li:last-child {
   border-bottom: 1px solid var(--line);
+}
+
+.lp-form__drawing {
+  width: min(360px, 100%);
+  margin-top: var(--s-24);
+}
+
+@media (max-width: 1100px) {
+  .lp-form__drawing {
+    display: none;
+  }
 }
 
 .lp-form {

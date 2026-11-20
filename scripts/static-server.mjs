@@ -2,7 +2,7 @@ import { createServer } from 'node:http'
 import { readFile, stat } from 'node:fs/promises'
 import { join, extname } from 'node:path'
 
-const ROOT = '.output/public'
+const ROOT = process.env.ROOT || '.output/public'
 const PORT = Number(process.env.PORT || 3200)
 const TYPES = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript',

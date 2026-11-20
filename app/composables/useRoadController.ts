@@ -473,6 +473,26 @@ export function useRoadController() {
     },
 
     /**
+     * After a page change (owner, 20 Nov 2026: "some roads only start after
+     * a refresh"): look at every road again from scratch. Each one is
+     * re-observed, so its visibility and nearness are measured afresh on the
+     * new page, and a road that is near but not yet set up starts.
+     */
+    recheck() {
+      if (!visObserver || !nearObserver) return
+      for (const e of entries) {
+        visObserver.unobserve(e.el)
+        visObserver.observe(e.el)
+        if (!e.handle) {
+          nearObserver.unobserve(e.el)
+          nearObserver.observe(e.el)
+        }
+      }
+      lastBest = null
+      schedule()
+    },
+
+    /**
      * Choreography 24, between pages: the road on screen stretches its light
      * trails for 400 ms while the next page fades in. A road that arrives on
      * the new page within the next second starts with the same burst.

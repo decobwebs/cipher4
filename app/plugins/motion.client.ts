@@ -23,6 +23,7 @@
  */
 import { motionAllowed, provideMotionLibs, getMotionLibs } from '~/composables/useMotion'
 import { useMenuOpen } from '~/composables/useScrollState'
+import { sheetStack } from '~/utils/sheetStack'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const router = useRouter()
@@ -35,6 +36,11 @@ export default defineNuxtPlugin((nuxtApp) => {
   // --- Page changes ---------------------------------------------------------
   router.beforeEach((to, from) => {
     if (to.path !== from.path) roads.burst()
+  })
+  // After every page change (links, Back, Forward), with or without motion:
+  // every road on the new page is checked again from scratch.
+  nuxtApp.hook('page:finish', () => {
+    requestAnimationFrame(() => requestAnimationFrame(() => roads.recheck()))
   })
 
   if (!motionAllowed()) return
@@ -74,8 +80,11 @@ export default defineNuxtPlugin((nuxtApp) => {
 
     provideMotionLibs({ gsap, ScrollTrigger, lenis })
     seams()
+    inner = innerTransitions(gsap, ScrollTrigger)
     watchHeight(ScrollTrigger, lenis)
   }
+
+  let inner: (() => void) | null = null
 
   // The new page: start at the top (or at its #anchor), add its seams and
   // measure again.
@@ -88,6 +97,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     else l.lenis?.scrollTo(0, { immediate: true, force: true })
     requestAnimationFrame(() => {
       seams()
+      inner?.()
+      inner = innerTransitions(l.gsap, l.ScrollTrigger)
       l.ScrollTrigger.refresh()
     })
   })
@@ -151,4 +162,44 @@ function seams() {
     if (above && above !== own) el.dataset.seam = above
     above = own
   }
+}
+
+// --- Inner pages: section transitions (owner, 20 Nov 2026) -----------------------
+// The home page sets its own, section by section. On every other page:
+//   - the first section after the page header is a sheet that slides up
+//     over the header (sheet stack)
+//   - paper and mist sections draw their texture in as they enter, by turns
+//     the grid drawing in from the left edge, and a colour wash
+// Returns a function that undoes it all (called on the next page change).
+function innerTransitions(
+  gsap: typeof import('gsap').gsap,
+  ScrollTrigger: typeof import('gsap/ScrollTrigger').ScrollTrigger,
+): () => void {
+  let page = document.querySelector('#main > div')
+  if (!page) return () => {}
+  while (page.children.length === 1 && page.firstElementChild?.tagName === 'DIV') page = page.firstElementChild
+  const blocks = [...page.children].filter((el): el is HTMLElement => el instanceof HTMLElement)
+  if (!blocks[0]?.classList.contains('ph')) return () => {}
+  const undo: (() => void)[] = []
+
+  // Its shape (rounded top, shadow) is in the CSS from the first paint
+  // (.ph + section, motion.css); this only adds the movement.
+  const sheet = blocks[1]
+  if (sheet && sheet.tagName === 'SECTION') undo.push(sheetStack(gsap, ScrollTrigger, sheet))
+
+  let turn = 0
+  const io = new IntersectionObserver((list) => {
+    for (const e of list) {
+      if (!e.isIntersecting) continue
+      ;(e.target as HTMLElement).setAttribute('data-bp-in', '')
+      io.unobserve(e.target)
+    }
+  }, { rootMargin: '0px 0px -8% 0px' })
+  for (const el of blocks.slice(1)) {
+    if (!el.matches('.c4-section--paper:not(.bp-host), .c4-section--mist:not(.bp-host)')) continue
+    el.setAttribute('data-bp-enter', turn++ % 2 ? 'wash' : 'grid')
+    io.observe(el)
+  }
+  undo.push(() => io.disconnect())
+  return () => { for (const u of undo) u() }
 }

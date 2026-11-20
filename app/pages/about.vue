@@ -15,16 +15,19 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'About' }]
 
 <template>
   <div>
-    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" road="service" :text-width="720" />
+    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" :drawing="{ icon: 'accountability', code: 'C4-050' }" :text-width="720" />
 
     <!-- Mission and vision -->
     <section class="c4-section c4-section--paper" aria-labelledby="ab-mission">
       <div class="c4-wrap ab-mv">
         <!-- The mission and vision rise from behind a clean edge, like the hero. -->
+        <div class="ab-mv__row">
         <div v-m="'lines'" class="ab-mv__block">
           <Eyebrow class="m-after" style="--i: -3">{{ page.mission.label }}</Eyebrow>
           <h2 id="ab-mission" class="c4p-statement"><span class="m-mask"><span class="m-line">{{ page.mission.statement }}</span></span></h2>
           <p class="c4-lead m-after">{{ page.mission.text }}</p>
+        </div>
+        <MissionDiagram class="ab-mv__diagram" />
         </div>
         <div v-m="'lines'" class="ab-mv__block ab-mv__block--vision">
           <Eyebrow class="m-after" style="--i: -3">{{ page.vision.label }}</Eyebrow>
@@ -114,6 +117,21 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'About' }]
   display: flex;
   flex-direction: column;
   gap: var(--s-96);
+}
+
+/* Mission on the left, its diagram on the right (no empty column). */
+.ab-mv__row {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: var(--s-64);
+  align-items: center;
+}
+
+@media (max-width: 1024px) {
+  .ab-mv__row {
+    grid-template-columns: 1fr;
+    gap: var(--s-32);
+  }
 }
 
 .ab-mv__block {

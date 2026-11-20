@@ -10,6 +10,7 @@
  * case studies have no lead (LucidHR has its own, from F4).
  */
 import { caseBySlug, CASE_LABELS, type Case } from '~/data/work'
+import type { C4IconName } from '~/lib/icons'
 
 const props = defineProps<{ item: Case }>()
 const c = computed(() => props.item)
@@ -21,6 +22,14 @@ useSeoMeta({
   ogTitle: () => c.value.seo.title,
   ogDescription: () => c.value.seo.description,
 })
+
+// Header drawing (owner, 20 Nov 2026): the platform's kind of work.
+const DRAWINGS: Record<string, { icon: C4IconName; code: string }> = {
+  'reliant-anchor': { icon: 'job-control', code: 'C4-031' },
+  harbours360: { icon: 'digital-platforms', code: 'C4-032' },
+  lucidhr: { icon: 'ai-automation', code: 'C4-033' },
+}
+const drawing = computed(() => DRAWINGS[c.value.slug] ?? { icon: 'operational-platforms' as C4IconName, code: 'C4-039' })
 
 const crumbs = computed(() => c.value.kind === 'product'
   ? [{ label: 'Home', to: '/' }, { label: 'Work', to: '/work' }, { label: 'LucidHR' }]
@@ -61,7 +70,7 @@ useScrollMoment(({ gsap }) => {
       :eyebrow="c.eyebrow"
       :title="c.title"
       :lead="c.lead"
-      :road="c.road"
+      :drawing="drawing"
       size="case"
       :text-width="720"
       :min-height="660"
@@ -262,11 +271,31 @@ useScrollMoment(({ gsap }) => {
   gap: var(--s-12);
 }
 
+/* Large outlined numerals, like a drafting stencil, so the step's column
+   carries weight beside its text (owner, 20 Nov 2026: no empty columns).
+   Decorative (aria-hidden); the step's name is the heading. */
 .cs-step__n {
-  font-family: var(--font-mono);
-  font-size: 40px;
-  letter-spacing: -0.02em;
-  color: #C2C9D8;
+  position: relative;
+  padding-left: var(--s-24);
+  font-family: var(--font-sans);
+  font-size: clamp(88px, 9vw, 144px);
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--indigo);
+}
+
+/* A measuring tick down its left side. */
+.cs-step__n::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8%;
+  bottom: 8%;
+  width: 9px;
+  border-top: 1px solid var(--line-2);
+  border-bottom: 1px solid var(--line-2);
+  background: linear-gradient(var(--line-2), var(--line-2)) center / 1px 100% no-repeat;
 }
 
 .cs-step__name {
@@ -426,7 +455,7 @@ useScrollMoment(({ gsap }) => {
   }
 
   .cs-step__n {
-    font-size: 28px;
+    font-size: 56px;
   }
 }
 

@@ -14,7 +14,7 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Technologies' }]
 
 <template>
   <div>
-    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" road="service" :text-width="680" />
+    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" :drawing="{ icon: 'works-with-what-you-have', code: 'C4-040' }" :text-width="680" />
 
     <section class="c4-section c4-section--paper" aria-labelledby="tx-list">
       <div class="c4-wrap">
@@ -64,6 +64,11 @@ const crumbs = [{ label: 'Home', to: '/' }, { label: 'Technologies' }]
 
 .tx-close {
   padding-bottom: var(--s-96);
+  text-align: center;
+}
+
+.tx-close .c4p-statement {
+  margin-inline: auto;
 }
 
 @media (max-width: 900px) {

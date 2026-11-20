@@ -756,3 +756,29 @@ html.c4-lenis body {
     transform: none;
   }
 }
+
+/* --- Sheet stack (utils/sheetStack.ts) ---------------------------------------------
+   The incoming section is a sheet of drawing paper: 32 px rounded top
+   corners and a soft shadow, sitting over the one before it. Static, so even
+   without motion there is no straight edge between the two. */
+[data-sheet],
+.ph + section {
+  position: relative;
+  z-index: 2;
+  margin-top: -32px;
+  border-radius: 32px 32px 0 0;
+  box-shadow: 0 -18px 48px rgba(16, 32, 104, 0.08), 0 -1px 0 rgba(16, 32, 104, 0.04);
+}
+
+/* A sheet needs its own paper, so the header never shows through it. */
+.ph + section:not(.c4-section--paper):not(.c4-section--mist) {
+  background-color: var(--white);
+}
+
+@media (max-width: 767px) {
+  [data-sheet],
+  .ph + section {
+    margin-top: -24px;
+    border-radius: 24px 24px 0 0;
+  }
+}

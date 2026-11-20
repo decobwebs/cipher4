@@ -9,7 +9,7 @@
  * are not in the content file, so they are not used.
  */
 import {
-  serviceBySlug, sectorRows, SERVICE_EYEBROW, PROBLEMS_TITLE, SECTORS_TITLE, RELATED_TITLE,
+  serviceBySlug, services, sectorRows, SERVICE_EYEBROW, PROBLEMS_TITLE, SECTORS_TITLE, RELATED_TITLE,
 } from '~/data/services'
 import { mainNav } from '~/data/site'
 import { clients } from '~/data/home'
@@ -49,7 +49,7 @@ const logoFor = (name: string) => clients.logos.find((l) => l.name === name)
       :eyebrow="SERVICE_EYEBROW"
       :title="service.title"
       :lead="service.lead"
-      road="service"
+      :drawing="{ icon: service.icon, code: `C4-01${services.findIndex((x) => x.slug === service.slug) + 1}` }"
     >
       <template #actions>
         <C4Button :to="service.cta.to" arrow>{{ service.cta.label }}</C4Button>

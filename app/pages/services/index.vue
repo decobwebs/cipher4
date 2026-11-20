@@ -34,7 +34,7 @@ const lineFor = (s: (typeof services)[number]) =>
 
 <template>
   <div>
-    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" road="service" :text-width="680">
+    <PageHero :crumbs="crumbs" :eyebrow="page.eyebrow" :title="page.title" :lead="page.lead" :drawing="{ icon: 'design', code: 'C4-010' }" :text-width="680">
       <template #actions>
         <C4Button :to="page.primary.to" arrow>{{ page.primary.label }}</C4Button>
         <C4Button :to="page.secondary.to" variant="secondary">{{ page.secondary.label }}</C4Button>
@@ -75,12 +75,10 @@ const lineFor = (s: (typeof services)[number]) =>
       </div>
     </section>
 
-    <RoadStrip />
-
     <!-- How we deliver: each stage checked off like a manifest. -->
     <section id="delivery" class="c4-section c4-section--white so-delivery" aria-labelledby="so-delivery">
       <div class="c4-wrap">
-        <SectionHeader title-id="so-delivery" :eyebrow="delivery.eyebrow" :title="delivery.title" :lead="delivery.lead" />
+        <SectionHeader layout="split" title-id="so-delivery" :eyebrow="delivery.eyebrow" :title="delivery.title" :lead="delivery.lead" />
         <table v-m="'manifest'" class="so-table">
           <thead>
             <tr>

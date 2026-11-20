@@ -14,7 +14,7 @@ Each new decision the owner makes is added here, with its date. Newer entries wi
 3. Reports are written in plain, simple language.
 
 ### Roads
-4. **Road experiments kept on real pages:**
+4. **Road experiments kept on real pages** *(narrowed on 2026-11-20: see "Design direction change" below; the Sector road is removed)*:
    - Arrival: home hero, once per visit
    - Steering: desktop with a mouse only
    - Sector road: home Sectors section, desktop only
@@ -23,7 +23,7 @@ Each new decision the owner makes is added here, with its date. Newer entries wi
 5. **Dropped:** Day to night.
 6. **Demo only:** Spine and Launch stay on `/_roads` only, never on real pages.
 7. **No loops or folds on any road**, except the home hero, which stays exactly as it is.
-8. **Header roads between 900 and 1100 px wide** sit in a band under the text.
+8. **Header roads between 900 and 1100 px wide** sit in a band under the text. *(From 2026-11-20 only the contact header keeps a road.)*
 
 ### Content and naming
 9. Use technology **names**, not company logos.
@@ -56,11 +56,63 @@ Each new decision the owner makes is added here, with its date. Newer entries wi
 | 2026-11-18 | The Critical operations support tier (1 hour, 24/7) stays out. |
 | 2026-11-18 | "Last updated" on Privacy and Terms stays hidden until launch day. |
 | 2026-11-18 | Old unused files (old header, footer, mobile menu and default layout, old small components, old data files, legacy styles) may be deleted, after checking nothing still uses them. |
-| 2026-11-18 | Header road choices per page (Phase 5) are approved: Sectors uses the maritime road; Our work, Credentials, Careers and Launchpad the long straight road; the other pages the service road; articles, Privacy and Terms have no road. |
+| 2026-11-18 | *(Superseded 2026-11-20: inner headers get blueprint drawings, not roads.)* Header road choices per page (Phase 5) are approved: Sectors uses the maritime road; Our work, Credentials, Careers and Launchpad the long straight road; the other pages the service road; articles, Privacy and Terms have no road. |
 | 2026-11-19 | **Phase 6 not approved.** Fix list from the owner's local test (items below). Phase 6 is not done until every item on the animation checklist works smoothly. |
 | 2026-11-19 | **Performance.** Lenis driven by `gsap.ticker`, ScrollTrigger updated on every Lenis scroll, lag smoothing off, and ScrollTrigger refreshed after fonts, images and page changes. Test on the production build (`npx nuxi build`, then `npx nuxi preview`), not only dev mode, and measure the frame rate while scrolling each page. Report Home and a service page before and after fixes. Only one road runs at a time; roads off screen stop completely. |
-| 2026-11-19 | **How we deliver (desktop) is a horizontal scroll section:** the section pins; scrolling down moves the six stages sideways, left to right; the light-speed road runs horizontally across the section beneath the stages, moving at scroll speed and stopping when scrolling stops; each stage lights as it reaches the centre; after the last stage the page continues normally; scrolling up reverses everything. **Phones and tablets:** no pinning, a vertical timeline where stages light as you scroll. Text never sits on the road. |
+| 2026-11-19 | *(Superseded 2026-11-20: the blueprint build replaces it.)* **How we deliver (desktop) is a horizontal scroll section:** the section pins; scrolling down moves the six stages sideways, left to right; the light-speed road runs horizontally across the section beneath the stages, moving at scroll speed and stopping when scrolling stops; each stage lights as it reaches the centre; after the last stage the page continues normally; scrolling up reverses everything. **Phones and tablets:** no pinning, a vertical timeline where stages light as you scroll. Text never sits on the road. |
 | 2026-11-19 | **Inner-page roads** must not break (flicker, freeze, wrong shape or blank) on any page that has a road. Find the exact cause and fix it everywhere. |
 | 2026-11-19 | **Work page logos:** every logo in the same box (max 160 px wide by 48 px tall), scaled to fit with the same visual weight, in solid ink `#0E1222`, never grey, stretched or blurred. Logo files too low in quality to look sharp are reported; the owner will supply better files in `design-handoff/client-logos/`. |
 | 2026-11-19 | **Checklist:** all 24 Choreography animations, plus the scroll-linked moments (hero exit, mission words, How we deliver, section strips) and page transitions, each marked working / partly working / not built, with its page. Every item must be finished. |
 | 2026-11-19 | **Phase 6 sign-off recordings:** a short screen recording of the home page (from the production build) and a service page, at desktop and phone sizes. |
+
+## Design direction change (2026-11-20)
+
+Phase 6 not approved after reviewing the production build. Everything below replaces any earlier decision it conflicts with.
+
+### A. The road: only where it means something
+The road means "an operation in motion": decisions going out, information coming back. It stays **only** on:
+- the home hero
+- the closing band
+- the contact page header (with Message sent)
+- the 404 page
+
+Removed everywhere else: the section strips, the home Sectors road, How we deliver, and all other inner-page headers.
+- **Home hero:** the road gets its own area on the right half of the hero, so the whole road shows (amber and indigo sides), with only a soft fade at that area's left edge. It never sits behind text.
+- **Bug to fix:** roads must start correctly after client-side page changes (route changes, page transitions, back and forward). Re-initialise on every route change, call `ScrollTrigger.refresh()`, and test by clicking between pages without reloading.
+
+### B. Second brand language: the blueprint
+Based on the owner's blueprint T-shirt design: an engineer's drawing.
+- **Grid paper:** 1 px lines in `#1A3AB5` at 6 to 8% opacity, 48 px squares, fading out at the edges with a radial mask.
+- **Dot grid:** 1.5 px dots at the same spacing.
+- **Construction details:** thin crosshair registration marks at section corners, measurement ticks along an edge, small drawing-sheet labels in Geist Mono ("SHEET 03 / 12", "DWG C4-0xx") at 50% opacity.
+- **Illustrations** are line drawings (1.5 px indigo lines, amber nodes) that draw themselves as they enter the screen.
+- **Backgrounds rotate** down the page: white, grid paper, dot grid, soft paper-to-mist gradients. Never two plain sections in a row. Text contrast stays WCAG AA everywhere.
+- **Inner page headers:** the road is replaced by a large blueprint drawing of that page's icon, drawn with construction lines, guide circles and measurements, drawing itself on load.
+
+### C. No empty columns
+Design rule: a column must never sit empty next to content.
+1. **Mission:** under the mission sentence on the left, a blueprint diagram of "Sense → Decide → Prove": three nodes on grid paper joined by lines, each with a small mono label. The paragraph stays on the right. The nodes light up in order as it enters.
+2. **What you can expect from us:** the left column is sticky (heading and a large blueprint drawing). As each promise reaches the middle of the screen, the drawing changes to that promise's icon, drawn large in blueprint style, with a crossfade.
+3. **Every page:** any column or area left visibly empty next to content gets a meaningful element or a better layout. Report the list of changes.
+
+### D. How we deliver: a blueprint that builds itself
+The horizontal road is removed. Desktop pins; phones get a vertical version with no pinning.
+- 01 Discovery: a survey grid draws and measurement points appear
+- 02 Design: construction lines draw the plan of a system (modules as outlined boxes, connections as dashed lines)
+- 03 Pilot: one module fills solid indigo
+- 04 Deployment: all modules fill and the connections turn solid
+- 05 Training: small people nodes appear around the system
+- 06 Support: a live amber pulse travels around the connections in a loop
+
+The stage text sits beside the drawing, never on it. The active stage is highlighted; scrolling back reverses each step.
+
+### E. Section transitions: no straight dividing lines
+No hard horizontal lines or flat edges between sections. Varied down the page, with GSAP ScrollTrigger and Lenis:
+- **Sheet stack:** the next section slides up over the previous one like a sheet of drawing paper (32 px top corners, soft shadow); the previous section scales to 0.97 and dims slightly.
+- **Grid draw-in:** the new section's grid lines draw in from one edge before its content arrives.
+- **Colour wash:** the background colour changes smoothly as the section enters.
+
+Every entrance still follows the Choreography rules: plays once, text never hidden more than 0.6 s, only transform and opacity animated, still with reduced motion.
+
+### Sign-off for this round
+Screenshots of the home page sections (desktop and phone), a screen recording of the full home page scroll and of one service page, and the C3 list. Then stop and wait for approval.

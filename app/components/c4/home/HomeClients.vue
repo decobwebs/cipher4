@@ -56,9 +56,9 @@ const deskH: Record<string, number> = {
 </template>
 
 <style scoped>
+/* No ruled lines above and below (owner, 20 Nov 2026: no straight
+   dividing lines between sections). */
 .hc {
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
   background: var(--white);
 }
 

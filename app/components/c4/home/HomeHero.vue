@@ -71,14 +71,28 @@ useScrollMoment(({ ScrollTrigger }) => {
   background: var(--white);
 }
 
-/* The road fills the hero, header area included (as on the board). */
+/* The road has its own area on the right half of the hero (owner, 20 Nov
+   2026): from just before the end of the text column to the right edge, so
+   the whole road shows, amber and indigo sides, and it never sits behind
+   the words. The library centres the road in its canvas, so it sits in the
+   middle of this area. Only the area's first 120 px fade in, inside the
+   gap between the words and the road. */
 .hh__road {
   position: absolute;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: calc(max(0px, 50% - 660px) + var(--gutter) + 680px + var(--s-24));
 }
 
 .hh__road :deep(.c4-road--hero) {
-  --road-text: 680px;
+  opacity: 1;
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0, #000 120px),
+    linear-gradient(180deg, #000 70%, transparent 100%);
+  mask-image:
+    linear-gradient(90deg, transparent 0, #000 120px),
+    linear-gradient(180deg, #000 70%, transparent 100%);
 }
 
 .hh__inner {
@@ -158,6 +172,12 @@ useScrollMoment(({ ScrollTrigger }) => {
     order: 1;
     height: 330px;
     margin-top: calc(-1 * var(--s-8));
+  }
+
+  /* Its own band under the words: full width, a soft fade top and bottom. */
+  .hh__road :deep(.c4-road--hero) {
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 70%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 70%, transparent 100%);
   }
 }
 </style>

@@ -29,6 +29,10 @@ useSeoMeta({
   articlePublishedTime: () => article.value?.date,
 })
 
+// The article's own section headings, for the "On this page" rail beside
+// the text (owner, 20 Nov 2026: no empty column next to content).
+const toc = computed(() => ((article.value?.body as { toc?: { links?: { id: string; text: string }[] } } | undefined)?.toc?.links ?? []))
+
 const crumbs = computed(() => [
   { label: 'Home', to: '/' },
   { label: insightsPage.eyebrow, to: '/insights' },
@@ -38,7 +42,7 @@ const crumbs = computed(() => [
 
 <template>
   <div v-if="article">
-    <PageHero :crumbs="crumbs" :eyebrow="insightsPage.eyebrow" :title="article.title" :lead="article.description" size="case" :min-height="0" :text-width="880">
+    <PageHero :crumbs="crumbs" :eyebrow="insightsPage.eyebrow" :title="article.title" :lead="article.description" size="case" :min-height="0" :text-width="760" :drawing="{ icon: 'document', code: 'C4-061' }">
       <template #meta>
         <p class="ar-meta">
           <span class="c4-label">{{ article.sector }}</span>
@@ -52,7 +56,15 @@ const crumbs = computed(() => [
 
     <section class="c4-section ar-body" aria-label="Article">
       <div class="c4-wrap">
-        <ContentRenderer :value="article" class="c4p-prose" />
+        <div class="ar-layout">
+          <ContentRenderer :value="article" class="c4p-prose" />
+          <nav v-if="toc.length" class="ar-toc" aria-label="On this page">
+            <p class="c4-label ar-toc__title">On this page</p>
+            <ul>
+              <li v-for="l in toc" :key="l.id"><a :href="`#${l.id}`">{{ l.text }}</a></li>
+            </ul>
+          </nav>
+        </div>
       </div>
     </section>
 
@@ -65,6 +77,12 @@ const crumbs = computed(() => [
               <span class="c4-label">{{ a.sector }} · {{ a.readingTime }}</span>
               <span class="c4p-link-card__title">{{ a.title }}</span>
               <span class="c4p-arrow">Read<C4Glyph name="arrow" /></span>
+            </NuxtLink>
+          </li>
+          <li class="m-card" :style="{ '--i': others.length }">
+            <NuxtLink to="/insights" class="c4-card c4p-link-card ar-all">
+              <span class="c4p-link-card__title">All insights</span>
+              <span class="c4p-arrow">Insights<C4Glyph name="arrow" /></span>
             </NuxtLink>
           </li>
         </ul>
@@ -97,7 +115,58 @@ const crumbs = computed(() => [
 
 .ar-body {
   padding-top: var(--s-64);
-  border-top: 1px solid var(--line);
+}
+
+/* The text at reading width, the section list beside it (sticky). */
+.ar-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 68ch) minmax(220px, 1fr);
+  gap: var(--s-96);
+  align-items: start;
+}
+
+.ar-toc {
+  position: sticky;
+  top: 120px;
+  padding-left: var(--s-24);
+  border-left: 1px solid var(--line-2);
+}
+
+.ar-toc__title {
+  margin-bottom: var(--s-12);
+}
+
+.ar-toc ul {
+  list-style: none;
+}
+
+.ar-toc a {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--slate);
+  transition: color var(--dur-ui) var(--ease-out);
+}
+
+.ar-toc a:hover {
+  color: var(--indigo);
+}
+
+.ar-all {
+  justify-content: space-between;
+  background: var(--white);
+}
+
+@media (max-width: 1100px) {
+  .ar-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .ar-toc {
+    display: none;
+  }
 }
 
 .ar-more__title {

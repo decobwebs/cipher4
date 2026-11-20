@@ -53,6 +53,7 @@ const ctl = useRoadController()
 let handle: RoadHandle | null = null
 let entry: RoadEntry | null = null
 let unmounted = false
+let starting = false
 
 const stillMeta = computed(() => (road.value as { still?: { desktop: [number, number]; mobile: [number, number]; sizes: string } }).still)
 const stillSet = computed(() => {
@@ -113,6 +114,9 @@ onMounted(() => {
     // Set up in an idle moment once near the screen, so the WebGL set-up
     // never lands in the middle of a scroll frame.
     onNear: () => {
+      // Once only: a page change re-checks every road (useRoadController).
+      if (starting) return
+      starting = true
       const ric = (window as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => void }).requestIdleCallback
       if (ric) ric(() => { start() }, { timeout: 600 })
       else setTimeout(() => { start() }, 50)
