@@ -151,6 +151,26 @@
   color: var(--danger);
 }
 
+.c4 .c4f-setup {
+  border-color: var(--line-2);
+  background: var(--paper);
+}
+
+.c4 .c4f-setup:focus {
+  outline: none;
+}
+
+.c4 .c4f-setup__title {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.c4 .c4f-setup a {
+  color: var(--indigo);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .c4 .c4f-done {
   display: flex;
   align-items: center;

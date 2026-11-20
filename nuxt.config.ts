@@ -129,6 +129,8 @@ export default defineNuxtConfig({
       // cannot find them.
       routes: [
         '/', '/sitemap.xml', '/robots.txt', '/_styleguide', '/_roads',
+        // The share-card page, which scripts/make-og-images.mjs photographs.
+        '/_og',
         // Phase 2b road experiments (internal, removed at launch).
         '/_roads/demos', '/_roads/arrival', '/_roads/sectors', '/_roads/steering',
         '/_roads/message-sent', '/_roads/not-found', '/_roads/spine', '/_roads/launch',
@@ -140,7 +142,8 @@ export default defineNuxtConfig({
   },
 
   // Old addresses move permanently (301) to their new pages, so links and
-  // search rankings carry over (content B1). Phase 7 adds a test for each.
+  // search rankings carry over (content B1). scripts/check-redirects.mjs
+  // tests each one.
   // These give a true 301 in the dev server. The static build can only
   // write "refresh" pages for them, so vercel.json repeats the same list as
   // real 301s for the live host. Keep the two lists the same.

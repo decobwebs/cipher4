@@ -9,8 +9,12 @@
  * (useContactForm), with its honeypot. Emits `sent` on success, so the page
  * can play the Message sent road effect.
  *
- * Phase 7 adds the J2 field messages, ?type= and ?sector= prefill, and the
- * test with the owner's key. Until a key is set, sending shows the J2 error.
+ * Phase 7: the J2 field messages (useFieldMessages); prefill from the
+ * address (?type=quote opens the quote tab; ?type=documents, ?type=reference
+ * and ?topic=lucidhr-waitlist open General enquiry with that heading as the
+ * message's first line; ?sector= picks the sector); and, until the owner's
+ * Web3Forms key is in the build, the "Setup needed" notice with the email
+ * address (nothing is sent without a key).
  */
 import {
   forms, fieldLabels, sectorOptions, serviceOptions, timelineOptions, tenderOptions,
@@ -29,10 +33,53 @@ const form = reactive({
   timeline: '', tender: '', message: '', botcheck: '',
 })
 
-const { state, submit } = useContactForm('Cipher4 website')
+const { state, isConfigured, submit } = useContactForm('Cipher4 website')
 const formEl = ref<HTMLFormElement | null>(null)
 const doneEl = ref<HTMLElement | null>(null)
 const errorEl = ref<HTMLElement | null>(null)
+const setupEl = ref<HTMLElement | null>(null)
+useFieldMessages(formEl)
+
+// --- Prefill from the address (content J2 note) ------------------------------
+const SECTOR_BY_PARAM: Record<string, string> = {
+  maritime: 'Maritime and ports',
+  'maritime-and-ports': 'Maritime and ports',
+  'oil-and-gas': 'Oil and gas',
+  logistics: 'Logistics and transport',
+  'logistics-and-transport': 'Logistics and transport',
+  'supply-chain': 'Supply chain and procurement',
+  'supply-chain-and-procurement': 'Supply chain and procurement',
+}
+const HEADINGS: Record<string, string> = {
+  documents: 'Documents for prequalification',
+  reference: 'Reference request',
+  'lucidhr-waitlist': 'LucidHR waitlist',
+}
+
+function prefill(q: URLSearchParams) {
+  const t = q.get('type') ?? ''
+  if (t === 'quote') type.value = 'quote'
+  else if (t) type.value = 'general'
+  const heading = HEADINGS[t] ?? HEADINGS[q.get('topic') ?? '']
+  // The heading becomes the message's first line, with a blank line after it.
+  if (heading && !form.message.startsWith(heading)) form.message = [heading, '', form.message].join('\n')
+  const s = (q.get('sector') ?? '').toLowerCase()
+  if (s) form.sector = SECTOR_BY_PARAM[s] ?? sectorOptions.find((o) => o.toLowerCase() === s) ?? form.sector
+}
+
+const route = useRoute()
+const queryOf = () => new URLSearchParams(route.fullPath.split('?')[1] ?? '')
+onMounted(() => {
+  let q = queryOf()
+  // On a first load the router can briefly drop the query from the address
+  // (see the head script in nuxt.config): use the copy kept at load, once.
+  const w = window as unknown as { __c4Search?: string; __c4Prefilled?: boolean }
+  if (![...q.keys()].length && !w.__c4Prefilled && location.pathname.replace(/\/$/, '') === '/contact') q = new URLSearchParams(w.__c4Search ?? '')
+  w.__c4Prefilled = true
+  prefill(q)
+})
+// A prefill link followed while already on the contact page.
+watch(() => route.fullPath, () => prefill(queryOf()))
 
 // --- Tabs (arrow keys move between them) ------------------------------------
 function onTabKey(e: KeyboardEvent, i: number) {
@@ -91,6 +138,8 @@ async function onSubmit() {
   if (ok) {
     emit('sent')
     doneEl.value?.focus()
+  } else if (state.value === 'setup') {
+    setupEl.value?.focus()
   } else {
     errorEl.value?.focus()
   }
@@ -137,6 +186,12 @@ async function onSubmit() {
         @submit.prevent="formEl?.reportValidity() && onSubmit()"
       >
         <p class="cf-intro">{{ f.intro }}</p>
+
+        <!-- No Web3Forms key in this build: say so, with the email route. -->
+        <div v-if="!isConfigured" ref="setupEl" class="cf-setup" role="status" tabindex="-1">
+          <p class="cf-setup__title">{{ messages.setupTitle }}</p>
+          <p>{{ messages.setupText }} <a :href="`mailto:${messages.setupEmail}`">{{ messages.setupEmail }}</a>.</p>
+        </div>
 
         <div v-if="state === 'error'" ref="errorEl" class="cf-error" role="alert" tabindex="-1">
           <p class="cf-error__title">{{ messages.errorTitle }}</p>
@@ -406,6 +461,31 @@ async function onSubmit() {
   font-size: 15px;
   line-height: 1.55;
   color: var(--ink-2);
+}
+
+.cf-setup {
+  padding: var(--s-16) var(--s-24);
+  border-radius: var(--radius-field);
+  border: 1px solid var(--line-2);
+  background: var(--paper);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.cf-setup:focus {
+  outline: none;
+}
+
+.cf-setup__title {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.cf-setup a {
+  color: var(--indigo);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .cf-error__title {

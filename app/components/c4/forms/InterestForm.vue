@@ -3,15 +3,18 @@
  * Scholarships: register interest (content I3 status block). Email and
  * area of interest. Same Web3Forms wiring and honeypot as the other forms.
  */
+import { messages } from '~/data/contact'
 import { scholarshipsPage, youthMessages as msg } from '~/data/youth'
 
 const s = scholarshipsPage.status
 const form = reactive({ email: '', area: '', botcheck: '' })
 
-const { state, submit } = useContactForm('Scholarships')
+const { state, isConfigured, submit } = useContactForm('Scholarships')
 const formEl = ref<HTMLFormElement | null>(null)
 const doneEl = ref<HTMLElement | null>(null)
 const errorEl = ref<HTMLElement | null>(null)
+const setupEl = ref<HTMLElement | null>(null)
+useFieldMessages(formEl)
 
 async function onSubmit() {
   if (!formEl.value?.reportValidity()) return
@@ -23,7 +26,7 @@ async function onSubmit() {
     botcheck: form.botcheck,
   })
   await nextTick()
-  ;(ok ? doneEl : errorEl).value?.focus()
+  ;(ok ? doneEl : state.value === 'setup' ? setupEl : errorEl).value?.focus()
 }
 </script>
 
@@ -34,6 +37,12 @@ async function onSubmit() {
     </p>
 
     <form v-else ref="formEl" class="c4f" novalidate @submit.prevent="onSubmit">
+      <!-- No Web3Forms key in this build: say so, with the email route. -->
+      <div v-if="!isConfigured" ref="setupEl" class="c4f-error c4f-setup" role="status" tabindex="-1">
+        <p class="c4f-setup__title">{{ messages.setupTitle }}</p>
+        <p>{{ messages.setupText }} <a :href="`mailto:${messages.setupEmail}`">{{ messages.setupEmail }}</a>.</p>
+      </div>
+
       <div v-if="state === 'error'" ref="errorEl" class="c4f-error" role="alert" tabindex="-1">
         <p class="c4f-error__title">{{ msg.errorTitle }}</p>
         <p>{{ msg.errorText }}</p>

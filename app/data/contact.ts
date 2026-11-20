@@ -52,6 +52,14 @@ export const fieldLabels = {
 export const privacyLine = { before: 'We use what you send only to reply to you. See our ', link: 'privacy policy', to: '/privacy', after: '.' }
 
 export const messages = {
+  // J2 field messages
+  missing: 'Please fill in this field.',
+  invalidEmail: 'Please enter a valid email address.',
+  // Plan, section 9: until the Web3Forms key is set, the form says so, with
+  // the J2 email route (the J2 error message without "Please try again").
+  setupTitle: 'Setup needed.',
+  setupText: 'Please email us directly at',
+  setupEmail: 'support@cipherfourai.com',
   sending: 'Sending…',
   successTitle: 'Thank you. Your message has reached us.',
   successText: 'We reply to every enquiry within one business day.',

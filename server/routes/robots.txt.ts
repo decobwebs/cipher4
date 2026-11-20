@@ -12,6 +12,7 @@ export default defineEventHandler((event) => {
 Allow: /
 Disallow: /_styleguide
 Disallow: /_roads
+Disallow: /_og
 
 Sitemap: ${siteUrl}/sitemap.xml
 `

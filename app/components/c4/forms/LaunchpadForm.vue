@@ -7,6 +7,7 @@
  * Sends through the same Web3Forms wiring as the contact form, with its
  * honeypot. Until the key is set (Phase 7), sending shows the error.
  */
+import { messages } from '~/data/contact'
 import { launchpadPage, youthMessages as msg } from '~/data/youth'
 
 const f = launchpadPage.form
@@ -18,10 +19,12 @@ const form = reactive({
 })
 const under18 = computed(() => form.age === f.under18)
 
-const { state, submit } = useContactForm('Launchpad')
+const { state, isConfigured, submit } = useContactForm('Launchpad')
 const formEl = ref<HTMLFormElement | null>(null)
 const doneEl = ref<HTMLElement | null>(null)
 const errorEl = ref<HTMLElement | null>(null)
+const setupEl = ref<HTMLElement | null>(null)
+useFieldMessages(formEl)
 
 async function onSubmit() {
   if (!formEl.value?.reportValidity()) return
@@ -42,7 +45,7 @@ async function onSubmit() {
     botcheck: form.botcheck,
   })
   await nextTick()
-  ;(ok ? doneEl : errorEl).value?.focus()
+  ;(ok ? doneEl : state.value === 'setup' ? setupEl : errorEl).value?.focus()
 }
 </script>
 
@@ -53,6 +56,12 @@ async function onSubmit() {
     </p>
 
     <form v-else ref="formEl" class="c4f" novalidate @submit.prevent="onSubmit">
+      <!-- No Web3Forms key in this build: say so, with the email route. -->
+      <div v-if="!isConfigured" ref="setupEl" class="c4f-error c4f-setup" role="status" tabindex="-1">
+        <p class="c4f-setup__title">{{ messages.setupTitle }}</p>
+        <p>{{ messages.setupText }} <a :href="`mailto:${messages.setupEmail}`">{{ messages.setupEmail }}</a>.</p>
+      </div>
+
       <div v-if="state === 'error'" ref="errorEl" class="c4f-error" role="alert" tabindex="-1">
         <p class="c4f-error__title">{{ msg.errorTitle }}</p>
         <p>{{ msg.errorText }}</p>

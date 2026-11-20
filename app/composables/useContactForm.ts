@@ -1,79 +1,64 @@
 /**
- * Contact form submission.
+ * Form submission, for the contact, Launchpad and Scholarships forms
+ * (plan, Phase 7). Posts to Web3Forms with the key from the environment:
+ * NUXT_PUBLIC_WEB3FORMS_KEY, set by the owner (in .env locally, in Vercel
+ * for the live site). Never written in the code.
  *
- * The old site used a mailto: link, which opens the visitor's mail client and
- * loses most enquiries — people who are browsing on a phone, on a shared
- * machine, or in webmail simply abandon at that point. This posts directly to
- * Web3Forms and reports real success and failure states.
- *
- * Setup: put your access key in .env as NUXT_PUBLIC_WEB3FORMS_KEY.
- * Free key, no account needed: https://web3forms.com
+ *   idle         ready
+ *   setup        no key in this build: nothing is sent, and the form shows
+ *                "Setup needed" with the email address instead
+ *   submitting   sending
+ *   success      sent (also what a bot filling the honeypot is told)
+ *   error        the send failed: the J2 error message
  */
 
-export type FormState = 'idle' | 'submitting' | 'success' | 'error'
+export type FormState = 'idle' | 'setup' | 'submitting' | 'success' | 'error'
 
 export function useContactForm(subjectPrefix: string) {
   const config = useRuntimeConfig()
   const state = ref<FormState>('idle')
-  const errorMessage = ref('')
 
-  const accessKey = computed(() => config.public.web3formsKey as string)
-  const isConfigured = computed(
-    () => Boolean(accessKey.value) && accessKey.value !== 'your-access-key-here',
-  )
+  const accessKey = computed(() => String(config.public.web3formsKey || '').trim())
+  const isConfigured = computed(() => accessKey.value.length > 0 && accessKey.value !== 'your-access-key-here')
 
   async function submit(fields: Record<string, string>) {
-    // Honeypot: a real person never fills a hidden field.
+    // Honeypot: a person never fills the hidden field. A bot is told it
+    // worked, and nothing is sent.
     if (fields.botcheck) {
       state.value = 'success'
       return true
     }
-
     if (!isConfigured.value) {
-      state.value = 'error'
-      errorMessage.value =
-        'This form is not connected yet. Please email us directly and we will pick it up straight away.'
+      state.value = 'setup'
       return false
     }
 
     state.value = 'submitting'
-    errorMessage.value = ''
-
     try {
-      const response = await $fetch<{ success: boolean; message?: string }>(
-        'https://api.web3forms.com/submit',
-        {
-          method: 'POST',
-          body: {
-            access_key: accessKey.value,
-            subject: `${subjectPrefix}: ${fields.subject || fields.company || 'New enquiry'}`,
-            from_name: 'Cipher4 website',
-            ...fields,
-          },
+      const { botcheck: _unused, subject, ...rest } = fields
+      const response = await $fetch<{ success: boolean }>('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: {
+          access_key: accessKey.value,
+          subject: `${subjectPrefix}: ${subject || 'New enquiry'}`,
+          from_name: 'Cipher4 website',
+          // Web3Forms' own spam check reads this field.
+          botcheck: false,
+          ...rest,
         },
-      )
-
-      if (response.success) {
-        state.value = 'success'
-        return true
-      }
-
-      throw new Error(response.message || 'Submission was rejected')
+      })
+      state.value = response.success ? 'success' : 'error'
+      return response.success
     }
-    catch (error) {
+    catch {
       state.value = 'error'
-      errorMessage.value =
-        error instanceof Error && error.message
-          ? `We could not send that: ${error.message}. Please email us directly.`
-          : 'We could not send that. Please check your connection, or email us directly.'
       return false
     }
   }
 
   function reset() {
-    state.value = 'idle'
-    errorMessage.value = ''
+    state.value = isConfigured.value ? 'idle' : 'setup'
   }
 
-  return { state, errorMessage, isConfigured, submit, reset }
+  return { state, isConfigured, submit, reset }
 }

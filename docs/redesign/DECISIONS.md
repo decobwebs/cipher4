@@ -116,3 +116,16 @@ Every entrance still follows the Choreography rules: plays once, text never hidd
 
 ### Sign-off for this round
 Screenshots of the home page sections (desktop and phone), a screen recording of the full home page scroll and of one service page, and the C3 list. Then stop and wait for approval.
+
+## Phase 7 (2026-11-20)
+
+| Date | Decision |
+|---|---|
+| 2026-11-20 | **Phase 6 approved** (round 3, the blueprint direction, commit `10c5e33`). Phase 7 started: forms, SEO and redirects. |
+| 2026-11-20 | **Form key:** the owner adds `NUXT_PUBLIC_WEB3FORMS_KEY` to `.env` personally. Never read or edit `.env`. The form works with the key when it is there and shows the "Setup needed" state when it is not. When the owner says the key is added, send **one** test message only, with "TEST — please ignore" in the subject. |
+| 2026-11-20 | **Analytics:** none for now. The slot in `app.vue` stays empty; the privacy policy stays as written. |
+| 2026-11-20 | **Share images (Open Graph):** 1200 × 630, in brand style (white, blueprint grid, Cipher4 logo, the page title), for Home and each page type: service, sector, case study, contact, youth. This replaces the content file's J6 note (logo on deep indigo). |
+| 2026-11-20 | **Still open, no action now:** the 3D carousel reference script and better client logo files; the owner sends them when available. |
+| 2026-11-20 | **How Phase 7 was built (Claude, for review):** the sitemap stays a small generated file (`server/routes/sitemap.xml.ts`) built from the same data as the pages, not the `@nuxtjs/sitemap` module; it lists the 30 public pages and leaves out redirects, the 404 page and the internal pages. robots.txt also blocks `/_og`, the internal share-card page. Share images are made from the built site by `scripts/make-og-images.mjs` into `public/og/`; pages without their own card (lists, About, legal, articles) use the default card. `scripts/check-redirects.mjs` checks content B1, `nuxt.config.ts` and `vercel.json` agree, and can test a build or a running server. |
+| 2026-11-20 | **Descriptions kept as written:** 9 page descriptions run past 160 characters and two article titles past 70, so search results may shorten them. They are the content file's wording, so they stay unless the owner shortens them. |
+| 2026-11-20 | **Removed as unused after Phase 7:** `app/data/company.ts` (replaced by `data/site.ts` in the structured data), `app/data/industries.ts` and `app/data/solutions.ts` (only the old sitemap used them). `public/images/og-default.jpg` is now unused but kept until the owner says to remove it. |

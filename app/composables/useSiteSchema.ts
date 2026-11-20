@@ -1,12 +1,17 @@
-import { company, formatAddress } from '~/data/company'
-
 /**
- * Organization + LocalBusiness structured data.
+ * Organization structured data (plan, Phase 7, step 5).
  *
- * The old site had no structured data at all, which meant search engines had
- * to infer the company name, the sectors served and the three office
- * locations from prose. This states them.
+ * Every fact comes from the content file, through data/site.ts and
+ * data/home.ts: the legal name, the home page description, the six
+ * services, the three offices and their numbers, the enquiries email and
+ * hours, and the RC number. Nothing here that the site itself does not
+ * say (content rules: no claims, no positioning beyond the copy).
  */
+import { company, offices, contact } from '~/data/site'
+import { homeSeo, services } from '~/data/home'
+
+const REGION: Record<string, string> = { Abuja: 'FCT', Lagos: 'Lagos', Kaduna: 'Kaduna' }
+
 export function useSiteSchema() {
   const config = useRuntimeConfig()
   const siteUrl = String(config.public.siteUrl || '').replace(/\/$/, '')
@@ -16,77 +21,36 @@ export function useSiteSchema() {
     '@type': 'Organization',
     '@id': `${siteUrl}/#organization`,
     name: company.legalName,
-    alternateName: company.shortName,
-    url: siteUrl,
-    // The full-resolution mark, NOT the header asset. `cipher4-logo.png` is
-    // resized to 96px because the header renders it at 28px and the footer at
-    // 40px — it was shipping at 1024x1024 and 1.3MB, on every page, which was
-    // the single heaviest asset on the site. Structured data wants a proper
-    // logo (Google asks for at least 112px), so it reads the full copy.
-    logo: `${siteUrl}/images/cipher4-logo-full.png`,
-    description: company.description,
-    email: company.email,
-    foundingDate: String(company.founded),
+    alternateName: company.name,
+    url: `${siteUrl}/`,
+    logo: `${siteUrl}/images/cipher4-mark-512.png`,
+    slogan: company.tagline,
+    description: homeSeo.description,
+    email: contact.email,
+    telephone: contact.phone,
+    foundingDate: '2023',
     ...(company.rcNumber ? { identifier: `RC ${company.rcNumber}` } : {}),
-    address: company.offices.map((office) => ({
+    knowsAbout: services.items.map((s) => s.title),
+    address: offices.map((o) => ({
       '@type': 'PostalAddress',
-      streetAddress: `${office.street}, ${office.area}`,
-      addressLocality: office.city,
-      addressRegion: office.state,
+      streetAddress: o.address.replace(/, FCT$/, ''),
+      addressLocality: o.city,
+      addressRegion: REGION[o.city] ?? o.city,
       addressCountry: 'NG',
     })),
-    contactPoint: company.offices.map((office) => ({
+    contactPoint: offices.map((o) => ({
       '@type': 'ContactPoint',
-      telephone: office.phone,
-      contactType: 'sales',
-      areaServed: 'NG',
+      telephone: o.phone,
+      email: contact.email,
+      contactType: 'customer service',
+      areaServed: 'Worldwide',
       availableLanguage: 'English',
+      hoursAvailable: { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '08:00', closes: '17:00' },
     })),
-    sameAs: Object.values(company.social).filter(Boolean),
-    knowsAbout: [
-      'Fleet management systems',
-      'Asset tracking',
-      'Offshore inspection robotics',
-      'Digital procurement',
-      'Industrial automation',
-      'Maritime logistics technology',
-    ],
-    areaServed: {
-      '@type': 'Country',
-      name: 'Nigeria',
-    },
+    ...(contact.linkedin ? { sameAs: [contact.linkedin] } : {}),
   }
 
-  const localBusinesses = company.offices.map((office, i) => ({
-    '@context': 'https://schema.org',
-    '@type': 'ProfessionalService',
-    '@id': `${siteUrl}/#office-${office.city.toLowerCase()}`,
-    name: `${company.legalName} — ${office.city}`,
-    parentOrganization: { '@id': `${siteUrl}/#organization` },
-    url: siteUrl,
-    telephone: office.phone,
-    email: company.email,
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: `${office.street}, ${office.area}`,
-      addressLocality: office.city,
-      addressRegion: office.state,
-      addressCountry: 'NG',
-    },
-    openingHours: 'Mo-Fr 08:00-17:00',
-    ...(i === 0 ? { description: company.description } : {}),
-  }))
-
   useHead({
-    script: [
-      {
-        type: 'application/ld+json',
-        innerHTML: JSON.stringify(organization),
-      },
-      ...localBusinesses.map((biz) => ({
-        type: 'application/ld+json',
-        innerHTML: JSON.stringify(biz),
-      })),
-    ],
+    script: [{ type: 'application/ld+json', innerHTML: JSON.stringify(organization) }],
   })
 }

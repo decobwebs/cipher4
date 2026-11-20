@@ -1,86 +1,62 @@
-import { solutions } from '../../app/data/solutions'
-import { industries } from '../../app/data/industries'
-
 /**
- * sitemap.xml, generated from the same data the pages are built from, so a
- * new solution or sector cannot be added without appearing here.
+ * sitemap.xml (plan, Phase 7). Every public page, built from the same data
+ * files the pages use, so a new service, sector or case study appears here
+ * on the next build. Articles come from content/insights (published only).
+ *
+ * Left out on purpose: the old addresses (they redirect), the 404 page,
+ * and the internal pages (/_styleguide, /_roads, /_og), which robots.txt
+ * also blocks.
  */
+import { services } from '../../app/data/services'
+import { sectors } from '../../app/data/sectors'
+import { cases } from '../../app/data/work'
 
-interface Entry {
-  loc: string
-  priority: string
-  changefreq: string
-}
+type Entry = { loc: string, priority: string, changefreq: string }
+
+const page = (loc: string, priority: string, changefreq = 'monthly'): Entry => ({ loc, priority, changefreq })
 
 export default defineEventHandler(async (event) => {
-  const siteUrl =
-    useRuntimeConfig().public.siteUrl?.replace(/\/$/, '') ||
-    'https://cipherfourai.com'
+  const siteUrl = (useRuntimeConfig().public.siteUrl || 'https://cipherfourai.com').replace(/\/$/, '')
 
-  const staticPages: Entry[] = [
-    { loc: '/', priority: '1.0', changefreq: 'monthly' },
-    { loc: '/solutions', priority: '0.9', changefreq: 'monthly' },
-    { loc: '/industries', priority: '0.9', changefreq: 'monthly' },
-    { loc: '/projects', priority: '0.8', changefreq: 'monthly' },
-    { loc: '/about', priority: '0.8', changefreq: 'monthly' },
-    { loc: '/credentials', priority: '0.8', changefreq: 'monthly' },
-    { loc: '/insights', priority: '0.7', changefreq: 'weekly' },
-    { loc: '/contact', priority: '0.9', changefreq: 'yearly' },
-    { loc: '/careers', priority: '0.5', changefreq: 'monthly' },
-    { loc: '/privacy', priority: '0.3', changefreq: 'yearly' },
-    { loc: '/terms', priority: '0.3', changefreq: 'yearly' },
+  const pages: Entry[] = [
+    page('/', '1.0', 'weekly'),
+    page('/services', '0.9'),
+    ...services.map((s) => page(`/services/${s.slug}`, '0.8')),
+    page('/sectors', '0.9'),
+    ...sectors.map((s) => page(`/sectors/${s.slug}`, '0.8')),
+    page('/work', '0.9'),
+    ...cases.map((c) => page(c.path, '0.8')),
+    page('/about', '0.7'),
+    page('/technologies', '0.6'),
+    page('/credentials', '0.7'),
+    page('/careers', '0.6'),
+    page('/youth', '0.7'),
+    page('/youth/launchpad', '0.6'),
+    page('/youth/scholarships', '0.6'),
+    page('/insights', '0.6', 'weekly'),
+    page('/contact', '0.8'),
+    page('/privacy', '0.3', 'yearly'),
+    page('/terms', '0.3', 'yearly'),
   ]
 
-  const solutionPages: Entry[] = solutions.map((s) => ({
-    loc: `/solutions/${s.slug}`,
-    priority: '0.8',
-    changefreq: 'monthly',
-  }))
-
-  const industryPages: Entry[] = industries.map((i) => ({
-    loc: `/industries/${i.slug}`,
-    priority: '0.8',
-    changefreq: 'monthly',
-  }))
-
-  // Insights come from the content collection so new articles appear
-  // automatically on the next build.
-  let insightPages: Entry[] = []
   try {
-    const articles = await queryCollection(event, 'insights')
-      .where('draft', '=', false)
-      .all()
-    insightPages = articles.map((a: { path: string }) => ({
-      loc: a.path,
-      priority: '0.6',
-      changefreq: 'yearly',
-    }))
+    const articles = await queryCollection(event, 'insights').where('draft', '=', false).all()
+    for (const a of articles as { path: string }[]) pages.push(page(a.path, '0.6', 'yearly'))
   }
   catch {
-    // Content not available at this point in the build — skip rather than fail.
+    // Content not ready at this point in the build: skip the articles
+    // rather than fail the whole sitemap.
   }
 
-  const all = [
-    ...staticPages,
-    ...solutionPages,
-    ...industryPages,
-    ...insightPages,
-  ]
-
   const lastmod = new Date().toISOString().split('T')[0]
-
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${all
-  .map(
-    (entry) => `  <url>
-    <loc>${siteUrl}${entry.loc}</loc>
+${pages.map((e) => `  <url>
+    <loc>${siteUrl}${e.loc === '/' ? '/' : e.loc}</loc>
     <lastmod>${lastmod}</lastmod>
-    <changefreq>${entry.changefreq}</changefreq>
-    <priority>${entry.priority}</priority>
-  </url>`,
-  )
-  .join('\n')}
+    <changefreq>${e.changefreq}</changefreq>
+    <priority>${e.priority}</priority>
+  </url>`).join('\n')}
 </urlset>
 `
 
