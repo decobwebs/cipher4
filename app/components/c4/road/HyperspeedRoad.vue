@@ -102,8 +102,13 @@ async function start() {
   }
   if (props.steering) wireSteering()
   if (props.surge) wireSurge()
-  // Fade in once the first frame is on the canvas.
-  requestAnimationFrame(() => requestAnimationFrame(() => { ready.value = true }))
+  // Fade in once the first frame is on the canvas (after the shaders have
+  // compiled in the background: handle.ready, Phase 8).
+  const h = handle
+  void Promise.resolve(h.ready).then(() => {
+    if (unmounted || handle !== h) return
+    requestAnimationFrame(() => requestAnimationFrame(() => { ready.value = true }))
+  })
 }
 
 onMounted(() => {

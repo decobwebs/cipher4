@@ -149,6 +149,10 @@ select {
   transform: translateY(-200%);
 }
 
+/* :focus as well as :focus-visible (Phase 8): coming back to the page from
+   the browser's address bar, some browsers focus it without :focus-visible,
+   and the link stayed hidden above the screen. */
+.c4-skip:focus,
 .c4-skip:focus-visible {
   transform: none;
 }

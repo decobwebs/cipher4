@@ -33,7 +33,7 @@ useScrollMoment(({ gsap }) => {
   <section class="hm c4-section bp-host" aria-labelledby="hm-eyebrow">
     <BlueprintGround kind="grid" draw="left" marks sheet="SHEET 01 / 09" dwg="DWG C4-001" />
     <div class="c4-wrap hm__inner">
-      <Eyebrow id="hm-eyebrow" class="hm__eyebrow">{{ mission.eyebrow }}</Eyebrow>
+      <Eyebrow id="hm-eyebrow" tag="h2" class="hm__eyebrow">{{ mission.eyebrow }}</Eyebrow>
       <p ref="statement" class="hm__statement">
         <span class="hm__quiet"><template v-for="(w, k) in quiet" :key="`q${k}`"><span class="hm__w">{{ w }}</span>{{ k < quiet.length - 1 ? ' ' : '' }}</template></span>
         {{ ' ' }}<span class="hm__strong"><template v-for="(w, k) in strong" :key="`s${k}`"><span class="hm__w">{{ w }}</span>{{ k < strong.length - 1 ? ' ' : '' }}</template></span><span class="c4-sr-only">.</span><span class="hm__node" aria-hidden="true" />

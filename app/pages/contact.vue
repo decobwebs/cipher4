@@ -28,9 +28,12 @@ const hero = ref<{ launch: () => void; speedUp: (ms?: number) => void } | null>(
       :min-height="520"
     />
 
-    <section class="ct c4-section c4-section--paper" aria-label="Send us a message">
+    <section class="ct c4-section c4-section--paper" aria-labelledby="ct-form-title">
       <div class="c4-wrap ct__grid">
         <div class="c4-card ct__form">
+          <!-- Phase 8: a heading for screen-reader users who move by
+               headings (the section had a name but no heading). -->
+          <h2 id="ct-form-title" class="c4-sr-only">Send us a message</h2>
           <ContactForm @sending="hero?.speedUp(400)" @sent="hero?.launch()" />
         </div>
 

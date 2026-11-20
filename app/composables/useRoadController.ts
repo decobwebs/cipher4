@@ -196,22 +196,11 @@ export function describeRoadState(): string {
 
 // --- Loading ---------------------------------------------------------------
 
-function whenIdle(): Promise<void> {
-  return new Promise((resolve) => {
-    const idle = () => {
-      const ric = (window as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => void }).requestIdleCallback
-      if (ric) ric(() => resolve(), { timeout: 2500 })
-      else setTimeout(resolve, 300)
-    }
-    if (document.readyState === 'complete') idle()
-    else window.addEventListener('load', idle, { once: true })
-  })
-}
-
-/** The road module, loaded once: after load, once the visitor engages
- *  (utils/engaged.ts, Phase 8), and in an idle moment. */
+/** The road module, loaded once: on the visitor's first move, touch,
+ *  scroll or key, or about 2 s after the page has fully loaded and the
+ *  browser is idle, whichever comes first (utils/engaged.ts, Phase 8). */
 export function loadRoadLib() {
-  libPromise ??= whenEngaged().then(whenIdle).then(() => import('~/lib/hyperspeed/index'))
+  libPromise ??= whenEngaged(2000).then(() => import('~/lib/hyperspeed/index'))
   return libPromise
 }
 

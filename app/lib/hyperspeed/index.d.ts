@@ -32,6 +32,8 @@ export interface RoadOptions {
 export interface RoadHandle {
   supported: boolean
   reason?: string
+  /** Resolves once the shaders have compiled and the first frame is drawn. */
+  ready?: Promise<void>
   setOptions(partial: RoadOptions): void
   getOptions(): RoadOptions
   /** Hold-style: true speeds up, false returns to normal. */

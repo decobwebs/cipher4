@@ -383,6 +383,10 @@ function mount(canvas, userOptions) {
   if (saveData()) return Object.assign(inert, { reason: 'save-data' })
   if (!supportsWebGL()) return Object.assign(inert, { reason: 'no-webgl' })
 
+  // C4 site (Phase 8): true until the scene's shaders have compiled in the
+  // background (warmUp). Nothing is drawn before then, so the first frame
+  // never makes the page wait while the browser compiles them.
+  let warming = true
   let renderer
   try {
     renderer = new WebGLRenderer({ canvas, antialias: false, alpha: true })
@@ -718,7 +722,7 @@ function mount(canvas, userOptions) {
   }
 
   function renderStill() {
-    if (!built) return
+    if (!built || warming) return
     setTime(elapsed + timeOffset)
     composer.render(0)
   }
@@ -727,6 +731,7 @@ function mount(canvas, userOptions) {
     return !destroyed && !userPaused && tabVisible && (onScreen || !o.pauseOffscreen) && !reduce()
   }
   function sync() {
+    if (warming) return
     if (shouldRun()) {
       if (!running) { running = true; clock.getDelta(); renderer.setAnimationLoop(frame) }
     } else {
@@ -787,12 +792,30 @@ function mount(canvas, userOptions) {
 
   build()
   wirePointer()
-  sync()
-  if (!running) renderStill()
+
+  // C4 site (Phase 8): compile the scene's shaders without blocking
+  // (KHR_parallel_shader_compile where the browser has it), then start.
+  // `ready` resolves once the first frame is on the canvas.
+  // Compiled against the composer's own buffer, which the scene is drawn
+  // into: the shaders are built for that target, not for the screen.
+  let compiling = Promise.resolve()
+  if (typeof renderer.compileAsync === 'function') {
+    const prev = renderer.getRenderTarget()
+    if (composer && composer.inputBuffer) renderer.setRenderTarget(composer.inputBuffer)
+    compiling = renderer.compileAsync(scene, camera).catch(() => {})
+    renderer.setRenderTarget(prev)
+  }
+  const ready = compiling.then(() => {
+    warming = false
+    if (destroyed) return
+    sync()
+    if (!running) renderStill()
+  })
 
   return {
     supported: true,
     canvas,
+    ready,
     setOptions(partial) {
       if (destroyed || !partial) return
       partial = clone(partial)

@@ -75,7 +75,8 @@ async function handle(req, res) {
     } catch {}
   }
   const notFound = join(ROOT, '404.html')
-  send(req, res, 404, notFound, await readFile(notFound).catch(() => Buffer.from('Not found')))
+  const nf = await stat(notFound).catch(() => null)
+  send(req, res, 404, notFound, await readFile(notFound).catch(() => Buffer.from('Not found')), nf?.mtimeMs ?? 0)
 }
 
 const tls = process.env.TLS_KEY && process.env.TLS_CERT

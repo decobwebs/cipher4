@@ -668,6 +668,14 @@ async function onSubmit() {
   }
 }
 
+/* Phase 8: while the step bar is pinned, the browser keeps a focused field
+   clear of it when tabbing (instead of scrolling it behind the bar). */
+@media (max-width: 767px) {
+  html:has(.cf-bar.is-pinned) {
+    scroll-padding-bottom: 168px;
+  }
+}
+
 @media (max-width: 767px) {
   html:not(.c4-js) .cf-next,
   html:not(.c4-js) .cf-steps {
