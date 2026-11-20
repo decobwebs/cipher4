@@ -10,10 +10,12 @@
  *      mobile  phones and tablets: only the page's header road and the
  *              closing road, pixel ratio capped at 1.5
  *      still   reduced motion, Save-Data, 4 cores or fewer, or a measured
- *              frame rate under 40 fps (see the frame-rate check below)
+ *              frame rate that stays under 24 fps (see the frame-rate
+ *              check below)
  *      none    no WebGL: still images only
- *  - The road code loads only after the page has loaded and the browser is
- *    idle, so it never delays the headline.
+ *  - The road code loads on the visitor's first interaction, or about 2 s
+ *    after the page has loaded and the browser is idle, so it never delays
+ *    the headline.
  *
  * Still frames are images exported from the real road (public/images/road),
  * so a device on the still tier never downloads the 3D code at all.
@@ -42,13 +44,18 @@ export interface RoadEntry {
 }
 
 // v2: the first version judged during start-up, so its notes are ignored.
-const LOWFPS_KEY = 'c4-road-lowfps-v2'
+// v3 (Phase 8): the old 40 fps rule wrongly failed 30 fps screens; flags
+// saved under the old rule are ignored.
+const LOWFPS_KEY = 'c4-road-lowfps-v3'
 const MOTION_KEY = 'c4-motion-on'
 const PRIORITY: Record<RoadKind, number> = { hero: 5, header: 4, closing: 3, deliver: 2, spine: 2, strip: 1 }
 
 // Frame-rate check settings.
-const FPS_MIN = 40
-const FPS_WINDOW = 2000 // judge the last 2 s of frames
+// Phase 8 (owner): a steady 30 fps looks smooth and is fine, e.g. a laptop
+// on battery saver. Only a device that genuinely struggles gets the still.
+const FPS_MIN = 24
+const FPS_WINDOW = 3000 // the average over the last 3 s of frames
+const FPS_SUSTAIN = 3000 // ...must stay under FPS_MIN this long to count
 const WARM_UP = 3000 // never judge in the first 3 s after a road starts or the page loads
 const RETRY_AFTER = 10000 // after a first failure, try again once after 10 s
 const GAP = 250 // a frame gap longer than this means the road was not really on view
@@ -339,8 +346,9 @@ function run() {
 // Never judges during the first 3 s after the first road starts, nor until
 // 3 s after the page finished loading. When another road takes over, or a
 // new one sets up, the next 600 ms are skipped (start-up stutter) and the
-// count carries on. Judges the last 2 s of frames: under 40 fps is
-// a failure. A first failure shows the still frame and tries again after
+// count carries on. Averages the last 3 s of frames; a failure only when
+// that average stays under 24 fps for 3 s more, so a brief drop (a heavy
+// scroll moment, a page change) never counts. A steady 30 fps passes. A first failure shows the still frame and tries again after
 // 10 s. Only a second failure keeps the still frames, for the rest of the
 // visit. The ?motion=on test switch turns the check off.
 
@@ -376,20 +384,23 @@ function fpsMonitor(active: boolean) {
   fpsReadyAt = Math.max(fpsReadyAt, performance.now() + (fpsWarmed ? SWITCH_SETTLE : WARM_UP))
   fpsWarmed = true
   let last = 0
+  let lowSince = 0 // when the 3 s average first went under FPS_MIN
   const tick = (t: number) => {
     fpsRaf = requestAnimationFrame(tick)
     // A long gap: the road was not really on view. Start the count again.
-    if (last && t - last > GAP) fpsFrames = []
+    if (last && t - last > GAP) { fpsFrames = []; lowSince = 0 }
     last = t
     const loaded = pageLoadedAt()
-    if (loaded === null || t < loaded + WARM_UP || t < fpsReadyAt) return
+    if (loaded === null || t < loaded + WARM_UP || t < fpsReadyAt) { lowSince = 0; return }
     fpsFrames.push(t)
     while (fpsFrames.length && t - fpsFrames[0]! > FPS_WINDOW) fpsFrames.shift()
     const span = t - fpsFrames[0]!
-    if (span < FPS_WINDOW - 100) return // only judge a full window
+    if (span < FPS_WINDOW - 100) { lowSince = 0; return } // only judge a full window
     const fps = ((fpsFrames.length - 1) / span) * 1000
     roadState.fps = Math.round(fps)
-    if (fps < FPS_MIN) frameRateFailed()
+    if (fps >= FPS_MIN) { lowSince = 0; return }
+    if (!lowSince) lowSince = t
+    if (t - lowSince >= FPS_SUSTAIN) frameRateFailed()
   }
   fpsRaf = requestAnimationFrame(tick)
 }
