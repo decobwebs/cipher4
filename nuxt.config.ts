@@ -26,7 +26,6 @@ export default defineNuxtConfig({
 
   // Components live in app/components/c4/** and are registered by their
   // file name alone (C4Logo, SiteHeader...), as the plan names them.
-  // app/components/dev holds the internal /_roads demo frame (DevRoadDemo).
   components: [
     { path: '~/components/c4', pathPrefix: false },
     '~/components',
@@ -56,7 +55,7 @@ export default defineNuxtConfig({
       // states only apply under `.c4-js`, so with JavaScript off every icon,
       // line and word is simply shown. It also keeps a copy of the address's
       // query string: during start-up the router briefly drops it, and the
-      // road's ?motion=on test switch needs to see it.
+      // contact form's ?type= and ?sector= prefill needs to see it.
       //
       // Phase 6: `.c4-motion` turns on the sections' starting states (they
       // play in from there), unless the device asks for reduced motion.
@@ -133,15 +132,12 @@ export default defineNuxtConfig({
     },
     prerender: {
       crawlLinks: true,
-      // `/_styleguide` and `/_roads` are linked from nowhere, so the crawler
+      // Pages linked from nowhere, so the crawler cannot find them.
       // cannot find them.
       routes: [
-        '/', '/sitemap.xml', '/robots.txt', '/_styleguide', '/_roads',
+        '/', '/sitemap.xml', '/robots.txt',
         // The share-card page, which scripts/make-og-images.mjs photographs.
         '/_og',
-        // Phase 2b road experiments (internal, removed at launch).
-        '/_roads/demos', '/_roads/arrival', '/_roads/sectors', '/_roads/steering',
-        '/_roads/message-sent', '/_roads/not-found', '/_roads/spine', '/_roads/launch',
         // The 404 page, written as 404.html for the host to serve with status 404.
         '/404.html',
       ],

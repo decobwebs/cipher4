@@ -61,8 +61,8 @@ export interface LegalPage {
   seo: { title: string; description: string }
   title: string
   /**
-   * "Last updated: [publication date]". The date is set at launch; until
-   * then the line is not shown.
+   * "Last updated: [publication date]". Set in Phase 9 (launch preparation);
+   * an empty value hides the line.
    */
   lastUpdated: string
   sections: LegalSection[]
@@ -79,7 +79,7 @@ export const privacyPage: LegalPage = {
     description: 'How Cipher4 AI & Robotics Ltd collects, uses and protects personal data, in line with the Nigeria Data Protection Act 2023.',
   },
   title: 'Privacy policy',
-  lastUpdated: '',
+  lastUpdated: '20 November 2026',
   sections: [
     {
       title: 'Who we are',
@@ -162,7 +162,7 @@ export const termsPage: LegalPage = {
     description: 'The terms governing use of the Cipher4 AI & Robotics Ltd website.',
   },
   title: 'Terms of use',
-  lastUpdated: '',
+  lastUpdated: '20 November 2026',
   sections: [
     {
       title: 'About these terms',

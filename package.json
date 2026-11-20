@@ -29,6 +29,7 @@
     "vue-router": "^5.2.0"
   },
   "devDependencies": {
+    "axe-core": "^4.14.1",
     "playwright": "^1.62.1"
   }
 }

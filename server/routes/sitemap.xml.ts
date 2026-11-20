@@ -4,7 +4,7 @@
  * on the next build. Articles come from content/insights (published only).
  *
  * Left out on purpose: the old addresses (they redirect), the 404 page,
- * and the internal pages (/_styleguide, /_roads, /_og), which robots.txt
+ * and the internal share-card page (/_og), which robots.txt
  * also blocks.
  */
 import { services } from '../../app/data/services'

@@ -7,7 +7,8 @@
  *
  * Brand style (owner, 20 Nov 2026): white, the blueprint grid, the Cipher4
  * logo, the page title, and the page's own blueprint drawing. noindex,
- * blocked in robots.txt, removed at launch with /_roads and /_styleguide.
+ * blocked in robots.txt, linked from nowhere. Kept after launch so the
+ * share cards can be made again (scripts/make-og-images.mjs).
  */
 import { shareCards, defaultCard } from '~/data/og'
 

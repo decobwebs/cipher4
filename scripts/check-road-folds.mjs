@@ -26,9 +26,6 @@ const ROADS = {
   deliver: { distortion: 'turbulentDistortion', uniforms: { uAmp: [14, 3, 2, 0] } },
   closing: { distortion: 'mountainDistortion', uniforms: { uAmp: [22, 2, 8] } },
   notfound: { distortion: 'deepDistortion', uniforms: { uAmp: [10, 3] } },
-  // Launch experiment: fixed camera behind the road, pointing up the screen.
-  'demo-rise': { distortion: 'LongRaceDistortion', uniforms: { uAmp: [3, 0] }, fixedCamera: { position: [0, 16, -8], target: [0, 0, -46] }, size: [760, 640] },
-  // Spine (straight, seen from above) cannot fold: no bends at all.
   // The home hero is exempt (kept exactly as the live road), so not listed.
 }
 // Allow a candidate as JSON: node check-road-folds.mjs '{"distortion":"turbulentDistortion","uniforms":{"uAmp":[10,2,3,3]}}'
